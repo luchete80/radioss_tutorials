@@ -16,7 +16,7 @@ flog = open("log.txt","w")
 largo = 0.25
 delta = 0.002
 thck  = 7.0e-4    #Plate Thickness
-thck_rig = 5.0e-4
+thck_rig = 1.0e-4
 
 #TOOL 
 r_i         = 88.2414e-3      #Inner Path Radius
@@ -31,7 +31,7 @@ p_S         = 4.3e-4     #ASDIF HEIGHT DISTANCE BETWEEN TOOLS
 tool_speed  = 0.6 / 60.0 * 5000 #600mm/min according to Valoppi
 t_ind       = 1.0e-3
 tool_rad    = 0.00755    #Tool radius
-gap         = 2.0e-4
+gap         = 0.0e-4
 gap_cont    = thck_rig
 dtout       = 1.0e-4
 end_time    = 0.0
@@ -78,13 +78,13 @@ shell_elnod = [(1,2,3,4)]
 shell_mesh = Plane_Mesh(1,largo,delta)
 if (not move_tool_to_inipos):
   x_init = 0.0
-sph1_mesh = Sphere_Mesh(2, tool_rad,        \
-                        x_init, 0.0,(tool_rad + thck/2.0 + gap), \
+sph1_mesh = Sphere_Mesh(2, tool_rad-thck_rig/2.0,        \
+                        x_init, 0.0,(tool_rad + thck/2.0 + gap + thck_rig/2.0), \
                                         5) #(id, radius, divisions):
 
 if (double_sided):
-  sph2_mesh = Sphere_Mesh(3, tool_rad,        \
-                        0.0, 0.0,(-tool_rad - thck/2.0 - gap), \
+  sph2_mesh = Sphere_Mesh(3, tool_rad-thck_rig/2.0,        \
+                        0.0, 0.0,(-tool_rad - thck/2.0 - gap-thck_rig/2.0), \
                                         5) #(id, radius, divisions):
                                         
 

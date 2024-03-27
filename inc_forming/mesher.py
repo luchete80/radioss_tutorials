@@ -611,6 +611,7 @@ class Model:
   def printInterfaces(self,f):
     f.write("#-  9. INTERFACES:\n")  
     for i in range (len(self.inter)):
+      fric = 0.0
       f.write("#---1----|----2----|----3----|----4----|----5----|----6----|----7----|----8----|----9----|---10----|\n")
       f.write("/INTER/TYPE7/%d\n" % (i))
       f.write("INTERFACE %d\n" % (i))
@@ -624,7 +625,10 @@ class Model:
       f.write("#              Stmin               Stmax          %mesh_size               dtmin  Irem_gap\n")
       f.write("                   0                   0                   0                   0         0\n")
       f.write("#              Stfac                Fric              Gapmin              Tstart               Tstop\n")
-      f.write("#                  1                  0.                  .0                   0                   0\n")
+      if (self.inter[i].id_master<4):
+        f.write("#                  1                  0.                  .0                   0                   0\n")
+      else :
+        f.write("#                  1                 0.4                  .0                   0                   0\n")
       f.write("                   1                 .0           0.0000                       0                   0\n")
       f.write("#      IBC                        Inacti                VisS                VisF              Bumult\n")
       f.write("       000                             0                   1                   1                   0\n")
