@@ -1,0 +1,12 @@
+__pycache__/
+*.py[cod]
+*.csv
+*.out
+*.rad
+testA*
+testT*
+*.tmp
+*.rst
+*.inc
+*.vtk
+*.inp
