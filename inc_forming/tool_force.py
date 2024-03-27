@@ -58,7 +58,7 @@ extension = '.vtk'  # Change this to the extension you want to search for
 open_files_with_extension(directory, extension)
 
 fi_x = open("force.csv","w")
-fi_x.write("t, f")
+fi_x.write("t, f\n")
 
 dt = 1.0e-3
 t = 0.0
