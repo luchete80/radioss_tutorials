@@ -773,10 +773,10 @@ class Model:
     f.write("200\n")    
     f.write('/END\n')
     
-  def printEngine(self, run):
+  def printEngine(self, run, time, dt):
     f = open(self.starter_file + "_000" + str(run) + ".rad","w+")
     f.write("/ANIM/DT\n")
-    f.write("0 0.001\n")
+    f.write("0 " +str(dt) + "\n")
     f.write("/ANIM/VECT/DISP\n")
     f.write("/ANIM/VECT/VEL\n")
     f.write("/ANIM/VECT/ACC\n")

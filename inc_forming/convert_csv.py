@@ -4,7 +4,7 @@ import numpy as np
 ###### PARAM ENTRADA ##############
 ##### ASSUMES THAT UNITS ARE MM####
 ## AND CSV IS IN MM
-vel = 4000.0; #mm/min
+vel = 10000000.0; #mm/min
 #THEY ARE USED TO CORRECT INITIAL Z
 gap_0       = 0.0e-4
 dt_dum      = 1.0e-3 #Positioning
