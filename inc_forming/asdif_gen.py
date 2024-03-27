@@ -16,6 +16,7 @@ flog = open("log.txt","w")
 largo = 0.25
 delta = 0.002
 thck  = 7.0e-4    #Plate Thickness
+thck_rig = 1.0e-6
 
 #TOOL 
 r_i         = 88.2414e-3      #Inner Path Radius
@@ -140,12 +141,14 @@ sph1_pt = Part(2)
 sph1_pt.AppendMesh(sph1_mesh) 
 sph1_pt.is_rigid = True
 sph1_pt.is_moving = True
+sph1_pt.asignPropID(2)
 
 if (double_sided):
   sph2_pt = Part(3)
   sph2_pt.AppendMesh(sph2_mesh) 
   sph2_pt.is_rigid = True
   sph2_pt.is_moving = True
+  sph2_pt.asignPropID(2)
 
 model.AppendPart(shell) #FIRST PART TO ADD!
 
@@ -154,6 +157,7 @@ if (cont_support):
     supp_part.append(Part(4+sp))
     supp_part[sp].AppendMesh(supp_mesh[sp])
     supp_part[sp].is_rigid = True #REMEMBER LAST NODE OF THE PART IS THE PIVOT
+    supp_part[sp].asignPropID(2)
     print("support part length", len(supp_part))
     model.AppendPart(supp_part[sp])
 
@@ -166,6 +170,8 @@ if (double_sided):
 
 model.AppendMat(Material(1,thermal))
 model.AppendProp(Prop(1,thck))
+
+model.AppendProp(Prop(2,thck_rig))
 
 #BALLS AND PLATE
 inter_1 = Interface(2,1)

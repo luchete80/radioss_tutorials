@@ -426,7 +426,7 @@ class Prop:
     f.write("##--------------------------------------------------------------------------------------------------\n")
     f.write("## Shell Property Set (pid 1)\n")
     f.write("##--------------------------------------------------------------------------------------------------\n")
-    f.write("/PROP/SHELL/1\n")
+    f.write("/PROP/SHELL/" + str(self.pid) + "\n")
     f.write("SECTION_SHELL:1 TITLE:probe_section  \n")                                                               
     f.write("#Ishell	Ismstr	Ish3n	Idril	 	 	P_thickfail\n")
     f.write("         4         2                         \n")                                   
@@ -483,6 +483,7 @@ class Part:
   is_rigid = False
   is_moving = False
   id_grn_move = 0 #GROUP NODE FOR MOVING
+  pid         = 1
   
   def __init__(self, mid):
     self.id = mid
@@ -490,6 +491,10 @@ class Part:
     self.title = "PART_ID_%d\n" %mid
     self.mid = 0
     self.id_grn_move = mid + 100
+    
+  def asignPropID (self, pi):
+    self.pid = pi
+    
   def AppendMesh(self,m):
     if (not isinstance(m, Mesh)):
       print ("part is not a mesh")
@@ -509,7 +514,7 @@ class Part:
     f.write(line)
     f.write(self.title)                                                                                            
     f.write("#     pid     mid\n")
-    f.write("      1         2\n") 
+    f.write(writeIntField(self.pid, 10) + "         2\n") 
     line = "/GRNOD/PART/%d\n" % self.id    
     line = line + "PART_%d\n" % self.id
     line = line + writeIntField(self.id,10) + "\n"
