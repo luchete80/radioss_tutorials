@@ -32,7 +32,7 @@ tool_speed  = 0.6 / 60.0 * 5000 #600mm/min according to Valoppi
 t_ind       = 1.0e-3
 tool_rad    = 0.00755    #Tool radius
 gap         = 0.0e-4
-gap_cont    = 0.0
+gap_cont    = -5.0e-4
 dtout       = 1.0e-4
 end_time    = 0.0
 
@@ -79,12 +79,12 @@ shell_mesh = Plane_Mesh(1,largo,delta)
 if (not move_tool_to_inipos):
   x_init = 0.0
 sph1_mesh = Sphere_Mesh(2, tool_rad-thck_rig/2.0,        \
-                        x_init, 0.0,(tool_rad + thck/2.0 + gap + thck_rig/2.0), \
+                        x_init, 0.0,(tool_rad + thck/2.0 + gap + thck_rig), \
                                         5) #(id, radius, divisions):
 
 if (double_sided):
   sph2_mesh = Sphere_Mesh(3, tool_rad-thck_rig/2.0,        \
-                        0.0, 0.0,(-tool_rad - thck/2.0 - gap-thck_rig/2.0), \
+                        0.0, 0.0,(-tool_rad - thck/2.0 - gap-thck_rig), \
                                         5) #(id, radius, divisions):
                                         
 
