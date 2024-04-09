@@ -33,7 +33,7 @@ tool_speed  = 0.6 / 60.0 * 5000 #600mm/min according to Valoppi
 t_ind       = 1.0e-3
 tool_rad    = 0.00755    #Tool radius
 gap         = 0.0e-4
-gap_cont    = -0.0e-4
+gap_cont    = 1.0e-4
 dtout       = 1.0e-4
 end_time    = 0.0
 

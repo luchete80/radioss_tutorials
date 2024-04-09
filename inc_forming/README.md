@@ -3,6 +3,12 @@ Is a python script to generate input files to solve incremental forming process 
 
 ![ScreenShot](https://github.com/luchete80/radioss_incforming/blob/master/screenshot.png)
 ## How to use it?
+0. If you have the toolpath as CSV file andyou wish to import it, run:
+```
+python convert_csv.py 
+```
+This scrip generates mov[i/o]_z.inc which are included in radioss starter file.
+
 1. Run the script
 ```
 python asdif_gen.py 
@@ -18,6 +24,19 @@ starter_win64 -i test_0000.rad
 ```
 engine_win64 -i test_0001.rad
 ```
+
+4. Converto outputs to vtk
+```
+anim_to_vtk__win64 testAXXX > test.vtk
+```
+
+
+5. Post process tool force
+```
+python tool_force.py
+```
+
+
 
 ## Types of Models
 By changing ```cont_support ``` inside the script, the model has shell boundaries fixed either by nodal fixities (```cont_support = False```) or by contact. 
