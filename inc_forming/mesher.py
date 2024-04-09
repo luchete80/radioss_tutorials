@@ -628,7 +628,7 @@ class Model:
       if (self.inter[i].id_master<4):
         f.write("#                  1                  0.                  .0                   0                   0\n")
       else :
-        f.write("#                  1                 0.4                  .0                   0                   0\n")
+        f.write("#                  1                 1.0                  .0                   0                   0\n")
       f.write("                   1                 .0           0.0000                       0                   0\n")
       f.write("#      IBC                        Inacti                VisS                VisF              Bumult\n")
       f.write("       000                             0                   1                   1                   0\n")

@@ -15,8 +15,9 @@ flog = open("log.txt","w")
 #WORKPIECE
 largo = 0.25
 delta = 0.002
-thck  = 7.0e-4    #Plate Thickness
-thck_rig = 1.0e-4
+thck  = 7.0e-4      #Plate Thickness
+thck_rig = 1.0e-4   #BALL
+thck_supp = 1.0e-3  #SUPP
 
 #TOOL 
 r_i         = 88.2414e-3      #Inner Path Radius
@@ -32,7 +33,7 @@ tool_speed  = 0.6 / 60.0 * 5000 #600mm/min according to Valoppi
 t_ind       = 1.0e-3
 tool_rad    = 0.00755    #Tool radius
 gap         = 0.0e-4
-gap_cont    = -5.0e-4
+gap_cont    = -0.0e-4
 dtout       = 1.0e-4
 end_time    = 0.0
 
@@ -90,30 +91,30 @@ if (double_sided):
 
 if (cont_support):
   #Y-     support,                id,lx,               ly,         elem_x,     elem_y,       ox,                   oy, z_, flip):
-  supp_mesh.append(Rect_Plane_Mesh(4,largo+largo_supp,largo_supp,dens_supp_2,dens_supp_1, -largo/2.0-largo_supp/2.0, -largo/2.0-largo_supp/2.0, -thck/2.0-gap_cont-thck_rig/2.0, False)) #Legth x,  
+  supp_mesh.append(Rect_Plane_Mesh(4,largo+largo_supp,largo_supp,dens_supp_2,dens_supp_1, -largo/2.0-largo_supp/2.0, -largo/2.0-largo_supp/2.0, -thck/2.0-gap_cont-thck_supp/2.0, False)) #Legth x,  
   supp_mesh[0].AddRigidNode(0.0,-largo/2.0, -2.0*thck)
-  supp_mesh.append(Rect_Plane_Mesh(5,largo+largo_supp,largo_supp,dens_supp_2,dens_supp_1, -largo/2.0-largo_supp/2.0, -largo/2.0-largo_supp/2.0,  thck/2.0+gap_cont+thck_rig/2.0, True))
+  supp_mesh.append(Rect_Plane_Mesh(5,largo+largo_supp,largo_supp,dens_supp_2,dens_supp_1, -largo/2.0-largo_supp/2.0, -largo/2.0-largo_supp/2.0,  thck/2.0+gap_cont+thck_supp/2.0, True))
   supp_mesh[1].AddRigidNode(0.0,-largo/2.0,  2.0*thck)
 
   #Y+ support,                   id,lx,               ly,         elem_x,     elem_y,       ox,                   oy, z_, flip):
-  supp_mesh.append(Rect_Plane_Mesh(6,largo+largo_supp,largo_supp,dens_supp_2,dens_supp_1, -largo/2.0-largo_supp/2.0,  largo/2.0-largo_supp/2.0, -thck/2.0-gap_cont-thck_rig/2.0, False))
+  supp_mesh.append(Rect_Plane_Mesh(6,largo+largo_supp,largo_supp,dens_supp_2,dens_supp_1, -largo/2.0-largo_supp/2.0,  largo/2.0-largo_supp/2.0, -thck/2.0-gap_cont-thck_supp/2.0, False))
   supp_mesh[2].AddRigidNode(0.0, largo/2.0, -2.0*thck)
-  supp_mesh.append(Rect_Plane_Mesh(7,largo+largo_supp,largo_supp,dens_supp_2,dens_supp_1, -largo/2.0-largo_supp/2.0,  largo/2.0-largo_supp/2.0,  thck/2.0+gap_cont+thck_rig/2.0, True))
+  supp_mesh.append(Rect_Plane_Mesh(7,largo+largo_supp,largo_supp,dens_supp_2,dens_supp_1, -largo/2.0-largo_supp/2.0,  largo/2.0-largo_supp/2.0,  thck/2.0+gap_cont+thck_supp/2.0, True))
   supp_mesh[3].AddRigidNode(0.0, largo/2.0,  2.0*thck)
   
   #THESE SUPPORTS HAVE Y LENGTH SHORTER THAN OTHERS; ONLY Y LENGTH ON HEIGHT
   # #X-     support,                id,lx,      ly,     elem_x,     elem_y,       ox,               oy, z_, flip):  
   x_pos = largo/2.0
-  supp_mesh.append(Rect_Plane_Mesh(8,largo_supp,largo-largo_supp,dens_supp_1,dens_supp_2, -x_pos-largo_supp/2.0, -largo/2.0+largo_supp/2.0, -thck/2.0-gap_cont-thck_rig/2.0, False))
+  supp_mesh.append(Rect_Plane_Mesh(8,largo_supp,largo-largo_supp,dens_supp_1,dens_supp_2, -x_pos-largo_supp/2.0, -largo/2.0+largo_supp/2.0, -thck/2.0-gap_cont-thck_supp/2.0, False))
   supp_mesh[4].AddRigidNode(-largo/2.0 ,0.0,  -2.0*thck)
-  supp_mesh.append(Rect_Plane_Mesh(9,largo_supp,largo-largo_supp,dens_supp_1,dens_supp_2, -x_pos-largo_supp/2.0, -largo/2.0+largo_supp/2.0,  thck/2.0+gap_cont+thck_rig/2.0, True))
+  supp_mesh.append(Rect_Plane_Mesh(9,largo_supp,largo-largo_supp,dens_supp_1,dens_supp_2, -x_pos-largo_supp/2.0, -largo/2.0+largo_supp/2.0,  thck/2.0+gap_cont+thck_supp/2.0, True))
   supp_mesh[5].AddRigidNode(-largo/2.0 ,0.0,   2.0*thck)
   
 
   # #X+     support,                id,lx,      ly,     elem_x,     elem_y,       ox,               oy, z_, flip):  
-  supp_mesh.append(Rect_Plane_Mesh(10,largo_supp,largo-largo_supp,dens_supp_1,dens_supp_2, x_pos-largo_supp/2.0, -largo/2.0+largo_supp/2.0, -thck/2.0-gap_cont-thck_rig/2.0, False))
+  supp_mesh.append(Rect_Plane_Mesh(10,largo_supp,largo-largo_supp,dens_supp_1,dens_supp_2, x_pos-largo_supp/2.0, -largo/2.0+largo_supp/2.0, -thck/2.0-gap_cont-thck_supp/2.0, False))
   supp_mesh[6].AddRigidNode(-largo/2.0 ,0.0,  -2.0*thck)
-  supp_mesh.append(Rect_Plane_Mesh(11,largo_supp,largo-largo_supp,dens_supp_1,dens_supp_2, x_pos-largo_supp/2.0, -largo/2.0+largo_supp/2.0,  thck/2.0+gap_cont+thck_rig/2.0, True))
+  supp_mesh.append(Rect_Plane_Mesh(11,largo_supp,largo-largo_supp,dens_supp_1,dens_supp_2, x_pos-largo_supp/2.0, -largo/2.0+largo_supp/2.0,  thck/2.0+gap_cont+thck_supp/2.0, True))
   supp_mesh[7].AddRigidNode(-largo/2.0 ,0.0,   2.0*thck)
 
 
@@ -159,7 +160,7 @@ if (cont_support):
     supp_part.append(Part(4+sp))
     supp_part[sp].AppendMesh(supp_mesh[sp])
     supp_part[sp].is_rigid = True #REMEMBER LAST NODE OF THE PART IS THE PIVOT
-    supp_part[sp].asignPropID(2)
+    supp_part[sp].asignPropID(3)
     print("support part length", len(supp_part))
     model.AppendPart(supp_part[sp])
 
@@ -174,6 +175,8 @@ model.AppendMat(Material(1,thermal))
 model.AppendProp(Prop(1,thck))
 
 model.AppendProp(Prop(2,thck_rig))
+
+model.AppendProp(Prop(3,thck_supp))
 
 #BALLS AND PLATE
 inter_1 = Interface(2,1)
