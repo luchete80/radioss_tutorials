@@ -1,0 +1,52 @@
+
+https://github.com/OpenRadioss/OpenRadioss/tree/main/tools
+
+
+LINUX 
+
+export OPENRADIOSS_PATH=$HOME/Programas/OpenRadioss
+export RAD_CFG_PATH=$OPENRADIOSS_PATH/hm_cfg_files
+export RAD_H3D_PATH=$OPENRADIOSS_PATH/extlib/h3d/lib/linux64
+export KMP_STACKSIZE=400m
+export PATH=$OPENRADIOSS_PATH/extlib/hm_reader/linux64:$PATH 
+export PATH=$OPENRADIOSS_PATH/exec:$PATH
+export LD_LIBRARY_PATH=$OPENRADIOSS_PATH/extlib/hm_reader/linux64/:$OPENRADIOSS_PATH/extlib/h3d/lib/linux64/:$LD_LIBRARY_PATH
+export LD_LIBRARY_PATH=/opt/openmpi/lib:$LD_LIBRARY_PATH
+export PATH=/opt/openmpi/bin:$PATH
+
+
+starter_linux64_gf -i test_0000.rad
+engine_linux64_gf -i test_0001.rad
+
+
+
+
+IF MPI    
+    
+
+
+
+ export OMP_STACKSIZE=400m
+  export OMP_NUM_THREADS=[N]
+  starter_linux64_gf -i [Starter input file] -np [P]
+  mpiexec -n [P]  --map-by socket:PE=$OMP_NUM_THREADS --bind-to core ./engine_linux64_gf_ompi -i [Engine input file]
+
+
+  export OMP_STACKSIZE=400m
+  export OMP_NUM_THREADS=2
+  starter_linux64_gf -i test_0000.rad -np 8
+  mpiexec -n 8  --map-by socket:PE=$OMP_NUM_THREADS --bind-to core engine_linux64_gf_ompi -i test_0001.rad 
+
+
+
+  
+  https://2021.help.altair.com/2021/hwsolvers/rad/topics/solvers/rad/rad_user_guide_intro_c.htm
+  
+  
+  
+  
+  mpirun -np 4 ./e_2019_linux64 impi -nt 2 -input CRA2V51_0001.rad
+  
+  anim_to_vtk_linux64_gf
+  
+

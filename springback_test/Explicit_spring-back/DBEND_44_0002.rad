@@ -1,0 +1,33 @@
+# RUN 2: SPRING BACK SIMULATION BY EXPLICIT WITH TOOLS REMOVING
+#
+# Copyright (C) 2022 Altair Engineering Inc. ("Holder")
+# Model is licensed by Holder under CC BY-NC 4.0
+# (https://creativecommons.org/licenses/by-nc/4.0/legalcode).
+#
+/RUN/DBEND_44/2
+2000.
+/VERS/140
+/ANIM/DT
+ 960.  40.
+/ANIM/VECT/DISP
+/ANIM/VECT/VEL
+/ANIM/VECT/FOPT
+/ANIM/ELEM/EPSP
+/ANIM/ELEM/VONM
+/ANIM/ELEM/ENER
+/ANIM/ELEM/THICK
+/RBODY/ON
+2549    2550    2551
+/TFILE
+1.
+#/ABF
+#1. 1e30
+/PRINT/-500
+/RFILE
+ 20000 0 0
+/DT
+0.9 0.0
+/MON/ON  
+
+/ANIM/ELEM/HOUR                                    
+/ANIM/SHELL/TENS

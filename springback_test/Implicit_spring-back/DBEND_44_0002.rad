@@ -1,0 +1,70 @@
+# RUN 2: SPRING BACK SIMULATION BY IMPLICIT
+#
+# Copyright (C) 2022 Altair Engineering Inc. ("Holder")
+# Model is licensed by Holder under CC BY-NC 4.0
+# (https://creativecommons.org/licenses/by-nc/4.0/legalcode).
+#
+/RUN/DBEND_44/2
+1000.01
+/VERS/140
+/ANIM/DT
+ 960.  4.
+/ANIM/VECT/DISP
+/ANIM/VECT/VEL
+/ANIM/VECT/FOPT
+/ANIM/ELEM/EPSP
+/ANIM/ELEM/VONM
+/ANIM/ELEM/ENER
+
+/ANIM/ELEM/THICK
+
+/ANIM/ELEM/HOUR
+/ANIM/SHELL/TENS
+
+/RBODY/ON
+2549    2550    2551
+/TFILE
+2.
+#/ABF
+#2. 1e30
+/PRINT/-1
+/RFILE
+ 20000 0 0
+/MON/ON   
+
+#INTERFACES REMOVING:
+
+/DEL/INTER
+1 2 3
+
+#ADDED BOUNDARY CONDITIONS:
+                                   
+/BCS/TRA/XYZ/
+2549 2550 
+/BCS/ROT/XYZ/
+2549 2550 
+/BCS/TRA/Z/
+427
+
+
+####################
+# IMPLICIT OPTIONS #
+####################
+
+/IMPL/PRINT/NONL/-1
+/IMPL/SOLVER/1
+# IPREC L_LIM ITOL L_TOL
+ 0 0 0 0.
+/IMPL/NONLIN/1
+# upd_K_LIM NITOL N_TOL
+ 2 0 0.25e-1
+/IMPL/DTINI
+ 0.08
+/IMPL/DT/STOP
+# DT_MIN DT_MAX
+ 0.1e-4 0.0
+/IMPL/DT/2
+# NL_DTP SCAL_DTP NL_DTN SCAL_DTN
+ 6 .0 20 0.67 0.0
+/IMPL/SPRBACK
+

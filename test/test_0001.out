@@ -1,0 +1,200 @@
+ test_0001.out
+************************************************************************
+**                                                                    **
+**                                                                    **
+**                         OpenRadioss Engine                         **
+**                                                                    **
+**            Non-linear Finite Element Analysis Software             **
+**                                                                    **
+**                                                                    **
+**                                                                    **
+**                    Linux 64 bits, GNU compiler                     **
+**                                                                    **
+**                                                                    **
+**                                                                    **
+** CommitID: d4f9d9503f37b2ae483d0eef7c09a700c672879e                 **
+************************************************************************
+** OpenRadioss Software                                               **
+** COPYRIGHT (C) 1986-2024 Altair Engineering, Inc.                   **
+** Licensed under GNU Affero General Public License.                  **
+** See License file.                                                  **
+************************************************************************
+ 
+ NUMBER OF SPMD DOMAINS           1
+ NUMBER OF THREADS PER DOMAIN     1
+ NUMBER OF HMPP PROCESSES         1
+  
+ COMPUTATION HARDWARE DESCRIPTION
+  
+ HOSTNAME     CPU TYPE, FREQUENCY AND MEMORY
+ weldform   Intel(R) Core(TM) i7-10700 CPU @ 2.90GHz (x86_64),  800 MHz,  15849 MB RAM,   2037 MB swap
+  
+************************************************************************
+
+
+ testD01                                                                         
+
+
+ FINAL TIME . . . . . . . . . . . . . . . . . . .   100.0000    
+
+ TIME INTERVAL FOR TIME HISTORY PLOTS . . . . . .  0.1000000    
+
+ TIME STEP SCALE FACTOR . . . . . . . . . . . . .  0.9000000    
+
+ MINIMUM TIME STEP  . . . . . . . . . . . . . . .   0.000000    
+
+
+ BRICK TIME STEP SCALE FACTOR . . . . . . . . . .  0.9000000    
+ BRICK MINIMUM TIME STEP. . . . . . . . . . . . .   0.000000    
+ MIN. TIME STEP FLAG (1:STOP RUN, 2:DELETE BRICK)     1
+
+ QUAD TIME STEP SCALE FACTOR. . . . . . . . . . .  0.9000000    
+ QUAD MINIMUM TIME STEP . . . . . . . . . . . . .   0.000000    
+ MIN. TIME STEP FLAG (1:STOP RUN, 2:DELETE QUAD).     1
+
+ SHELL TIME STEP SCALE FACTOR . . . . . . . . . .  0.9000000    
+ SHELL MINIMUM TIME STEP. . . . . . . . . . . . .   0.000000    
+ MIN. TIME FLAG (1:STOP, 2:DELETE, 3:SMALL STRAIN)    2
+
+ TRUSS TIME STEP SCALE FACTOR . . . . . . . . . .  0.9000000    
+ TRUSS MINIMUM TIME STEP. . . . . . . . . . . . .   0.000000    
+ MIN. TIME FLAG (1:STOP, 2:DELETE). . . . . . . .     0
+
+ BEAM TIME STEP SCALE FACTOR. . . . . . . . . . .  0.9000000    
+ BEAM MINIMUM TIME STEP . . . . . . . . . . . . .   0.000000    
+ MIN. TIME FLAG (1:STOP, 2:DELETE). . . . . . . .     0
+
+ SPRING TIME STEP SCALE FACTOR. . . . . . . . . .  0.9000000    
+ SPRING MINIMUM TIME STEP . . . . . . . . . . . .   0.000000    
+ MIN. TIME FLAG (1:STOP, 2:DELETE). . . . . . . .     0
+
+ AIRBAG TIME STEP SCALE FACTOR. . . . . . . . . .  0.9000000    
+ AIRBAG MINIMUM TIME STEP . . . . . . . . . . . .   0.000000    
+ MIN. TIME FLAG (1:STOP). . . . . . . . . . . . .     0
+
+ CONTACT TIME STEP SCALE FACTOR . . . . . . . . .  0.9000000    
+ CONTACT MINIMUM TIME STEP. . . . . . . . . . . .   0.000000    
+ MIN. TIME FLAG(1:STOP, 2:REMOVE NODE FROM INTERF)    0
+
+ PRINTOUT CYCLE FREQUENCY . . . . . . . . . . . .  -100
+
+ RESTART CYCLE FREQUENCY. . . . . . . . . . . . .   10000000
+
+ MAXIMUM RESTART WRITE BEFORE OVERWRITE . . . . .     0
+
+ INVERS: INPUT DECK VERSION . . . . . . . . . . .   101
+ ITTYP : FLAG FOR TYPE OF T-FILE. . . . . . . . .     3
+
+ FINITE ELEMENT THERMAL ANALYSIS 
+
+ TIME FOR FIRST ANIMATION-FILE PLOT . . . . . . .   0.000000    
+ TIME INTERVAL FOR ANIMATION-FILE PLOTS . . . . .  0.1000000E-03
+ TIME TO STOP ANIMATION-FILE PLOTS. . . . . . . .  0.1000000E+21
+ SENSOR FOR ANIMATION-FILE PLOTS. . . . . . . . .          0
+ TIME INTERVAL FOR SENSOR ANIMATION-FILE PLOTS. .   0.000000    
+
+ VARIABLE SAVED ON ANIMATION FILES (1: YES) :
+      PLASTIC STRAIN. . . . . .     1
+      DENSITY     (SOLID ONLY).     0
+      SPECIFIC ENERGY . . . . .     1
+      HOURGLASS ENERGY. . . . .     0
+      TEMPERATURE (SOLID ONLY).     0
+      THICKNESS   (SHELL ONLY).     0
+      PRESSURE    (SOLID ONLY).     0
+      VON MISES . . . . . . . .     0
+      TURBULENT ENERGY (FLUID).     0
+      TURBULENT VISCOSITY(FLUID)    0
+      VORTICITY (FLUID) . . . .     0
+ NODAL VALUES SAVED ON ANIMATION FILES (1: YES) :
+      PRESSURE. . . . . . . . .     1
+      DENSITY . . . . . . . . .     0
+      TEMPERATURE . . . . . . .     1
+ VECTOR SAVED ON ANIMATION FILES (1: YES) :
+      VELOCITY VECTOR . . . . .     1
+      DISPLACEMENT VECTOR . . .     1
+      ACCELERATION VECTOR . . .     1
+      CONTACT FORCES. . . . . .     1
+      INTERNAL FORCES . . . . .     1
+      EXTERNAL FORCES . . . . .     1
+      SECTION RBY RWALL FORCES.     1
+      ROTATIONAL VELOCITY VECTOR    0
+      CONTACT PRESSURE (VECTORS)    0
+ SHELL TENSOR SAVED ON ANIMATION FILES (1: YES) :
+      MEMBRANE STRESS . . . . .     0
+      BENDING STRESS(MOMENT/T^2)    0
+      UPPER LAYER STRESS. . . .     0
+      LOWER LAYER STRESS. . . .     0
+      MEMBRANE STRAIN . . . . .     0
+      CURVATURE . . . . . . . .     0
+      UPPER LAYER STRAIN. . . .     0
+      LOWER LAYER STRAIN. . . .     0
+ NODAL MASS SAVED ON ANIMATION FILES (1: YES) :    0
+ KEEP DELETED ELEMENT (1: YES) :    0
+
+
+ INITIAL TIME STEP. . . . . . . . . . . . . . . .   0.000000    
+ MAXIMUM TIME STEP. . . . . . . . . . . . . . . .  0.1000000E+31
+
+ PARALLEL ARITHMETIC ON
+ NUMBER OF INTERFACES TO BE ELIMINATED. . . . . .        0
+
+ NUMBER OF SOLID  ELEMENT BLOCKS TO BE ELIMINATED        0
+
+ NUMBER OF QUAD   ELEMENT BLOCKS TO BE ELIMINATED        0
+
+ NUMBER OF SHELL  ELEMENT BLOCKS TO BE ELIMINATED        0
+
+ NUMBER OF TRUSS  ELEMENT BLOCKS TO BE ELIMINATED        0
+
+ NUMBER OF BEAM   ELEMENT BLOCKS TO BE ELIMINATED        0
+
+ NUMBER OF SPRING ELEMENT BLOCKS TO BE ELIMINATED        0
+
+ NUMBER OF SH_3N  ELEMENT BLOCKS TO BE ELIMINATED        0
+
+ NUMBER OF  SPH PARTICLES BLOCKS TO BE ELIMINATED        0
+
+ NUMBER OF RIGID LINKS. . . . . . . . . . . . . .        0
+
+ NUMBER OF NEW BOUNDARY CONDITIONS. . . . . . . .        0
+
+ 10/04/2024
+   CYCLE    TIME      TIME-STEP  ELEMENT          ERROR  I-ENERGY    K-ENERGY T  K-ENERGY R  EXT-WORK     MAS.ERR     TOTAL MASS  MASS ADDED
+       0   0.000      0.1788E-06 NODE           1   0.0%   0.000       0.000       0.000       0.000       0.000      0.5010       0.000    
+     ANIMATION FILE: testA001 WRITTEN
+     100  0.8180E-05  0.9363E-07 NODE       15751  99.9%  0.4126      0.3030      0.5782E-30  0.7543E-01   0.000      0.5010       0.000    
+     200  0.1755E-04  0.9368E-07 NODE           1  99.9%  0.5355      0.3498      0.9366E-30  0.7543E-01   0.000      0.5010       0.000    
+     300  0.2691E-04  0.9361E-07 NODE           1  99.9%  0.7445      0.3392      0.1262E-29  0.7543E-01   0.000      0.5010       0.000    
+     400  0.3627E-04  0.9366E-07 NODE           1  99.9%  0.9274      0.2836      0.1638E-29  0.7543E-01   0.000      0.5010       0.000    
+     500  0.4563E-04  0.9349E-07 NODE         126  99.9%  0.9932      0.2566      0.1874E-29  0.7543E-01   0.000      0.5010       0.000    
+     600  0.5499E-04  0.9344E-07 NODE         126  99.9%  0.7710      0.3356      0.2252E-29  0.7543E-01   0.000      0.5010       0.000    
+     700  0.6435E-04  0.9364E-07 NODE         126  99.9%  0.6141      0.3649      0.2583E-29  0.7543E-01   0.000      0.5010       0.000    
+     800  0.7370E-04  0.9364E-07 NODE           1  99.9%  0.5638      0.3102      0.2809E-29  0.7543E-01   0.000      0.5010       0.000    
+     900  0.8306E-04  0.9366E-07 NODE           1  99.9%  0.5624      0.2587      0.3015E-29  0.7543E-01   0.000      0.5010       0.000    
+    1000  0.9242E-04  0.9322E-07 NODE           1  99.9%  0.5205      0.2734      0.3215E-29  0.7543E-01   0.000      0.5010       0.000    
+     ANIMATION FILE: testA002 WRITTEN
+    1100  0.1018E-03  0.9304E-07 NODE       15751  99.9%  0.6298      0.3520      0.3441E-29  0.7543E-01   0.000      0.5010       0.000    
+    1200  0.1111E-03  0.9347E-07 NODE         126  99.9%  0.7903      0.3012      0.3734E-29  0.7543E-01   0.000      0.5010       0.000    
+    1300  0.1205E-03  0.9363E-07 NODE         126  99.9%  0.9197      0.2361      0.3868E-29  0.7543E-01   0.000      0.5010       0.000    
+    1400  0.1298E-03  0.9349E-07 NODE         126  99.9%  0.8958      0.2626      0.4121E-29  0.7543E-01   0.000      0.5010       0.000    
+    1500  0.1391E-03  0.9345E-07 NODE         126  99.9%  0.8461      0.3118      0.4368E-29  0.7543E-01   0.000      0.5010       0.000    
+    1600  0.1485E-03  0.9349E-07 NODE           1  99.9%  0.5933      0.3258      0.2284E-03  0.8666E-01   0.000      0.5010       0.000    
+    1700  0.1578E-03  0.9316E-07 NODE           1  99.9%  0.5372      0.2791      0.3982E-03  0.1054       0.000      0.5010       0.000    
+    1800  0.1672E-03  0.9365E-07 NODE           1  99.9%  0.5338      0.2598      0.4648E-03  0.1252       0.000      0.5010       0.000    
+    1900  0.1766E-03  0.9366E-07 NODE           1  99.9%  0.5562      0.3251      0.5023E-03  0.1445       0.000      0.5010       0.000    
+    2000  0.1859E-03  0.9324E-07 NODE       15751  99.9%  0.6060      0.3733      0.5226E-03  0.1636       0.000      0.5010       0.000    
+    2100  0.1953E-03  0.9366E-07 NODE       15876  99.9%  0.8814      0.3443      0.6052E-03  0.1844       0.000      0.5010       0.000    
+     ANIMATION FILE: testA003 WRITTEN
+    2200  0.2046E-03  0.9322E-07 NODE           1  99.9%   1.009      0.2815      0.1006E-02  0.1984       0.000      0.5010       0.000    
+    2300  0.2140E-03  0.9367E-07 NODE       15876  99.9%  0.8816      0.3159      0.1049E-02  0.1984       0.000      0.5010       0.000    
+    2400  0.2234E-03  0.9365E-07 NODE       15876  99.9%  0.7103      0.3701      0.1038E-02  0.1984       0.000      0.5010       0.000    
+    2500  0.2327E-03  0.9368E-07 NODE         126  99.9%  0.6150      0.3564      0.9968E-03  0.1984       0.000      0.5010       0.000    
+    2600  0.2421E-03  0.9367E-07 NODE           1  99.9%  0.5152      0.2967      0.1064E-02  0.1984       0.000      0.5010       0.000    
+    2700  0.2515E-03  0.9366E-07 NODE           1  99.9%  0.5678      0.2967      0.1110E-02  0.1984       0.000      0.5010       0.000    
+    2800  0.2608E-03  0.9367E-07 NODE       15876  99.9%  0.6601      0.3433      0.1157E-02  0.1984       0.000      0.5010       0.000    
+    2900  0.2702E-03  0.9367E-07 NODE       15751  99.9%  0.7675      0.3843      0.1157E-02  0.1984       0.000      0.5010       0.000    
+    3000  0.2796E-03  0.9367E-07 NODE       15876  99.9%  0.8361      0.3420      0.1137E-02  0.1984       0.000      0.5010       0.000    
+
+
+
+     ERROR TERMINATION
