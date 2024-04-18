@@ -1,0 +1,13 @@
+__pycache__/
+*.py[cod]
+.ipynb_checkpoints/
+*.csv
+*.out
+*.rad
+testA*
+testT*
+*.tmp
+*.rst
+*.inc
+*.vtk
+*.inp
