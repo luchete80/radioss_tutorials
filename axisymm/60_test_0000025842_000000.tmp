@@ -1,0 +1,28 @@
+#RADIOSS STARTER                                                                                    
+/BEGIN                                                                                              
+test                                                                                                
+      2019         0                                                                                
+                  kg                   m                   s                                        
+                  kg                   m                   s                                        
+/ANALY                                                                                              
+1                                                                                                   
+/NODE                                                                                               
+         1                 0.0                 0.0        0.000000e+00                              
+         2                 0.0                0.10        0.000000e+00                              
+         3                 0.0                 0.0        0.10                                      
+         4                 0.0                0.10        0.10                                      
+/QUAD/1                                                                                             
+         1         1         2       4       3                                                      
+/PART/1                                                                                             
+element                                                                                             
+1          1                                                                                        
+/MAT/ELAST/1                                                                                        
+test                                                                                                
+7850.0                                                                                              
+200.0e9    0.3                                                                                      
+/PROP/SOLID/1                                                                                       
+title                                                                                               
+2          2                                                                                        
+                                                                                                    
+                                                                                                    
+/END                                                                                                
