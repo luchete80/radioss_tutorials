@@ -173,6 +173,9 @@ class Mesh:
     line = line + writeIntField(self.id,10) + "\n"
     f.write(line)
     f.write("\n\n\n") # 3 more line needed for RBODY COMMAND
+  def getRigidNode(self): #ALREADY OPENED
+    print (self.ini_node_id + self.node_count - 1)
+    return self.ini_node_id + self.node_count - 1
   def writeCenters(self):
     print ("Writing centers ")
     # print ("self nodes size ",len(self.nodes))
@@ -817,3 +820,83 @@ class Model:
     f.write("0.1\n")
     f.write("/STOP\n")
     f.write("0 1e+08 0 1 1\n") 
+
+
+  def printImplRelease(self, run, time, dt):
+    f = open(self.starter_file + "_000" + str(run) + ".rad","w+")
+    f.write("/RUN/" + self.starter_file + "/" + str(run) + "\n")
+    f.write("/ANIM/DT\n")
+    f.write("0 " +str(dt) + "\n")
+    f.write("/ANIM/VECT/DISP\n")
+    f.write("/ANIM/VECT/VEL\n")
+    f.write("/ANIM/VECT/ACC\n")
+    f.write("/ANIM/VECT/CONT\n")
+    f.write("/ANIM/SHELL/TENS/STRESS/UPPER\n")
+    f.write("/ANIM/SHELL/TENS/STRESS/LOWER\n")
+    f.write("/ANIM/BRICK/TENS/STRESS\n")
+    f.write("/ANIM/ELEM/EPSP\n")
+    f.write("/ANIM/ELEM/ENER\n")
+    f.write("/ANIM/SHELL/EPSP/UPPER\n")
+    f.write("/ANIM/SHELL/EPSP/LOWER\n")
+    f.write("/ANIM/SHELL/THIC\n")
+    f.write("/ANIM/NODA/TEMP\n")
+    f.write("/ANIM/NODA/P\n")
+    f.write("/ANIM/VECT/FINT\n")
+    f.write("/ANIM/VECT/FEXT\n")
+    f.write("/ANIM/VECT/FOPT\n")
+    f.write("/ANIM/VECT/FREAC\n")
+    f.write("/RBODY/ON\n")
+    for p in range(self.part_count):
+      if (self.part[p].is_rigid):
+        f.write(str(self.part[p].mesh[0].getRigidNode()) + " ")
+    f.write("\n")
+    
+    f.write("/TFILE\n")
+    f.write("2.\n")
+    f.write("/PRINT/-1\n")
+    f.write("/RFILE\n")
+    f.write(" 20000 0 0\n")
+    f.write("/MON/ON   \n")
+    f.write("\n")
+    f.write("#INTERFACES REMOVING:\n")
+    f.write("/DEL/INTER\n")
+    for i in range (len(self.inter)):
+      f.write(str(i) + " ")
+    f.write("\n\n")
+    
+    f.write("#ADDED BOUNDARY CONDITIONS:\n")
+    f.write("/BCS/TRA/XYZ/\n")
+    for p in range(self.part_count):
+      if (self.part[p].is_rigid):
+        f.write(str(self.part[p].mesh[0].getRigidNode()) + " ")
+    f.write("\n")
+
+    f.write("/BCS/ROT/XYZ/\n")
+    for p in range(self.part_count):
+      if (self.part[p].is_rigid):
+        f.write(str(self.part[p].mesh[0].getRigidNode()) + " ")
+    f.write("\n")
+    
+    f.write("/BCS/TRA/Z/\n")
+    f.write("1\n")
+    
+    f.write("####################\n")
+    f.write("# IMPLICIT OPTIONS #\n")
+    f.write("####################\n")
+
+    f.write("/IMPL/PRINT/NONL/-1\n")
+    f.write("/IMPL/SOLVER/1\n")
+    f.write("# IPREC L_LIM ITOL L_TOL\n")
+    f.write(" 0 0 0 0.\n")
+    f.write("/IMPL/NONLIN/1\n")
+    f.write("# upd_K_LIM NITOL N_TOL\n")
+    f.write(" 2 0 0.25e-1\n")
+    f.write("/IMPL/DTINI\n")
+    f.write(" 0.08\n")
+    f.write("/IMPL/DT/STOP\n")
+    f.write("# DT_MIN DT_MAX\n")
+    f.write(" 0.1e-4 0.0\n")
+    f.write("/IMPL/DT/2\n")
+    f.write("# NL_DTP SCAL_DTP NL_DTN SCAL_DTN\n")
+    f.write(" 6 .0 20 0.67 0.0\n")
+    f.write("/IMPL/SPRBACK\n")
