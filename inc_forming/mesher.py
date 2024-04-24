@@ -822,7 +822,7 @@ class Model:
     f.write("0 1e+08 0 1 1\n") 
 
 
-  def printImplRelease(self, run, time, dt):
+  def printRelease(self, run, time, dt):
     f = open(self.starter_file + "_000" + str(run) + ".rad","w+")
     f.write("/RUN/" + self.starter_file + "/" + str(run) + "\n")
     f.write("/ANIM/DT\n")
@@ -864,39 +864,39 @@ class Model:
       f.write(str(i) + " ")
     f.write("\n\n")
     
-    f.write("#ADDED BOUNDARY CONDITIONS:\n")
-    f.write("/BCS/TRA/XYZ/\n")
-    for p in range(self.part_count):
-      if (self.part[p].is_rigid):
-        f.write(str(self.part[p].mesh[0].getRigidNode()) + " ")
-    f.write("\n")
+    # f.write("#ADDED BOUNDARY CONDITIONS:\n")
+    # f.write("/BCS/TRA/XYZ/\n")
+    # for p in range(self.part_count):
+      # if (self.part[p].is_rigid):
+        # f.write(str(self.part[p].mesh[0].getRigidNode()) + " ")
+    # f.write("\n")
 
-    f.write("/BCS/ROT/XYZ/\n")
-    for p in range(self.part_count):
-      if (self.part[p].is_rigid):
-        f.write(str(self.part[p].mesh[0].getRigidNode()) + " ")
-    f.write("\n")
+    # f.write("/BCS/ROT/XYZ/\n")
+    # for p in range(self.part_count):
+      # if (self.part[p].is_rigid):
+        # f.write(str(self.part[p].mesh[0].getRigidNode()) + " ")
+    # f.write("\n")
     
-    f.write("/BCS/TRA/Z/\n")
-    f.write("1\n")
+    # f.write("/BCS/TRA/Z/\n")
+    # f.write("1\n")
     
-    f.write("####################\n")
-    f.write("# IMPLICIT OPTIONS #\n")
-    f.write("####################\n")
+    # f.write("####################\n")
+    # f.write("# IMPLICIT OPTIONS #\n")
+    # f.write("####################\n")
 
-    f.write("/IMPL/PRINT/NONL/-1\n")
-    f.write("/IMPL/SOLVER/1\n")
-    f.write("# IPREC L_LIM ITOL L_TOL\n")
-    f.write(" 0 0 0 0.\n")
-    f.write("/IMPL/NONLIN/1\n")
-    f.write("# upd_K_LIM NITOL N_TOL\n")
-    f.write(" 2 0 0.25e-1\n")
-    f.write("/IMPL/DTINI\n")
-    f.write(" 0.08\n")
-    f.write("/IMPL/DT/STOP\n")
-    f.write("# DT_MIN DT_MAX\n")
-    f.write(" 0.1e-4 0.0\n")
-    f.write("/IMPL/DT/2\n")
-    f.write("# NL_DTP SCAL_DTP NL_DTN SCAL_DTN\n")
-    f.write(" 6 .0 20 0.67 0.0\n")
-    f.write("/IMPL/SPRBACK\n")
+    # f.write("/IMPL/PRINT/NONL/-1\n")
+    # f.write("/IMPL/SOLVER/1\n")
+    # f.write("# IPREC L_LIM ITOL L_TOL\n")
+    # f.write(" 0 0 0 0.\n")
+    # f.write("/IMPL/NONLIN/1\n")
+    # f.write("# upd_K_LIM NITOL N_TOL\n")
+    # f.write(" 2 0 0.25e-1\n")
+    # f.write("/IMPL/DTINI\n")
+    # f.write(" 0.08\n")
+    # f.write("/IMPL/DT/STOP\n")
+    # f.write("# DT_MIN DT_MAX\n")
+    # f.write(" 0.1e-4 0.0\n")
+    # f.write("/IMPL/DT/2\n")
+    # f.write("# NL_DTP SCAL_DTP NL_DTN SCAL_DTN\n")
+    # f.write(" 6 .0 20 0.67 0.0\n")
+    # f.write("/IMPL/SPRBACK\n")

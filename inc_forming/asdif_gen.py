@@ -342,7 +342,7 @@ def save(lin):
   model.printRadioss("test")
   
   model.printEngine(1, end_time,dtout)
-  model.printImplRelease(2, end_time+0.01,dtout)
+  model.printRelease(2, end_time+0.01,dtout)
 
 #Si no se coloca lambda no funciona
 b = Button(window, text="Generate", width=10, command=lambda:save(linea_g))
