@@ -84,7 +84,7 @@ class Vector:
 
   def __str__(self):
     # return str(self.components)
-    return f"Vector{self.components}"
+    return "Vector{self.components}"
     # return str(self.components)
     
 # def __add__(self, other):
