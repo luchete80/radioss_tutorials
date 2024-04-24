@@ -444,19 +444,25 @@ class Prop:
      
 class Material:
   thermal = False
+  rho = 0.0
+  ms_fac = 1.0
   def __init__(self, mid, th):
     self.thermal = th
     id = mid
   def printRadioss(self,f):
     f.write("/MAT/PLAS_JOHNS/2\n")  
     f.write("MAT_PIECEWISE_LINEAR_PLASTICITY:2 TITLE:mat_probe   \n")
-    f.write("              7850.0\n")  
+    f.write(writeFloatField(self.rho,20,6) + "\n")
+    #f.write("              7850.0\n")  
     f.write("#                  E                  Nu     Iflag  \n")
-    f.write("      200000000000.0                0.33\n")  
+#    f.write("      200000000000.0                0.33\n")  
+    f.write(writeFloatField(self.E,20,6) + writeFloatField(self.nu,20,6) +"\n")    
     f.write("#                  a                   b                   n             EPS_max            SIG_max0\n")
-    f.write("         359000000.0         327000000.0               0.4541.00000000000000E+301.00000000000000E+30\n")
+#    f.write("         359000000.0         327000000.0               0.4541.00000000000000E+301.00000000000000E+30\n")
+    f.write(writeFloatField(self.Ajc,20,6) + writeFloatField(self.Bjc,20,6) + writeFloatField(self.njc,20,6) + "1.00000000000000E+301.00000000000000E+30\n")    
     f.write("#                  c           EPS_DOT_0       ICC   Fsmooth               F_cut               Chard\n")    
-    f.write("              0.0786                0.04         1         11.00000000000000E+30\n")
+    #f.write("              0.0786                0.04         1         11.00000000000000E+30\n")
+    f.write(writeFloatField(self.Cjc,20,6) + writeFloatField(self.e0jc,20,6) + "         1         11.00000000000000E+30\n")
     f.write("#                  m              T_melt              rhoC_p                 T_r\n")    
     f.write("               0.919               1500.              3.29e6                   0\n")
     # if (self.thermal):    
@@ -467,6 +473,7 @@ class Material:
     f.write("                20.0              3.29e6                15.0                  0.0        1\n")
     f.write(" \n") #REQUIRED
 
+    
 class Function:
   val_count = 0 
   def __init__(self, id, x,y):

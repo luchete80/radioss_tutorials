@@ -5,6 +5,8 @@ import numpy as np
 
 from tkinter import *
 from tkinter.ttk import Combobox
+from enum import Enum
+
 window=Tk()
 linea_g=10
 
@@ -56,6 +58,38 @@ calc_path = False
 
 manual_mass_scal = False
 
+###### MATERIAL
+mat = Material(1,thermal) #ID, THERMAL
+mat.rho = 7850.0
+mat.E   = 200.0e9
+mat.nu  = 0.33
+
+#thermal
+mat_k  = 15.0
+mat_cp = 419.11
+
+mat.Ajc   = 359.0e6
+mat.Bjc   = 327.0e6
+mat.njc   = 0.454
+mat.mjc   = 0.919
+mat.Cjc   = 0.0786
+mat.e0jc  = 0.04
+
+##### SCALING
+class Scaling(Enum):
+  NONE   = 1       # 
+  VPROC  = 2       #Only on tool veloc 
+  MS_FIX = 3       #Fixed Mass scal, since cp 
+  VS_FIX = 4
+  AMS    = 5
+
+scal_type = Scaling.MS_FIX
+scal_fac  = 250.0          #ONLY WORKS WITH FIXE MS OR VS 
+
+################################################## BEGIN ####################################################################################
+#############################################################################################################################################
+if (scal_type == Scaling.NONE or scal_type == Scaling.VPROC or scal_type == Scaling.AMS):
+  scal_fac = 1.0
 
 filelbl = Label(window, text="Input File", width=15,justify=LEFT)
 filelbl.grid(column=1, row=0)	
@@ -67,7 +101,7 @@ test = [(1,1),(2,2)]
 test.append((3,4))
 print (test)
 print (test[2][0])
-#############################################################################################################################################
+
 
 
 supp_mesh = []
@@ -171,7 +205,7 @@ model.AppendPart(sph1_pt)
 if (double_sided):
   model.AppendPart(sph2_pt)
 
-model.AppendMat(Material(1,thermal))
+model.AppendMat(mat)
 model.AppendProp(Prop(1,thck))
 
 model.AppendProp(Prop(2,thck_rig))
