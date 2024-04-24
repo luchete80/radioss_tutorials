@@ -3,11 +3,11 @@ from math import *
 from mesher import *
 import numpy as np
 
-from tkinter import *
-from tkinter.ttk import Combobox
+# from tkinter import *
+# from tkinter.ttk import Combobox
 from enum import Enum
 
-window=Tk()
+# window=Tk()
 linea_g=10
 
 flog = open("log.txt","w")
@@ -91,11 +91,11 @@ scal_fac  = 250.0          #ONLY WORKS WITH FIXE MS OR VS
 if (scal_type == Scaling.NONE or scal_type == Scaling.VPROC or scal_type == Scaling.AMS):
   scal_fac = 1.0
 
-filelbl = Label(window, text="Input File", width=15,justify=LEFT)
-filelbl.grid(column=1, row=0)	
-textField = Entry(window, width=15)
-textField.grid(column=2, row=0)
-textField.insert(0,"test")
+# filelbl = Label(window, text="Input File", width=15,justify=LEFT)
+# filelbl.grid(column=1, row=0)	
+# textField = Entry(window, width=15)
+# textField.grid(column=2, row=0)
+# textField.insert(0,"test")
 
 test = [(1,1),(2,2)]
 test.append((3,4))
@@ -248,141 +248,141 @@ for e in range (model.part[0].mesh[0].elem_count):
 
 #IMPORTANTE: LA VELOCIDAD SE ASUME PARA RADIO CONSTANTE EN CADA VUELTAS
 #CON LO CUAL EN LA REALIDAD DISMINUYE UN POCO
-def save(lin):
+# def save(lin):
 
-  if (calc_path):
-  # f= open(textField.get(),"w+")
-    # LA HERRAMIENTA INTERNA ESTA EN EL TOP, LA EXTERNA EN EL BOTTOM
-    # PERO TOP Y BOTTOM CONFUNDE POR LAS INDENTACIONES
-    fi_x = open("movi_x.inc","w")
-    fi_y = open("movi_y.inc","w")
-    fi_z = open("movi_z.inc","w")
+if (calc_path):
+# f= open(textField.get(),"w+")
+  # LA HERRAMIENTA INTERNA ESTA EN EL TOP, LA EXTERNA EN EL BOTTOM
+  # PERO TOP Y BOTTOM CONFUNDE POR LAS INDENTACIONES
+  fi_x = open("movi_x.inc","w")
+  fi_y = open("movi_y.inc","w")
+  fi_z = open("movi_z.inc","w")
 
-    if (double_sided):  
-      fo_x = open("movo_x.inc","w")
-      fo_y = open("movo_y.inc","w")
-      fo_z = open("movo_z.inc","w")
+  if (double_sided):  
+    fo_x = open("movo_x.inc","w")
+    fo_y = open("movo_y.inc","w")
+    fo_z = open("movo_z.inc","w")
 
-    fi_x.write("/FUNCT/1000001\nmovx\n")    
-    fi_y.write("/FUNCT/1000002\nmovy\n")      
-    fi_z.write("/FUNCT/1000003\nmovz\n")    
+  fi_x.write("/FUNCT/1000001\nmovx\n")    
+  fi_y.write("/FUNCT/1000002\nmovy\n")      
+  fi_z.write("/FUNCT/1000003\nmovz\n")    
 
+  if (double_sided):
+    fo_x.write("/FUNCT/1000004\nmovx\n")    
+    fo_y.write("/FUNCT/1000005\nmovy\n")      
+    fo_z.write("/FUNCT/1000006\nmovz\n")    
+  
+  t = 0.0
+  r = r_i
+  turn = 1
+  
+  z  = 0.0 
+  # zo = -thck #ESTA HERRAMIENTA NO DESCIENDE (PARA EVITAR DEFORMACIONES IRREGULARES)
+  # zi =  thck 
+  zo = zi = 0
+  vz = (thck + p_S) / t_ind # EN PRINCIPIO S EDESPLAZA SOLO LA INTERIOR 
+  
+  #####################INDENTACION ######################### 
+  xi = r - p_D/2.0
+  xo = r + p_D/2.0
+  
+  while (t < t_ind):    
+    if (move_tool_to_inipos):
+      xo -= x_init
+      xi -= x_init
+
+    zi -= vz * dt
+    #HAY QUE VER SI ES NECESARIO ESCRIBIR X E Y PARA TODOS LOS TIEMPOS
+    fi_x.write(writeFloatField(t,20,6) + writeFloatField(xi,20,6) + "\n")
+    fi_y.write(writeFloatField(t,20,6) + writeFloatField(0.,20,6) + "\n")
+    fi_z.write(writeFloatField(t,20,6) + writeFloatField(zi,20,6) + "\n")
+    
     if (double_sided):
-      fo_x.write("/FUNCT/1000004\nmovx\n")    
-      fo_y.write("/FUNCT/1000005\nmovy\n")      
-      fo_z.write("/FUNCT/1000006\nmovz\n")    
+      fo_x.write(writeFloatField(t,20,6) + writeFloatField(xo,20,6) + "\n")
+      fo_y.write(writeFloatField(t,20,6) + writeFloatField(0.,20,6) + "\n")
+      fo_z.write(writeFloatField(t,20,6) + writeFloatField(zo,20,6) + "\n")
     
-    t = 0.0
-    r = r_i
-    turn = 1
-    
-    z  = 0.0 
-    # zo = -thck #ESTA HERRAMIENTA NO DESCIENDE (PARA EVITAR DEFORMACIONES IRREGULARES)
-    # zi =  thck 
-    zo = zi = 0
-    vz = (thck + p_S) / t_ind # EN PRINCIPIO S EDESPLAZA SOLO LA INTERIOR 
-    
-    #####################INDENTACION ######################### 
-    xi = r - p_D/2.0
-    xo = r + p_D/2.0
-    
-    while (t < t_ind):    
-      if (move_tool_to_inipos):
-        xo -= x_init
-        xi -= x_init
-
+    # fo_x.write("%.6e, %.6e\n" % (t,xo))
+    # fo_y.write("%.6e, %.6e\n" % (t,0.0))
+    # fo_z.write("%.6e, %.6e\n" % (t,zo))  
+    t +=dt 
+ 
+  print("Final zi %.3e , zo %.3e \n" %(zi,zo))
+  
+  ######################## VUELTAS ##############################
+  while (t < t_end):
+    t_ang = 2.0 * pi * r / tool_speed #Tiempo (incremento) de cada vuelta (ASUMIENDO RADIO CONSTANTE)
+    print("Turn %d Turn Time %.3e Time %.3e Radius %.3e\n" %(turn, t_ang,t,r))
+    t_vuelta = t + t_ang  #Tiempo de final de vuelta (TOTAL)
+    t_0 = t               #Tiempo de comienzo de vuelta
+    t_inc = 0.0           # t - t_0
+    dz = dr               #CAMBIAR SEGUN GEOMETRIA
+    vz = dz / t_ang
+    while (t < t_vuelta): #VUELTAS  
+      # print ("t_inc %.3e t_ang %.3e"%(t_inc,t_ang))
+      xi = (r - p_D/2.0 + dr * t_inc/t_ang) *cos(2.0*pi*t_inc/t_ang)
+      yi = (r - p_D/2.0 + dr * t_inc/t_ang) *sin(2.0*pi*t_inc/t_ang)
       zi -= vz * dt
-      #HAY QUE VER SI ES NECESARIO ESCRIBIR X E Y PARA TODOS LOS TIEMPOS
-      fi_x.write(writeFloatField(t,20,6) + writeFloatField(xi,20,6) + "\n")
-      fi_y.write(writeFloatField(t,20,6) + writeFloatField(0.,20,6) + "\n")
-      fi_z.write(writeFloatField(t,20,6) + writeFloatField(zi,20,6) + "\n")
+
+      xo = (r + p_D/2.0 + dr * t_inc/t_ang) *cos(2.0*pi*t_inc/t_ang)
+      yo = (r + p_D/2.0 + dr * t_inc/t_ang) *sin(2.0*pi*t_inc/t_ang)      
+      zo -= vz * dt #CAMBIAR A DZ
       
+      # print("zi %.3e , zo %.3e \n" %(zi,zo))
+      # z -= t_inc/t_ang * dr # CAMBIAR A dz
+      
+      fi_x.write(writeFloatField(t,20,6) + writeFloatField(xi,20,6) + "\n")
+      fi_y.write(writeFloatField(t,20,6) + writeFloatField(yi,20,6) + "\n")
+      fi_z.write(writeFloatField(t,20,6) + writeFloatField(zi,20,6) + "\n")
       if (double_sided):
         fo_x.write(writeFloatField(t,20,6) + writeFloatField(xo,20,6) + "\n")
-        fo_y.write(writeFloatField(t,20,6) + writeFloatField(0.,20,6) + "\n")
+        fo_y.write(writeFloatField(t,20,6) + writeFloatField(yo,20,6) + "\n")
         fo_z.write(writeFloatField(t,20,6) + writeFloatField(zo,20,6) + "\n")
       
       # fo_x.write("%.6e, %.6e\n" % (t,xo))
-      # fo_y.write("%.6e, %.6e\n" % (t,0.0))
-      # fo_z.write("%.6e, %.6e\n" % (t,zo))  
-      t +=dt 
-   
-    print("Final zi %.3e , zo %.3e \n" %(zi,zo))
-    
-    ######################## VUELTAS ##############################
-    while (t < t_end):
-      t_ang = 2.0 * pi * r / tool_speed #Tiempo (incremento) de cada vuelta (ASUMIENDO RADIO CONSTANTE)
-      print("Turn %d Turn Time %.3e Time %.3e Radius %.3e\n" %(turn, t_ang,t,r))
-      t_vuelta = t + t_ang  #Tiempo de final de vuelta (TOTAL)
-      t_0 = t               #Tiempo de comienzo de vuelta
-      t_inc = 0.0           # t - t_0
-      dz = dr               #CAMBIAR SEGUN GEOMETRIA
-      vz = dz / t_ang
-      while (t < t_vuelta): #VUELTAS  
-        # print ("t_inc %.3e t_ang %.3e"%(t_inc,t_ang))
-        xi = (r - p_D/2.0 + dr * t_inc/t_ang) *cos(2.0*pi*t_inc/t_ang)
-        yi = (r - p_D/2.0 + dr * t_inc/t_ang) *sin(2.0*pi*t_inc/t_ang)
-        zi -= vz * dt
+      # fo_y.write("%.6e, %.6e\n" % (t,yo))
+      # fo_z.write("%.6e, %.6e\n" % (t,zo))
+      
+      t_inc +=dt
+      t += dt
 
-        xo = (r + p_D/2.0 + dr * t_inc/t_ang) *cos(2.0*pi*t_inc/t_ang)
-        yo = (r + p_D/2.0 + dr * t_inc/t_ang) *sin(2.0*pi*t_inc/t_ang)      
-        zo -= vz * dt #CAMBIAR A DZ
-        
-        # print("zi %.3e , zo %.3e \n" %(zi,zo))
-        # z -= t_inc/t_ang * dr # CAMBIAR A dz
-        
-        fi_x.write(writeFloatField(t,20,6) + writeFloatField(xi,20,6) + "\n")
-        fi_y.write(writeFloatField(t,20,6) + writeFloatField(yi,20,6) + "\n")
-        fi_z.write(writeFloatField(t,20,6) + writeFloatField(zi,20,6) + "\n")
-        if (double_sided):
-          fo_x.write(writeFloatField(t,20,6) + writeFloatField(xo,20,6) + "\n")
-          fo_y.write(writeFloatField(t,20,6) + writeFloatField(yo,20,6) + "\n")
-          fo_z.write(writeFloatField(t,20,6) + writeFloatField(zo,20,6) + "\n")
-        
-        # fo_x.write("%.6e, %.6e\n" % (t,xo))
-        # fo_y.write("%.6e, %.6e\n" % (t,yo))
-        # fo_z.write("%.6e, %.6e\n" % (t,zo))
-        
-        t_inc +=dt
-        t += dt
+      if (thermal):
+        e = model.part[0].mesh[0].findNearestElem(xi,yi,zi)
+        flog.write ("TIME %f, pos: %.6e %.6e, Found %d\n" % (t, xi, yi, e ))
+        coord = str (model.part[0].mesh[0].elcenter[e].components)
+        flog.write ("baricenter: %s\n" %(coord))  
+        model.load_fnc[e].Append(t,1.0e6)
+      
+    r +=dr
+    turn += 1    
 
-        if (thermal):
-          e = model.part[0].mesh[0].findNearestElem(xi,yi,zi)
-          flog.write ("TIME %f, pos: %.6e %.6e, Found %d\n" % (t, xi, yi, e ))
-          coord = str (model.part[0].mesh[0].elcenter[e].components)
-          flog.write ("baricenter: %s\n" %(coord))  
-          model.load_fnc[e].Append(t,1.0e6)
-        
-      r +=dr
-      turn += 1    
+  #SPRINGBACK
+  fi_x.close;fi_y.close;fi_z.close
+  if (double_sided):
+    fo_x.close;fo_y.close;fo_z.close
 
-    #SPRINGBACK
-    fi_x.close;fi_y.close;fi_z.close
-    if (double_sided):
-      fo_x.close;fo_y.close;fo_z.close
+  
+for e in range (model.part[0].mesh[0].elem_count):  
+  model.load_fnc[e].Append(1.0e3,0.0)
 
-    
-  for e in range (model.part[0].mesh[0].elem_count):  
-    model.load_fnc[e].Append(1.0e3,0.0)
+
+
+# for e in range (10):
+  # # for f in range (len(load_function[e])):
+  # for f in range (model.load_fnc[e].val_count):
+    # print ("Load Fnction ", e, model.load_fnc[e].getVal(f))
   
 
+model.printRadioss("test")
 
-  # for e in range (10):
-    # # for f in range (len(load_function[e])):
-    # for f in range (model.load_fnc[e].val_count):
-      # print ("Load Fnction ", e, model.load_fnc[e].getVal(f))
-    
+model.printEngine(1, end_time,dtout)
+model.printRelease(2, end_time+0.01,dtout)
 
-  model.printRadioss("test")
-  
-  model.printEngine(1, end_time,dtout)
-  model.printRelease(2, end_time+0.01,dtout)
+# #Si no se coloca lambda no funciona
+# b = Button(window, text="Generate", width=10, command=lambda:save(linea_g))
+# b.grid(column=3, row=10)
+# #b.pack()
 
-#Si no se coloca lambda no funciona
-b = Button(window, text="Generate", width=10, command=lambda:save(linea_g))
-b.grid(column=3, row=10)
-#b.pack()
-
-window.title('Incremental Forming PATH Script')
-window.geometry("400x200+10+10")
-window.mainloop()
+# window.title('Incremental Forming PATH Script')
+# window.geometry("400x200+10+10")
+# window.mainloop()
