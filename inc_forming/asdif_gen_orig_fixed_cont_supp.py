@@ -22,24 +22,22 @@ thck_rig = 1.0e-4   #BALL
 thck_supp = 1.0e-3  #SUPP
 
 #TOOL 
-r_i           = 88.2414e-3      #Inner Path Radius
-r_o           = 0.0325    #Outer Path Radius
-r             = 0.0325
-dr            = 5.0e-4    #DESAPARECE DE ACUERDO A LA GEOMETRIA
-t_end         = 0.05      #Process End time
-dt            = 1.0e-5    #Time increment for path gen
-#t_ang         = 1.0e-3    #Periodo angular, ANTES ERA CONSTANTE
-p_D           = 2.5e-3     #ASDIF RADIAL DISTANCE BETWEEN TOOLS
-p_S           = 4.3e-4     #ASDIF HEIGHT DISTANCE BETWEEN TOOLS
-tool_speed    = 0.6 / 60.0 * 5000 #600mm/min according to Valoppi
-t_ind         = 1.0e-3
-tool_rad      = 0.00755    #Tool radius
-gap           = 0.0e-4
-gap_cont      = 1.5e-4
-dtout         = 1.0e-4
-end_time      = 0.02
-v_supp        = 1.0e-3
-supp_rel_time = 1.0e-3
+r_i         = 88.2414e-3      #Inner Path Radius
+r_o         = 0.0325    #Outer Path Radius
+r           = 0.0325
+dr          = 5.0e-4    #DESAPARECE DE ACUERDO A LA GEOMETRIA
+t_end       = 0.05      #Process End time
+dt          = 1.0e-5    #Time increment for path gen
+#t_ang       = 1.0e-3    #Periodo angular, ANTES ERA CONSTANTE
+p_D         = 2.5e-3     #ASDIF RADIAL DISTANCE BETWEEN TOOLS
+p_S         = 4.3e-4     #ASDIF HEIGHT DISTANCE BETWEEN TOOLS
+tool_speed  = 0.6 / 60.0 * 5000 #600mm/min according to Valoppi
+t_ind       = 1.0e-3
+tool_rad    = 0.00755    #Tool radius
+gap         = 0.0e-4
+gap_cont    = 1.5e-4
+dtout       = 1.0e-4
+end_time    = 0.0
 
 ###### SUPPORT
 dens_supp_1 = 1
@@ -49,12 +47,16 @@ largo_supp = 0.01
 ###### CENTER OF PIECE 
 x_init              = r_i  #DO NOT PUT xo! USED AS x OUTPUT IN DOUBLE SIDED
 move_tool_to_inipos = True # THIS IS CONVENIENT, OTHERWISE RADIOSS THROWS ERROR DUE TO LARGE DISP TO INITIAL POS
-thermal             = False
-cont_support        = True       #TRUE: SUPPORT IS MODELED BY CONTACT, FALSE: SUPPORT IS MODELED BY BCS ON NODES
-double_sided        = False
-calc_path           = False
-manual_mass_scal    = False
 
+thermal     = False
+
+cont_support = True       #TRUE: SUPPORT IS MODELED BY CONTACT, FALSE: SUPPORT IS MODELED BY BCS ON NODES
+
+double_sided = False
+
+calc_path = False
+
+manual_mass_scal = False
 
 ###### MATERIAL
 mat = Material(1,thermal) #ID, THERMAL
@@ -164,7 +166,6 @@ if (double_sided):
 # print("Shell node count", len(sph1_mesh.elnod))
 
 model = Model()
-model.end_proc_time = end_time
 model.double_sided = double_sided
 print ("Model size: ", len(model.part))
 shell = Part(1)
@@ -359,12 +360,6 @@ if (calc_path):
   fi_x.close;fi_y.close;fi_z.close
   if (double_sided):
     fo_x.close;fo_y.close;fo_z.close
-
-              #filename, name, id, init_time, veloc):
-f_upper_supp = Function(1000007,0.0,0.0) 
-f_upper_supp.Append(end_time, 0.0)
-f_upper_supp.Append(end_time+supp_rel_time, v_supp)
-model.supp_fnc.append(f_upper_supp)
 
   
 for e in range (model.part[0].mesh[0].elem_count):  

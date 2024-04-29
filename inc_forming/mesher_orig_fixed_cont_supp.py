@@ -27,7 +27,8 @@ def Norm2(v):
     for i in range (len(v.components)):
       norm = norm + v.components[i] * v.components[i]
   return norm
-      
+
+    
 class Vector:
   def __init__(self, *components):
       self.components = components
@@ -479,7 +480,6 @@ class Function:
     self.val_count = 1
     self.vals = []
     self.vals.append((x,y))
-    self.id = id
   def Append (self,x,y):
     self.vals.append((x,y))
     self.val_count = self.val_count + 1
@@ -487,13 +487,6 @@ class Function:
     return self.vals[i]
   def getVal_ij(self, i, j):
     return self.vals[i][j]
-  def print(self,f):
-    line = "/FUNCT/%d\n" % (self.id)
-    line = line + "F_VEL_%d\n" % (self.id)
-    for val in range (self.val_count):
-      line = line + writeFloatField(self.getVal(val)[0],20,6) + \
-                    writeFloatField(self.getVal(val)[1],20,6) + "\n"
-    f.write(line)  
 
 #ASSUMING EACH PART HAS ONLY 1 MESH
 class Part:
@@ -537,7 +530,7 @@ class Part:
     line = line + writeIntField(self.id,10) + "\n"
     f.write(line)
     
-    #GRNOD FOR MOVE (IF CONTACT SUPPORT)
+    #GRNOD FOR MOVE 
     if (self.is_rigid):
       line = "/GRNOD/NODE/%d\n" % self.id_grn_move    
       line = line + "MOVE_%d\n" % self.id
@@ -550,7 +543,7 @@ class Part:
       if (self.is_moving):
         line = line + "   000 111         0" + writeIntField(100+self.id, 10) + "\n"
       else: 
-        line = line + "   110 111         0" + writeIntField(100+self.id, 10) + "\n"
+        line = line + "   111 111         0" + writeIntField(100+self.id, 10) + "\n"
       f.write(line)
 
     
@@ -577,7 +570,6 @@ class Model:
   starter_file = ""
   double_sided = True
   min_dt = 1.0e-4
-  end_proc_time = 0.0 #Before release
   def __init__(self):
     self.part_count = 0
     self.part = []
@@ -587,7 +579,6 @@ class Model:
     self.inter = []
     self.node_group = []
     self.starter_file = ""
-    self.supp_fnc = []
     
   
   def AppendPart(self, p):
@@ -781,9 +772,7 @@ class Model:
       
     self.printInterfaces(f)
     
-    #IF NO RELEASE
     self.printFixNodeGroups(f)
-    
     self.printMovingParts(f)
     
     #IF MASS SCALING
@@ -795,28 +784,7 @@ class Model:
     f.write("/TH/RBODY/1\n")
     f.write("TH_NAME1 \n")
     f.write("FX        FY        FZ        \n")
-    f.write("200\n")  
-    
-    ## SUPPORT RELEASE THING
-    for velf in range(len(self.supp_fnc)):
-      self.supp_fnc[velf].print(f)
-    
-    print ("Printing Node groups %d \n" % (self.node_group_count))
-    for lf in range (1, 9):
-      # print ("fn ", self.load_fnc[lf][0], "\n")
-      line = "/IMPVEL/%d\nVEL_SUPP%d\n" % (lf+1,lf+1)
-      line = line + "#funct_IDT       Dir   skew_ID sensor_ID  grnod_ID  frame_ID     Icoor\n"
-      line = line + writeIntField(self.supp_fnc[0].id,10) + "         Z         0         0" + writeIntField (103+lf,10) + "         0         0\n"
-      line = line + "#           Ascale_x            Fscale_Y              Tstart               Tstop\n"
-      if lf % 2 == 0:
-        fscale = writeIntField(1,20)
-      else:
-        fscale = writeIntField(-1,20)
-      line = line + "                   0" + fscale + "                   0               11000\n"
-      line = line + "#---1----|----2----|----3----|----4----|----5----|----6----|----7----|----8----|----9----|---10----|\n"
-      f.write(line)
-
-      
+    f.write("200\n")    
     f.write('/END\n')
     
   def printEngine(self, run, time, dt):
@@ -845,7 +813,7 @@ class Model:
     # f.write("/DT/AMS\n0.67 " +str(self.min_dt) + "\n")
     
     f.write("/RUN/" + self.starter_file + "_0000.rad" + "/1/\n")
-    f.write(str(self.end_proc_time)+ "\n")
+    f.write("100.0\n")
     f.write("/TFILE/3\n")
     	# No value: Built-in format of current Radioss version.
 # = 1
@@ -897,10 +865,10 @@ class Model:
     f.write(" 20000 0 0\n")
     f.write("/MON/ON   \n")
     f.write("\n")
-    # f.write("#INTERFACES REMOVING:\n")
-    # f.write("/DEL/INTER\n")
-    # for i in range (len(self.inter)):
-      # f.write(str(i) + " ")
+    f.write("#INTERFACES REMOVING:\n")
+    f.write("/DEL/INTER\n")
+    for i in range (len(self.inter)):
+      f.write(str(i) + " ")
     f.write("\n\n")
     
     # f.write("#ADDED BOUNDARY CONDITIONS:\n")
