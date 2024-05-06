@@ -26,7 +26,6 @@ r_i           = 88.2414e-3      #Inner Path Radius
 r_o           = 0.0325    #Outer Path Radius
 r             = 0.0325
 dr            = 5.0e-4    #DESAPARECE DE ACUERDO A LA GEOMETRIA
-t_end         = 0.05      #Process End time
 dt            = 1.0e-5    #Time increment for path gen
 #t_ang         = 1.0e-3    #Periodo angular, ANTES ERA CONSTANTE
 p_D           = 2.5e-3     #ASDIF RADIAL DISTANCE BETWEEN TOOLS
@@ -37,7 +36,7 @@ tool_rad      = 0.00755    #Tool radius
 gap           = 0.0e-4
 gap_cont      = 1.5e-4
 dtout         = 1.0e-4
-end_time      = 0.02
+end_time      = 0.01
 v_supp        = 1.0e-3
 supp_rel_time = 1.0e-3
 
@@ -309,7 +308,7 @@ if (calc_path):
   print("Final zi %.3e , zo %.3e \n" %(zi,zo))
   
   ######################## VUELTAS ##############################
-  while (t < t_end):
+  while (t < end_time):
     t_ang = 2.0 * pi * r / tool_speed #Tiempo (incremento) de cada vuelta (ASUMIENDO RADIO CONSTANTE)
     print("Turn %d Turn Time %.3e Time %.3e Radius %.3e\n" %(turn, t_ang,t,r))
     t_vuelta = t + t_ang  #Tiempo de final de vuelta (TOTAL)
