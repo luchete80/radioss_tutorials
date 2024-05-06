@@ -37,7 +37,7 @@ gap           = 0.0e-4
 gap_cont      = 1.5e-4
 dtout         = 1.0e-4
 end_time      = 0.01
-v_supp        = 1.0e-3
+v_supp        = 1.0
 supp_rel_time = 1.0e-2
 
 ###### SUPPORT
@@ -362,6 +362,7 @@ if (calc_path):
               #filename, name, id, init_time, veloc):
 f_upper_supp = Function(1000007,0.0,0.0) 
 f_upper_supp.Append(end_time, 0.0)
+f_upper_supp.Append(end_time+1.0e-4, v_supp)
 f_upper_supp.Append(end_time+supp_rel_time, v_supp)
 model.supp_fnc.append(f_upper_supp)
 
