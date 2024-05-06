@@ -721,7 +721,7 @@ class Model:
   
   def printRadioss(self,fname):
     self.starter_file = fname
-    print ("WRITING RADIOSS INPUT\n")face
+    print ("WRITING RADIOSS INPUT\n")
     f = open(fname + "_0000.rad","w+")
     f.write("#RADIOSS STARTER\n")
     f.write("/BEGIN\n")
