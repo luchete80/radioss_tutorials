@@ -38,7 +38,7 @@ gap_cont      = 1.5e-4
 dtout         = 1.0e-4
 end_time      = 0.01
 v_supp        = 1.0e-3
-supp_rel_time = 1.0e-3
+supp_rel_time = 1.0e-2
 
 ###### SUPPORT
 dens_supp_1 = 1
@@ -380,7 +380,7 @@ for e in range (model.part[0].mesh[0].elem_count):
 model.printRadioss("test")
 
 model.printEngine(1, end_time,dtout)
-model.printRelease(2, end_time+0.01,dtout)
+model.printRelease(2, end_time+supp_rel_time,dtout)
 
 # #Si no se coloca lambda no funciona
 # b = Button(window, text="Generate", width=10, command=lambda:save(linea_g))
