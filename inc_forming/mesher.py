@@ -864,7 +864,7 @@ class Model:
   def printRelease(self, run, time, dt):
     f = open(self.starter_file + "_000" + str(run) + ".rad","w+")
     f.write("/RUN/" + self.starter_file + "/" + str(run) + "\n")
-    f.write(str(run)+"\n")
+    f.write(str(time)+"\n")
     f.write("/ANIM/DT\n")
     f.write("0 " +str(dt) + "\n")
     f.write("/ANIM/VECT/DISP\n")
