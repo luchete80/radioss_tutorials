@@ -29,7 +29,7 @@ out_y = open('movi_y.inc',"w")
 out_z = open('movi_z.inc',"w")
 
 
-file = open('input.csv')
+file = open('./data/input.csv')
 
 reader = csv.reader(file)
 
