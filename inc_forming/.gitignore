@@ -8,7 +8,9 @@ __pycache__/
 # 2.1 Ignore file pattern everywhere
 *.csv
 # 2.2 ...but NOT in the current directory
-!/*.csv
+#!/*.csv
+# 2.2 ...but NOT in the data directory
+!/data/*.csv
 *.out
 *.rad
 testA*
