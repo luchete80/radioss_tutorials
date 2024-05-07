@@ -15,9 +15,9 @@ flog = open("log.txt","w")
 #################### INPUT VARS
 
 #WORKPIECE
-largo = 0.25
-delta = 0.002
-thck  = 7.0e-4      #Plate Thickness
+largo = 0.22
+delta = 0.004
+thck  = 6.5e-4      #Plate Thickness
 thck_rig = 1.0e-4   #BALL
 thck_supp = 1.0e-3  #SUPP
 
@@ -35,13 +35,13 @@ tool_speed  = 0.6 / 60.0 * 5000 #600mm/min according to Valoppi
 t_ind       = 1.0e-3
 tool_rad    = 0.00755    #Tool radius
 gap         = 0.0e-4
-gap_cont    = 1.5e-4
+gap_cont    = 1.7e-4
 dtout       = 1.0e-4
 end_time    = 0.0
 
 ###### SUPPORT
-dens_supp_1 = 1
-dens_supp_2 = 10
+dens_supp_1 = 4
+dens_supp_2 = 50
 largo_supp = 0.01
 
 ###### CENTER OF PIECE 
@@ -65,7 +65,7 @@ mat.E   = 200.0e9
 mat.nu  = 0.33
 
 #thermal
-mat_k  = 15.0
+mat_k  = 3750.0
 mat_cp = 419.11
 
 mat.Ajc   = 359.0e6
