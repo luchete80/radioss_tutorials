@@ -366,7 +366,9 @@ f_upper_supp.Append(end_time, 0.0)
 if (not supp_vel_ramp):
   f_upper_supp.Append(end_time+1.0e-4, v_supp)
 f_upper_supp.Append(end_time+supp_rel_time, v_supp)
+f_upper_supp.Append(1000.0, v_supp)
 model.supp_fnc.append(f_upper_supp)
+
 
   
 for e in range (model.part[0].mesh[0].elem_count):  
