@@ -367,8 +367,8 @@ f_upper_supp.Append(end_time, 0.0)
 if (not supp_vel_ramp):
   f_upper_supp.Append(end_time+1.0e-4, v_supp)
 f_upper_supp.Append(end_time+supp_rel_time, v_supp)
-f_upper_supp.Append(end_time+1.0e-4,  10.0*v_supp)
-f_upper_supp.Append(end_time+1.0e-4+dynrel_time,      10.0*v_supp)
+f_upper_supp.Append(end_time+supp_rel_time+1.0e-4,  10.0*v_supp)
+f_upper_supp.Append(end_time+supp_rel_time+1.0e-4+dynrel_time,      10.0*v_supp)
 model.supp_fnc.append(f_upper_supp)
 
 
