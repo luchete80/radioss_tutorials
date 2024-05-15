@@ -388,7 +388,7 @@ model.printRadioss("test")
 
 model.printEngine(1, end_time,dtout)
 model.printRelease(2, end_time+supp_rel_time,dtout)
-
+model.printDynRelax(3,end_time+supp_rel_time+dynrel_time,dtout)
 # #Si no se coloca lambda no funciona
 # b = Button(window, text="Generate", width=10, command=lambda:save(linea_g))
 # b.grid(column=3, row=10)

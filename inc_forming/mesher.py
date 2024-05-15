@@ -940,3 +940,42 @@ class Model:
     # f.write("# NL_DTP SCAL_DTP NL_DTN SCAL_DTN\n")
     # f.write(" 6 .0 20 0.67 0.0\n")
     # f.write("/IMPL/SPRBACK\n")
+    
+  def printDynRelax(self, run, time, dt):
+    f = open(self.starter_file + "_000" + str(run) + ".rad","w+")
+    f.write("/RUN/test/3
+    f.write(str(time)+"\n")
+    f.write("/ANIM/DT\n")
+    f.write("0 " +str(dt) + "\n")
+    f.write("/ANIM/VECT/DISP\n")
+    f.write("/ANIM/VECT/VEL\n")
+    f.write("/ANIM/VECT/ACC\n")
+    f.write("/ANIM/VECT/CONT\n")
+    f.write("/ANIM/SHELL/TENS/STRESS/UPPER\n")
+    f.write("/ANIM/SHELL/TENS/STRESS/LOWER\n")
+    f.write("/ANIM/BRICK/TENS/STRESS\n")
+    f.write("/ANIM/ELEM/EPSP\n")
+    f.write("/ANIM/ELEM/ENER\n")
+    f.write("/ANIM/ELEM/HOUR   \n")                                 
+    f.write("/ANIM/SHELL/EPSP/UPPER\n")
+    f.write("/ANIM/SHELL/EPSP/LOWER\n")
+    f.write("/ANIM/SHELL/THIC\n")
+    f.write("/ANIM/NODA/TEMP\n")
+    f.write("/ANIM/NODA/P\n")
+    f.write("/ANIM/VECT/FINT\n")
+    f.write("/ANIM/VECT/FEXT\n")
+    f.write("/ANIM/VECT/FOPT\n")
+    f.write("/ANIM/VECT/FREAC\n")
+    # /RBODY/ON
+    # 3392 3648 3904 4160 4416 4672 4928 5184 5337 
+    f.write("/TFILE\n")
+    f.write("2.\n")
+    f.write("/PRINT/-1\n")
+    f.write("/RFILE\n")
+    f.write(" 20000 0 0\n")
+    f.write("/MON/ON   \n")
+    f.write("\n")
+    f.write("/ADYREL\n")
+    f.write(" \n")
+    f.write("/ANIM/ELEM/HOUR                                    
+    f.write("/ANIM/SHELL/TENS
