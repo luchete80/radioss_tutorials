@@ -178,7 +178,7 @@ class Mesh:
     f.write(line)
     f.write("\n\n\n") # 3 more line needed for RBODY COMMAND
 
-  def printConvRadioss(self,f):
+  def printConvRadioss(self,vs_fac,f):
     
     f.write("#---1----|----2----|----3----|----4----|----5----|----6----|----7----|----8----|----9----|---10----|\n")
     f.write("/CONVEC/1/11\n")
@@ -186,7 +186,7 @@ class Mesh:
     f.write("#  SURF_ID    FCT_ID   SENS_ID\n")
     f.write(writeIntField(self.id,10)+"     10000         0\n")
     f.write("#             ASCALE              FSCALE              TSTART               TSTOP                   H\n")
-    f.write("                   0                   0                   0                   0" + writeFloatField(30.0*self.vscal_fac,20,6) +"\n")
+    f.write("                   0                   0                   0                   0" + writeFloatField(30.0*vs_fac,20,6) +"\n")
     f.write("#---1----|----2----|----3----|----4----|----5----|----6----|----7----|----8----|----9----|---10----|\n")
     f.write("/FUNCT/10000\n")
     f.write("temperature of ambient air (with constant temperature 293K)\n")
@@ -587,7 +587,6 @@ class Part:
       self.mesh[0].printContSurfRadioss(f)
     else:
       self.mesh[0].printPartSurfRadioss(f) #ONLYFOR CONVECTION
-      self.mesh[0].printConvRadioss(f)
 
 class Interface:
   id_master = 0
@@ -779,6 +778,9 @@ class Model:
     # Print element connectivity
     for p in range (self.part_count):
       self.part[p].printRadioss(f)
+      if (not self.part[p].is_rigid):
+        self.part[p].mesh[0].printConvRadioss(self.vscal_fac,f)
+        
     
     print ("printing materials: ", len(self.mat))
     for m in range (len(self.mat)):
