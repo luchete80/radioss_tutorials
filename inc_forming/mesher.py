@@ -161,6 +161,11 @@ class Mesh:
     f.write("/SURF/PART/%d\n"%(self.id+1000000))
     f.write("PART_RIG_SURF_%d\n"%self.id)
     f.write(writeIntField(self.id,10)+"\n")
+
+  def printPartSurfRadioss(self,f): #ALREADY OPENED
+    f.write("/SURF/PART/%d\n"%(self.id))
+    f.write("PART_WORKPIECE_SURF_%d\n"%self.id)
+    f.write(writeIntField(self.id,10)+"\n")
     
   def printRigidRadioss(self,f): #ALREADY OPENED
     #IF THE SURFACE IS RIGID; IT TAKES ITS LAST NODE
@@ -172,6 +177,25 @@ class Mesh:
     line = line + writeIntField(self.id,10) + "\n"
     f.write(line)
     f.write("\n\n\n") # 3 more line needed for RBODY COMMAND
+
+  def printConvRadioss(self,f):
+    
+    f.write("#---1----|----2----|----3----|----4----|----5----|----6----|----7----|----8----|----9----|---10----|\n")
+    f.write("/CONVEC/1/11\n")
+    f.write("convect with ambient air \n")
+    f.write("#  SURF_ID    FCT_ID   SENS_ID\n")
+    f.write(writeIntField(self.id,10)+"     10000         0\n")
+    f.write("#             ASCALE              FSCALE              TSTART               TSTOP                   H\n")
+    f.write("                   0                   0                   0                   0                 100\n")
+    f.write("#---1----|----2----|----3----|----4----|----5----|----6----|----7----|----8----|----9----|---10----|\n")
+    f.write("/FUNCT/10000\n")
+    f.write("temperature of ambient air (with constant temperature 293K)\n")
+    f.write("#                  X                   Y\n")
+    f.write("                   0                 20\n")
+    f.write("                   1                 20\n")
+    f.write("#---1----|----2----|----3----|----4----|----5----|----6----|----7----|----8----|----9----|---10----|\n")
+    f.write("#ENDDATA  \n")
+  
   def getRigidNode(self): #ALREADY OPENED
     print (self.ini_node_id + self.node_count - 1)
     return self.ini_node_id + self.node_count - 1
@@ -445,6 +469,7 @@ class Material:
   thermal = False
   rho = 0.0
   ms_fac = 1.0
+  vs_fac = 1.0
   def __init__(self, mid, th):
     self.thermal = th
     id = mid
@@ -469,7 +494,7 @@ class Material:
     f.write("/HEAT/MAT/2\n")
     f.write("#                 T0             RHO0_CP                  AS                  BS     IFORM\n")
     #f.write("              20.0                 2.5e6               15.0                  0.0        1\n")
-    f.write("                20.0              3.29e6                15.0                  0.0        1\n")
+    f.write("                20.0" + writeFloatField(self.rho*self.cp_th*self.ms_fac,20,6) + writeFloatField(self.vs_fac*self.k_th,20,6) + "                 0.0        1\n")
     f.write(" \n") #REQUIRED
 
     
@@ -556,10 +581,14 @@ class Part:
     
     if (self.mesh[0].print_segments):
       self.mesh[0].printESurfsRadioss(f) 
+
     if (self.is_rigid):
       self.mesh[0].printRigidRadioss(f) 
       self.mesh[0].printContSurfRadioss(f)
-      
+    else:
+      self.mesh[0].printPartSurfRadioss(f) #ONLYFOR CONVECTION
+      self.mesh[0].printConvRadioss(f)
+
 class Interface:
   id_master = 0
   id_slave = 0
@@ -578,6 +607,7 @@ class Model:
   double_sided = True
   min_dt = 1.0e-4
   end_proc_time = 0.0 #Before release
+  vscal_fac = 1.0
   def __init__(self):
     self.part_count = 0
     self.part = []
@@ -943,7 +973,7 @@ class Model:
     
   def printDynRelax(self, run, time, dt):
     f = open(self.starter_file + "_000" + str(run) + ".rad","w+")
-    f.write("/RUN/test/3
+    f.write("/RUN/" + self.starter_file + "/" + str(run) + "\n")
     f.write(str(time)+"\n")
     f.write("/ANIM/DT\n")
     f.write("0 " +str(dt) + "\n")
@@ -977,5 +1007,5 @@ class Model:
     f.write("\n")
     f.write("/ADYREL\n")
     f.write(" \n")
-    f.write("/ANIM/ELEM/HOUR                                    
-    f.write("/ANIM/SHELL/TENS
+    f.write("/ANIM/ELEM/HOUR             \n")                       
+    f.write("/ANIM/SHELL/TENS\n")

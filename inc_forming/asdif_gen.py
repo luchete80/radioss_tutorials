@@ -41,6 +41,8 @@ v_supp        = 1.0e-3
 supp_rel_time = 0.5
 supp_vel_ramp = True
 dynrel_time   = 2.0
+## SCALING
+vscal_fac     = 250.0 #Affects All magnitudes with s^-1: Tool Speed, HEAT CONDUCTIVIY, CONVECTION
 
 ###### SUPPORT
 dens_supp_1 = 4
@@ -59,13 +61,14 @@ manual_mass_scal    = False
 
 ###### MATERIAL
 mat = Material(1,thermal) #ID, THERMAL
-mat.rho = 7850.0
-mat.E   = 200.0e9
-mat.nu  = 0.33
+mat.rho     = 7850.0
+mat.E       = 200.0e9
+mat.nu      = 0.33
+mat.vs_fac  = vscal_fac
 
 #thermal
-mat_k  = 3750 # 15 //
-mat_cp = 419.11
+mat.k_th  = 15.0 # 15 //
+mat.cp_th = 419.11
 
 mat.Ajc   = 359.0e6
 mat.Bjc   = 327.0e6
@@ -170,7 +173,7 @@ model.double_sided = double_sided
 print ("Model size: ", len(model.part))
 shell = Part(1)
 shell.AppendMesh(shell_mesh) 
-
+model.vscal_fac = vscal_fac
 
 bcpos = largo/2.0 - largo_supp
 
