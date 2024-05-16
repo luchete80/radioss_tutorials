@@ -181,6 +181,9 @@ class Mesh:
   def printConvRadioss(self,vs_fac,f):
     
     f.write("#---1----|----2----|----3----|----4----|----5----|----6----|----7----|----8----|----9----|---10----|\n")
+    f.write("/UNIT/11\n")
+    f.write("unit for convection load\n")
+    f.write("                  kg                   m                   s\n")
     f.write("/CONVEC/1/11\n")
     f.write("convect with ambient air \n")
     f.write("#  SURF_ID    FCT_ID   SENS_ID\n")
@@ -488,7 +491,7 @@ class Material:
     #f.write("              0.0786                0.04         1         11.00000000000000E+30\n")
     f.write(writeFloatField(self.Cjc,20,6) + writeFloatField(self.e0jc,20,6) + "         1         11.00000000000000E+30\n")
     f.write("#                  m              T_melt              rhoC_p                 T_r\n")    
-    f.write("               0.919               1500.              3.29e6                   0\n")
+    f.write("               0.919               1500."+writeFloatField(self.rho*self.cp_th*self.ms_fac,20,6) +"                   0\n")
     # if (self.thermal):    
     f.write("#/HEAT/MAT/mat_ID/unit_ID\n")
     f.write("/HEAT/MAT/2\n")

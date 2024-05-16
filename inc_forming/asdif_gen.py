@@ -78,20 +78,20 @@ mat.Cjc   = 0.0786
 mat.e0jc  = 0.04
 
 ##### SCALING
-class Scaling(Enum):
-  NONE   = 1       # 
-  VPROC  = 2       #Only on tool veloc 
-  MS_FIX = 3       #Fixed Mass scal, since cp 
-  VS_FIX = 4
-  AMS    = 5
+# class Scaling(Enum):
+  # NONE   = 1       # 
+  # VPROC  = 2       #Only on tool veloc 
+  # MS_FIX = 3       #Fixed Mass scal, since cp 
+  # VS_FIX = 4
+  # AMS    = 5
 
-scal_type = Scaling.MS_FIX
-scal_fac  = 250.0          #ONLY WORKS WITH FIXE MS OR VS 
+# scal_type = Scaling.MS_FIX
+# scal_fac  = 250.0          #ONLY WORKS WITH FIXE MS OR VS 
 
 ################################################## BEGIN ####################################################################################
 #############################################################################################################################################
-if (scal_type == Scaling.NONE or scal_type == Scaling.VPROC or scal_type == Scaling.AMS):
-  scal_fac = 1.0
+# if (scal_type == Scaling.NONE or scal_type == Scaling.VPROC or scal_type == Scaling.AMS):
+  # scal_fac = 1.0
 
 # filelbl = Label(window, text="Input File", width=15,justify=LEFT)
 # filelbl.grid(column=1, row=0)	
