@@ -21,28 +21,44 @@ thck  = 6.5e-4      #Plate Thickness
 thck_rig = 1.0e-4   #BALL
 thck_supp = 1.0e-3  #SUPP
 
+vscal_fac     = 250.0 #Affects All magnitudes with s^-1: Tool Speed, HEAT CONDUCTIVIY, CONVECTION
+
 #TOOL 
-r_i           = 88.2414e-3      #Inner Path Radius
-r_o           = 0.0325    #Outer Path Radius
-r             = 0.0325
-dr            = 5.0e-4    #DESAPARECE DE ACUERDO A LA GEOMETRIA
+# SHAPE FROM
+#A hybrid mixed double-sided incremental forming method for forming
+#Ti6Al4V alloy
+###### -------------------------------------------------------------
+r_ac1 = 10.0e-3 
+r_ac2 = 5.0e-3
+ang_1 = 50.0 #DEG
+ang_1 = 20.0 #DEG
+tool_speed    = 4.0 / 60.0 * vscal_fac #Exam,ple 4000 mm/min 
+t_ind         = 1.0e-3
+dz            = 5.0e-4    #DESAPARECE DE ACUERDO A LA GEOMETRIA
+
+# TOOL PATH GENERATION
+#--------------------------------------------------------------------
+calc_path           = True
+move_tool_to_inipos = True # THIS IS CONVENIENT, OTHERWISE RADIOSS THROWS ERROR DUE TO LARGE DISP TO INITIAL POS
+ball_gap      = 1.0e-4  #THIS IS ASSIGNED SINCE IF NOT THE BALL INITIAL MOVEMENT DRAGS THE PLATE
+r             = 0.01
+
 dt            = 1.0e-5    #Time increment for path gen
 #t_ang         = 1.0e-3    #Periodo angular, ANTES ERA CONSTANTE
 p_D           = 2.5e-3     #ASDIF RADIAL DISTANCE BETWEEN TOOLS
 p_S           = 4.3e-4     #ASDIF HEIGHT DISTANCE BETWEEN TOOLS
-tool_speed    = 0.6 / 60.0 * 5000 #600mm/min according to Valoppi
-t_ind         = 1.0e-3
+
 tool_rad      = 0.00755    #Tool radius
 gap           = 0.0e-4
 gap_cont      = 1.3e-4
-dtout         = 5.0e-3
+dtout         = 1.0e-4
 end_time      = 2.1879884613e+00
 v_supp        = 1.0e-3
 supp_rel_time = 0.5
 supp_vel_ramp = True
 dynrel_time   = 2.0
 ## SCALING
-vscal_fac     = 250.0 #Affects All magnitudes with s^-1: Tool Speed, HEAT CONDUCTIVIY, CONVECTION
+
 
 ###### SUPPORT
 dens_supp_1 = 4
@@ -50,12 +66,9 @@ dens_supp_2 = 50
 largo_supp = 0.01
 
 ###### CENTER OF PIECE 
-x_init              = r_i  #DO NOT PUT xo! USED AS x OUTPUT IN DOUBLE SIDED
-move_tool_to_inipos = True # THIS IS CONVENIENT, OTHERWISE RADIOSS THROWS ERROR DUE TO LARGE DISP TO INITIAL POS
 thermal             = False
 cont_support        = True       #TRUE: SUPPORT IS MODELED BY CONTACT, FALSE: SUPPORT IS MODELED BY BCS ON NODES
-double_sided        = False
-calc_path           = False
+double_sided        = True
 manual_mass_scal    = False
 
 
@@ -113,14 +126,14 @@ shell_elnod = [(1,2,3,4)]
 
 
 shell_mesh = Plane_Mesh(1,largo,delta)
-if (not move_tool_to_inipos):
-  x_init = 0.0
-sph1_mesh = Sphere_Mesh(2, tool_rad-thck_rig/2.0,        \
-                        x_init, 0.0,(tool_rad + thck/2.0 + gap + thck_rig), \
+
+
+sph1_mesh = Sphere_Mesh(2, tool_rad-thck_rig/2.0 +ball_gap,        \
+                        0.0, 0.0,(tool_rad + thck/2.0 + gap + thck_rig), \
                                         5) #(id, radius, divisions):
 
 if (double_sided):
-  sph2_mesh = Sphere_Mesh(3, tool_rad-thck_rig/2.0,        \
+  sph2_mesh = Sphere_Mesh(3, tool_rad-thck_rig/2.0-ball_gap,        \
                         0.0, 0.0,(-tool_rad - thck/2.0 - gap-thck_rig), \
                                         5) #(id, radius, divisions):
                                         
@@ -260,7 +273,9 @@ if (calc_path):
   fi_x = open("movi_x.inc","w")
   fi_y = open("movi_y.inc","w")
   fi_z = open("movi_z.inc","w")
-
+  
+  f_test = open("tool_i.csv","w")
+  
   if (double_sided):  
     fo_x = open("movo_x.inc","w")
     fo_y = open("movo_y.inc","w")
@@ -269,6 +284,7 @@ if (calc_path):
   fi_x.write("/FUNCT/1000001\nmovx\n")    
   fi_y.write("/FUNCT/1000002\nmovy\n")      
   fi_z.write("/FUNCT/1000003\nmovz\n")    
+  
 
   if (double_sided):
     fo_x.write("/FUNCT/1000004\nmovx\n")    
@@ -276,29 +292,37 @@ if (calc_path):
     fo_z.write("/FUNCT/1000006\nmovz\n")    
   
   t = 0.0
-  r = r_i
   turn = 1
   
   z  = 0.0 
   # zo = -thck #ESTA HERRAMIENTA NO DESCIENDE (PARA EVITAR DEFORMACIONES IRREGULARES)
   # zi =  thck 
-  zo = zi = 0
-  vz = (thck + p_S) / t_ind # EN PRINCIPIO S EDESPLAZA SOLO LA INTERIOR 
+  zo  = zi = 0
+  vz  = (thck + p_S + ball_gap) / t_ind # EN PRINCIPIO S EDESPLAZA SOLO LA INTERIOR 
+  
+  vzo =  ball_gap / t_ind
   
   #####################INDENTACION ######################### 
   xi = r - p_D/2.0
   xo = r + p_D/2.0
+
+  # if (move_tool_to_inipos):
+    # xo -= x_init
+    # xi -= x_init
+  f_test.write("X, Y, Z\n")
   
   while (t < t_ind):    
-    if (move_tool_to_inipos):
-      xo -= x_init
-      xi -= x_init
 
-    zi -= vz * dt
+
+    zi -= vz  * dt
+    zo += vzo * dt 
+    
     #HAY QUE VER SI ES NECESARIO ESCRIBIR X E Y PARA TODOS LOS TIEMPOS
     fi_x.write(writeFloatField(t,20,6) + writeFloatField(xi,20,6) + "\n")
     fi_y.write(writeFloatField(t,20,6) + writeFloatField(0.,20,6) + "\n")
     fi_z.write(writeFloatField(t,20,6) + writeFloatField(zi,20,6) + "\n")
+    
+    f_test.write(str(xi) + ", " +str(0) + "," + str(zi) + "\n")
     
     if (double_sided):
       fo_x.write(writeFloatField(t,20,6) + writeFloatField(xo,20,6) + "\n")
@@ -310,17 +334,34 @@ if (calc_path):
     # fo_z.write("%.6e, %.6e\n" % (t,zo))  
     t +=dt 
  
-  print("Final zi %.3e , zo %.3e \n" %(zi,zo))
+  print("Initial zi %.3e , zo %.3e \n" %(zi,zo))
   
+  r0 = 0
   ######################## VUELTAS ##############################
-  while (t < end_time):
+  end_angle = ang_1 *np.pi / 180.0
+  end = False
+  while (not end):
+  
+  
     t_ang = 2.0 * pi * r / tool_speed #Tiempo (incremento) de cada vuelta (ASUMIENDO RADIO CONSTANTE)
     print("Turn %d Turn Time %.3e Time %.3e Radius %.3e\n" %(turn, t_ang,t,r))
     t_vuelta = t + t_ang  #Tiempo de final de vuelta (TOTAL)
     t_0 = t               #Tiempo de comienzo de vuelta
     t_inc = 0.0           # t - t_0
-    dz = dr               #CAMBIAR SEGUN GEOMETRIA
-    vz = dz / t_ang
+
+    vz = dz / t_ang       #ORIGINAL, CONSTANT
+    
+    
+    #INITIAL VALUES
+    z_0i = zi
+    z_0o = zo
+    z_c = (zi + zo)/2.0 - r_ac1
+    
+    #Calculate angle
+    ang = np.arccos((r_ac1-turn*dz)/r_ac1)
+    dr  = (r_ac1-turn*dz) * np.tan(ang) - r0
+    print("Angle ",ang*180.0/np.pi)
+    
     while (t < t_vuelta): #VUELTAS  
       # print ("t_inc %.3e t_ang %.3e"%(t_inc,t_ang))
       xi = (r - p_D/2.0 + dr * t_inc/t_ang) *cos(2.0*pi*t_inc/t_ang)
@@ -331,8 +372,7 @@ if (calc_path):
       yo = (r + p_D/2.0 + dr * t_inc/t_ang) *sin(2.0*pi*t_inc/t_ang)      
       zo -= vz * dt #CAMBIAR A DZ
       
-      # print("zi %.3e , zo %.3e \n" %(zi,zo))
-      # z -= t_inc/t_ang * dr # CAMBIAR A dz
+      f_test.write(str(xi) + ", " +str(yi) + "," + str(zi) + "\n")
       
       fi_x.write(writeFloatField(t,20,6) + writeFloatField(xi,20,6) + "\n")
       fi_y.write(writeFloatField(t,20,6) + writeFloatField(yi,20,6) + "\n")
@@ -342,9 +382,6 @@ if (calc_path):
         fo_y.write(writeFloatField(t,20,6) + writeFloatField(yo,20,6) + "\n")
         fo_z.write(writeFloatField(t,20,6) + writeFloatField(zo,20,6) + "\n")
       
-      # fo_x.write("%.6e, %.6e\n" % (t,xo))
-      # fo_y.write("%.6e, %.6e\n" % (t,yo))
-      # fo_z.write("%.6e, %.6e\n" % (t,zo))
       
       t_inc +=dt
       t += dt
@@ -356,8 +393,14 @@ if (calc_path):
         flog.write ("baricenter: %s\n" %(coord))  
         model.load_fnc[e].Append(t,1.0e6)
       
+    r0+=dr
     r +=dr
     turn += 1    
+
+
+    if (ang > end_angle):
+      end = True
+
 
   #SPRINGBACK
   fi_x.close;fi_y.close;fi_z.close
