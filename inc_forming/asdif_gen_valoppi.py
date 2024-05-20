@@ -34,14 +34,14 @@ ang_1 = 50.0 #DEG
 ang_1 = 20.0 #DEG
 tool_speed    = 4.0 / 60.0 * vscal_fac #Exam,ple 4000 mm/min 
 t_ind         = 1.0e-3
-dz            = 5.0e-4    #DESAPARECE DE ACUERDO A LA GEOMETRIA
+dz            = 1.0e-4    #DESAPARECE DE ACUERDO A LA GEOMETRIA
 
 # TOOL PATH GENERATION
 #--------------------------------------------------------------------
 calc_path           = True
 move_tool_to_inipos = True # THIS IS CONVENIENT, OTHERWISE RADIOSS THROWS ERROR DUE TO LARGE DISP TO INITIAL POS
 ball_gap      = 1.0e-4  #THIS IS ASSIGNED SINCE IF NOT THE BALL INITIAL MOVEMENT DRAGS THE PLATE
-r             = 0.01
+r             = 0.065
 
 dt            = 1.0e-5    #Time increment for path gen
 #t_ang         = 1.0e-3    #Periodo angular, ANTES ERA CONSTANTE
@@ -356,6 +356,7 @@ if (calc_path):
     z_0i = zi
     z_0o = zo
     z_c = (zi + zo)/2.0 - r_ac1
+    print ("zi ", zi)
     
     #Calculate angle
     ang = np.arccos((r_ac1-turn*dz)/r_ac1)
@@ -364,12 +365,12 @@ if (calc_path):
     
     while (t < t_vuelta): #VUELTAS  
       # print ("t_inc %.3e t_ang %.3e"%(t_inc,t_ang))
-      xi = (r - p_D/2.0 + dr * t_inc/t_ang) *cos(2.0*pi*t_inc/t_ang)
-      yi = (r - p_D/2.0 + dr * t_inc/t_ang) *sin(2.0*pi*t_inc/t_ang)
+      xi = (r - p_D/2.0 - dr * t_inc/t_ang) *cos(2.0*pi*t_inc/t_ang)
+      yi = (r - p_D/2.0 - dr * t_inc/t_ang) *sin(2.0*pi*t_inc/t_ang)
       zi -= vz * dt
 
-      xo = (r + p_D/2.0 + dr * t_inc/t_ang) *cos(2.0*pi*t_inc/t_ang)
-      yo = (r + p_D/2.0 + dr * t_inc/t_ang) *sin(2.0*pi*t_inc/t_ang)      
+      xo = (r + p_D/2.0 - dr * t_inc/t_ang) *cos(2.0*pi*t_inc/t_ang)
+      yo = (r + p_D/2.0 - dr * t_inc/t_ang) *sin(2.0*pi*t_inc/t_ang)      
       zo -= vz * dt #CAMBIAR A DZ
       
       f_test.write(str(xi) + ", " +str(yi) + "," + str(zi) + "\n")
