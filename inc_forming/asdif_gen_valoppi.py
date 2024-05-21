@@ -37,8 +37,8 @@ ang_1 = 20.0 #DEG
 tool_speed    = 4.0 / 60.0 * vscal_fac #Exam,ple 4000 mm/min 
 t_ind         = 1.0e-3
 dz            = 1.0e-4    #
-dt            = 0.01/vscal_fac    #Periodo angular, ANTES ERA CONSTANTE
-
+dtind         = 0.01/vscal_fac    #Indentation time for crve generation
+da            = 2.5 #ANGLE FOR 
 calc_path           = True
 move_tool_to_inipos = True # THIS IS CONVENIENT, OTHERWISE RADIOSS THROWS ERROR DUE TO LARGE DISP TO INITIAL POS
 ball_gap      = 1.0e-4  #THIS IS ASSIGNED SINCE IF NOT THE BALL INITIAL MOVEMENT DRAGS THE PLATE
@@ -161,7 +161,7 @@ def make_init_curve(rac, r, t, zi, zo, ts, dz, dt): #Convex radius is from outsi
       
     print("Angle ",ang*180.0/np.pi, "deg, dr ", dr)
     print ("Initial turn radius ",r - p_D/2.0 - rinc )
-    #dt = t_ang * da / (2.0*np.pi)
+    dt = t_ang * (np.pi /180.0 * da ) / (2.0*np.pi)
     while (t < t_vuelta): #VUELTAS  
       # print ("t_inc %.3e t_ang %.3e"%(t_inc,t_ang))
       ri_curr = r - p_D/2.0 - dr * t_inc/t_ang
@@ -257,7 +257,7 @@ def make_outer_curve(rac, beta0, beta1, r, t, zi, zo, ts, dz, dt): #Convex radiu
       
     print("Angle ",alpha*180.0/np.pi, "deg, dr ", dr)
     # print ("Initial turn radius ",r - p_D/2.0 - rinc )
-    #dt = t_ang * da / (2.0*np.pi)
+    dt = t_ang * (np.pi / 180.0 * da ) / (2.0*np.pi)
     while (t < t_vuelta): #VUELTAS  
       # print ("t_inc %.3e t_ang %.3e"%(t_inc,t_ang))
       ri_curr = r - p_D/2.0 - dr * t_inc/t_ang
@@ -316,7 +316,7 @@ def make_line(angle, depth, r, t, turn, zi, zo, ts, dz, dt):
     t_inc = 0.0           # t - t_0
     vz = dz / t_ang
     dr = dz / np.tan(angle * np.pi / 180.0)
-    #dt = t_ang * da / (2.0*np.pi)
+    dt = t_ang * (np.pi / 180.0 * da ) / (2.0*np.pi)
     while (t < t_vuelta): #VUELTAS  
       # print ("t_inc %.3e t_ang %.3e"%(t_inc,t_ang))
       xi = (r - p_D/2.0 - dr * t_inc/t_ang) *cos(2.0*pi*t_inc/t_ang)
@@ -548,13 +548,13 @@ if (calc_path):
     # xo -= x_init
     # xi -= x_init
   f_test.write("X, Y, Z\n")
-  dt = 0.1 / vscal_fac
-
+  
+  
   while (t < t_ind):    
 
 
-    zi -= vz  * dt
-    zo += vzo * dt 
+    zi -= vz  * dtind
+    zo += vzo * dtind 
     
     #HAY QUE VER SI ES NECESARIO ESCRIBIR X E Y PARA TODOS LOS TIEMPOS
     fi_x.write(writeFloatField(t,20,6) + writeFloatField(xi,20,6) + "\n")
@@ -571,24 +571,24 @@ if (calc_path):
     # fo_x.write("%.6e, %.6e\n" % (t,xo))
     # fo_y.write("%.6e, %.6e\n" % (t,0.0))
     # fo_z.write("%.6e, %.6e\n" % (t,zo))  
-    t +=dt 
+    t +=dtind 
  
   print("Initial zi %.3e , zo %.3e \n" %(zi,zo))
   
   
   r = r0
   turn = 1
-  r, t, zi, zo = make_init_curve(r_ac1, r,t, zi, zo, tool_speed, dz, dt)
+  r, t, zi, zo = make_init_curve(r_ac1, r,t, zi, zo, tool_speed, dz, da)
   print ("BEGINING CONE PART ----\n")
   print ("Initial radius ", r)
   ### make_line(angle, depth, r, t, turn, zi, zo)
-  r, t, zi, zo = make_line(50.0, 0.015, r, t, turn, zi, zo, tool_speed, dz, dt)
+  r, t, zi, zo = make_line(50.0, 0.015, r, t, turn, zi, zo, tool_speed, dz, da)
   print ("BEGINING RADIUS PART ----\n")
   print ("Initial radius ", r)
-  r, t, zi, zo = make_outer_curve(r_ac2, 50.0, 20.0, r,t, zi, zo, tool_speed, dz, dt)  
+  r, t, zi, zo = make_outer_curve(r_ac2, 50.0, 20.0, r,t, zi, zo, tool_speed, dz, da)  
   print("MAKING 20 deg line ")
   ### make_line(angle, depth, r, t, turn, zi, zo)
-  r, t, zi, zo = make_line(20.0, 0.005, r, t, turn, zi, zo, tool_speed, dz, dt)  
+  r, t, zi, zo = make_line(20.0, 0.005, r, t, turn, zi, zo, tool_speed, dz, da)  
   
 
   #SPRINGBACK
