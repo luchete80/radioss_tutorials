@@ -300,7 +300,7 @@ class Rect_Plane_Mesh(Mesh):
       for i in range (ncx):
         self.nodes.append((x,y,z_))
         x = x + dx
-        print ('x y ', x, y)
+        # print ('x y ', x, y)
       y = y + dy
       
     for ey in range (elem_y):    

@@ -28,27 +28,27 @@ vscal_fac     = 250.0 #Affects All magnitudes with s^-1: Tool Speed, HEAT CONDUC
 #A hybrid mixed double-sided incremental forming method for forming
 #Ti6Al4V alloy
 ###### -------------------------------------------------------------
-r_ac1 = 10.0e-3 
-r_ac2 = 5.0e-3
-ang_1 = 50.0 #DEG
+# TOOL PATH GENERATION
+#--------------------------------------------------------------------
+r_ac1 = 20.0e-3 
+r_ac2 = 6.35e-3
+ang_1 = 40.0 #DEG
 ang_1 = 20.0 #DEG
 tool_speed    = 4.0 / 60.0 * vscal_fac #Exam,ple 4000 mm/min 
 t_ind         = 1.0e-3
-dz            = 1.0e-4    #DESAPARECE DE ACUERDO A LA GEOMETRIA
+dz            = 1.0e-4    #
+dt            = 0.01/vscal_fac    #Periodo angular, ANTES ERA CONSTANTE
 
-# TOOL PATH GENERATION
-#--------------------------------------------------------------------
 calc_path           = True
 move_tool_to_inipos = True # THIS IS CONVENIENT, OTHERWISE RADIOSS THROWS ERROR DUE TO LARGE DISP TO INITIAL POS
 ball_gap      = 1.0e-4  #THIS IS ASSIGNED SINCE IF NOT THE BALL INITIAL MOVEMENT DRAGS THE PLATE
-r             = 0.065
+r0            = 0.065
 
-dt            = 1.0e-5    #Time increment for path gen
-#t_ang         = 1.0e-3    #Periodo angular, ANTES ERA CONSTANTE
+#dang           = 5.0  #Angle (deg) increment for path gen
 p_D           = 2.5e-3     #ASDIF RADIAL DISTANCE BETWEEN TOOLS
 p_S           = 4.3e-4     #ASDIF HEIGHT DISTANCE BETWEEN TOOLS
 
-tool_rad      = 0.00755    #Tool radius
+tool_rad      = 0.0025    #Tool radius
 gap           = 0.0e-4
 gap_cont      = 1.3e-4
 dtout         = 1.0e-4
@@ -86,6 +86,7 @@ mat.cp_th = 419.11
 mat.Ajc   = 359.0e6
 mat.Bjc   = 327.0e6
 mat.njc   = 0.454
+mat.njc   = 0.454
 mat.mjc   = 0.919
 mat.Cjc   = 0.0786
 mat.e0jc  = 0.04
@@ -112,6 +113,254 @@ mat.e0jc  = 0.04
 # textField.grid(column=2, row=0)
 # textField.insert(0,"test")
 
+fi_x = open("movi_x.inc","w")
+fi_y = open("movi_y.inc","w")
+fi_z = open("movi_z.inc","w")
+
+f_test = open("tool_i.csv","w")
+
+ 
+fo_x = open("movo_x.inc","w")
+fo_y = open("movo_y.inc","w")
+fo_z = open("movo_z.inc","w")
+
+#CHANGE r, t 
+def make_init_curve(rac, r, t, zi, zo, ts, dz, dt): #Convex radius is from outside
+  rinc = 0
+  turn = 1
+  ######################## VUELTAS ##############################
+  end_angle = ang_1 *np.pi / 180.0
+  end = False
+  while (not end):
+  
+  
+    t_ang = 2.0 * pi * r / ts #Tiempo (incremento) de cada vuelta (ASUMIENDO RADIO CONSTANTE)
+    print("Turn %d Turn Time %.3e Time %.3e Radius %.3e\n" %(turn, t_ang,t,r))
+    t_vuelta = t + t_ang  #Tiempo de final de vuelta (TOTAL)
+    t_0 = t               #Tiempo de comienzo de vuelta
+    t_inc = 0.0           # t - t_0
+
+    vz = dz / t_ang       #ORIGINAL, CONSTANT
+    
+    
+    #INITIAL VALUES
+    z_0i = zi
+    z_0o = zo
+    z_c = (zi + zo)/2.0 - rac
+    print ("zi ", zi)
+    
+    #- 
+    #  \
+    #   |
+    # GIving an angle
+
+    #Calculate angle
+    ang = np.arccos((rac-turn*dz)/rac)
+    dr  = (rac-turn*dz) * np.tan(ang) - rinc
+
+      
+    print("Angle ",ang*180.0/np.pi, "deg, dr ", dr)
+    print ("Initial turn radius ",r - p_D/2.0 - rinc )
+    #dt = t_ang * da / (2.0*np.pi)
+    while (t < t_vuelta): #VUELTAS  
+      # print ("t_inc %.3e t_ang %.3e"%(t_inc,t_ang))
+      ri_curr = r - p_D/2.0 - dr * t_inc/t_ang
+      # print ("rcurr, z, " + str(ri_curr) + str (zi))
+      xi = ri_curr * cos(2.0*pi*t_inc/t_ang)
+      yi = ri_curr * sin(2.0*pi*t_inc/t_ang)
+      zi -= vz * dt
+      
+      ro_curr = r + p_D/2.0 - dr * t_inc/t_ang
+      xo = ro_curr*cos(2.0*pi*t_inc/t_ang)
+      yo = ro_curr *sin(2.0*pi*t_inc/t_ang)      
+      zo -= vz * dt #CAMBIAR A DZ
+      
+      f_test.write(str(xi) + ", " +str(yi) + "," + str(zi) + "\n")
+      
+      fi_x.write(writeFloatField(t,20,6) + writeFloatField(xi,20,6) + "\n")
+      fi_y.write(writeFloatField(t,20,6) + writeFloatField(yi,20,6) + "\n")
+      fi_z.write(writeFloatField(t,20,6) + writeFloatField(zi,20,6) + "\n")
+      if (double_sided):
+        fo_x.write(writeFloatField(t,20,6) + writeFloatField(xo,20,6) + "\n")
+        fo_y.write(writeFloatField(t,20,6) + writeFloatField(yo,20,6) + "\n")
+        fo_z.write(writeFloatField(t,20,6) + writeFloatField(zo,20,6) + "\n")
+      
+      
+      t_inc +=dt
+      t += dt
+
+      if (thermal):
+        e = model.part[0].mesh[0].findNearestElem(xi,yi,zi)
+        flog.write ("TIME %f, pos: %.6e %.6e, Found %d\n" % (t, xi, yi, e ))
+        coord = str (model.part[0].mesh[0].elcenter[e].components)
+        flog.write ("baricenter: %s\n" %(coord))  
+        model.load_fnc[e].Append(t,1.0e6)
+      
+    rinc+=dr
+    r -=dr
+    turn += 1    
+
+
+    if (ang > end_angle):
+      end = True
+  return r,t,zi,zo 
+
+#
+#Both angles are from the outside and respect oto horizontal 
+#   \
+#    \
+# beta\
+#------------ >> WORKPIECE SHAPE
+
+# ANGLES IN DEGs
+def make_outer_curve(rac, beta0, beta1, r, t, zi, zo, ts, dz, dt): #Convex radius is from outside
+  rinc = 0
+  turn = 1
+  ######################## VUELTAS ##############################
+
+    #ALPHA in incrementing and beta (PI/2 - alpha)
+    # is decrementing
+    # |
+    # |alpha /
+    #  \    /
+    #   \  
+    #    ------- <<--- Workpiece curve
+    # GIving an angle
+  alpha0 = np.pi/2.0 - beta0 * np.pi /180.0
+  alpha1 = np.pi/2.0 - beta1 * np.pi /180.0
+  racc = rac * (1.0 - np.cos(alpha0))
+  zacc  = rac * np.sin(alpha0)  #SUPPOSED INITIAL DEPTH TO REACH INITIAL APHA
+  print ("Alpha0, Acc z ", alpha0, zacc)
+  
+  end = False
+  while (not end):
+  
+  
+    t_ang = 2.0 * pi * r / ts #Tiempo (incremento) de cada vuelta (ASUMIENDO RADIO CONSTANTE)
+    print("Turn %d Turn Time %.3e Time %.3e Radius %.3e\n" %(turn, t_ang,t,r))
+    t_vuelta = t + t_ang  #Tiempo de final de vuelta (TOTAL)
+    t_0 = t               #Tiempo de comienzo de vuelta
+    t_inc = 0.0           # t - t_0
+
+    vz = dz / t_ang       #ORIGINAL, CONSTANT
+    
+    
+    #INITIAL VALUES
+    z_0i = zi
+    z_0o = zo
+    z_c = (zi + zo)/2.0 - rac
+    print ("zi ", zi)
+    
+    
+    alpha = np.arcsin((zacc+turn*dz)/rac)
+    dr  = rac - ((zacc+turn*dz) / np.tan(alpha))  - rinc - racc
+      
+    print("Angle ",alpha*180.0/np.pi, "deg, dr ", dr)
+    # print ("Initial turn radius ",r - p_D/2.0 - rinc )
+    #dt = t_ang * da / (2.0*np.pi)
+    while (t < t_vuelta): #VUELTAS  
+      # print ("t_inc %.3e t_ang %.3e"%(t_inc,t_ang))
+      ri_curr = r - p_D/2.0 - dr * t_inc/t_ang
+      # print ("rcurr, z, " + str(ri_curr) + str (zi))
+      xi = ri_curr * cos(2.0*pi*t_inc/t_ang)
+      yi = ri_curr * sin(2.0*pi*t_inc/t_ang)
+      zi -= vz * dt
+      
+      ro_curr = r + p_D/2.0 - dr * t_inc/t_ang
+      xo = ro_curr*cos(2.0*pi*t_inc/t_ang)
+      yo = ro_curr *sin(2.0*pi*t_inc/t_ang)      
+      zo -= vz * dt #CAMBIAR A DZ
+      
+      f_test.write(str(xi) + ", " +str(yi) + "," + str(zi) + "\n")
+      
+      fi_x.write(writeFloatField(t,20,6) + writeFloatField(xi,20,6) + "\n")
+      fi_y.write(writeFloatField(t,20,6) + writeFloatField(yi,20,6) + "\n")
+      fi_z.write(writeFloatField(t,20,6) + writeFloatField(zi,20,6) + "\n")
+      if (double_sided):
+        fo_x.write(writeFloatField(t,20,6) + writeFloatField(xo,20,6) + "\n")
+        fo_y.write(writeFloatField(t,20,6) + writeFloatField(yo,20,6) + "\n")
+        fo_z.write(writeFloatField(t,20,6) + writeFloatField(zo,20,6) + "\n")
+      
+      
+      t_inc +=dt
+      t += dt
+
+      if (thermal):
+        e = model.part[0].mesh[0].findNearestElem(xi,yi,zi)
+        flog.write ("TIME %f, pos: %.6e %.6e, Found %d\n" % (t, xi, yi, e ))
+        coord = str (model.part[0].mesh[0].elcenter[e].components)
+        flog.write ("baricenter: %s\n" %(coord))  
+        model.load_fnc[e].Append(t,1.0e6)
+      
+    rinc+=dr
+    r -=dr
+    turn += 1    
+
+
+    if (alpha > alpha1):
+      end = True
+  return r,t,zi,zo 
+  
+#Make a cone 
+def make_line(angle, depth, r, t, turn, zi, zo, ts, dz, dt):
+  ######################## VUELTAS ##############################
+  end = False
+  rmin = r - depth / np.tan(angle * np.pi / 180.0)
+  print ("Line (cone) rmin ", rmin)
+  while ( not end):
+    print ("r, ts ", r, ts)
+    t_ang = 2.0 * np.pi * r / ts #Tiempo (incremento) de cada vuelta (ASUMIENDO RADIO CONSTANTE)
+    print("Turn %d Turn Time %.3e Time %.3e Radius %.3e\n" %(turn, t_ang,t,r))
+    t_vuelta = t + t_ang  #Tiempo de final de vuelta (TOTAL)
+    t_0 = t               #Tiempo de comienzo de vuelta
+    t_inc = 0.0           # t - t_0
+    vz = dz / t_ang
+    dr = dz / np.tan(angle * np.pi / 180.0)
+    #dt = t_ang * da / (2.0*np.pi)
+    while (t < t_vuelta): #VUELTAS  
+      # print ("t_inc %.3e t_ang %.3e"%(t_inc,t_ang))
+      xi = (r - p_D/2.0 - dr * t_inc/t_ang) *cos(2.0*pi*t_inc/t_ang)
+      yi = (r - p_D/2.0 - dr * t_inc/t_ang) *sin(2.0*pi*t_inc/t_ang)
+      zi -= vz * dt
+
+      xo = (r + p_D/2.0 - dr * t_inc/t_ang) *cos(2.0*pi*t_inc/t_ang)
+      yo = (r + p_D/2.0 - dr * t_inc/t_ang) *sin(2.0*pi*t_inc/t_ang)      
+      zo -= vz * dt #CAMBIAR A DZ
+
+      f_test.write(str(xi) + ", " +str(yi) + "," + str(zi) + "\n")
+      
+      # print("zi %.3e , zo %.3e \n" %(zi,zo))
+      # z -= t_inc/t_ang * dr # CAMBIAR A dz
+      
+      fi_x.write(writeFloatField(t,20,6) + writeFloatField(xi,20,6) + "\n")
+      fi_y.write(writeFloatField(t,20,6) + writeFloatField(yi,20,6) + "\n")
+      fi_z.write(writeFloatField(t,20,6) + writeFloatField(zi,20,6) + "\n")
+      if (double_sided):
+        fo_x.write(writeFloatField(t,20,6) + writeFloatField(xo,20,6) + "\n")
+        fo_y.write(writeFloatField(t,20,6) + writeFloatField(yo,20,6) + "\n")
+        fo_z.write(writeFloatField(t,20,6) + writeFloatField(zo,20,6) + "\n")
+     
+      
+      t_inc +=dt
+      t += dt
+
+      if (thermal):
+        e = model.part[0].mesh[0].findNearestElem(xi,yi,zi)
+        flog.write ("TIME %f, pos: %.6e %.6e, Found %d\n" % (t, xi, yi, e ))
+        coord = str (model.part[0].mesh[0].elcenter[e].components)
+        flog.write ("baricenter: %s\n" %(coord))  
+        model.load_fnc[e].Append(t,1.0e6)
+      
+    r -=dr
+    turn += 1  
+    
+    if (r <= rmin):
+      end = True
+
+  return r,t,zi,zo
+  
+  
+  
 test = [(1,1),(2,2)]
 test.append((3,4))
 print (test)
@@ -270,16 +519,6 @@ if (calc_path):
 # f= open(textField.get(),"w+")
   # LA HERRAMIENTA INTERNA ESTA EN EL TOP, LA EXTERNA EN EL BOTTOM
   # PERO TOP Y BOTTOM CONFUNDE POR LAS INDENTACIONES
-  fi_x = open("movi_x.inc","w")
-  fi_y = open("movi_y.inc","w")
-  fi_z = open("movi_z.inc","w")
-  
-  f_test = open("tool_i.csv","w")
-  
-  if (double_sided):  
-    fo_x = open("movo_x.inc","w")
-    fo_y = open("movo_y.inc","w")
-    fo_z = open("movo_z.inc","w")
 
   fi_x.write("/FUNCT/1000001\nmovx\n")    
   fi_y.write("/FUNCT/1000002\nmovy\n")      
@@ -292,7 +531,6 @@ if (calc_path):
     fo_z.write("/FUNCT/1000006\nmovz\n")    
   
   t = 0.0
-  turn = 1
   
   z  = 0.0 
   # zo = -thck #ESTA HERRAMIENTA NO DESCIENDE (PARA EVITAR DEFORMACIONES IRREGULARES)
@@ -303,14 +541,15 @@ if (calc_path):
   vzo =  ball_gap / t_ind
   
   #####################INDENTACION ######################### 
-  xi = r - p_D/2.0
-  xo = r + p_D/2.0
+  xi = r0 - p_D/2.0
+  xo = r0 + p_D/2.0
 
   # if (move_tool_to_inipos):
     # xo -= x_init
     # xi -= x_init
   f_test.write("X, Y, Z\n")
-  
+  dt = 0.1 / vscal_fac
+
   while (t < t_ind):    
 
 
@@ -336,72 +575,21 @@ if (calc_path):
  
   print("Initial zi %.3e , zo %.3e \n" %(zi,zo))
   
-  r0 = 0
-  ######################## VUELTAS ##############################
-  end_angle = ang_1 *np.pi / 180.0
-  end = False
-  while (not end):
   
+  r = r0
+  turn = 1
+  r, t, zi, zo = make_init_curve(r_ac1, r,t, zi, zo, tool_speed, dz, dt)
+  print ("BEGINING CONE PART ----\n")
+  print ("Initial radius ", r)
+  ### make_line(angle, depth, r, t, turn, zi, zo)
+  r, t, zi, zo = make_line(50.0, 0.015, r, t, turn, zi, zo, tool_speed, dz, dt)
+  print ("BEGINING RADIUS PART ----\n")
+  print ("Initial radius ", r)
+  r, t, zi, zo = make_outer_curve(r_ac2, 50.0, 20.0, r,t, zi, zo, tool_speed, dz, dt)  
+  print("MAKING 20 deg line ")
+  ### make_line(angle, depth, r, t, turn, zi, zo)
+  r, t, zi, zo = make_line(20.0, 0.005, r, t, turn, zi, zo, tool_speed, dz, dt)  
   
-    t_ang = 2.0 * pi * r / tool_speed #Tiempo (incremento) de cada vuelta (ASUMIENDO RADIO CONSTANTE)
-    print("Turn %d Turn Time %.3e Time %.3e Radius %.3e\n" %(turn, t_ang,t,r))
-    t_vuelta = t + t_ang  #Tiempo de final de vuelta (TOTAL)
-    t_0 = t               #Tiempo de comienzo de vuelta
-    t_inc = 0.0           # t - t_0
-
-    vz = dz / t_ang       #ORIGINAL, CONSTANT
-    
-    
-    #INITIAL VALUES
-    z_0i = zi
-    z_0o = zo
-    z_c = (zi + zo)/2.0 - r_ac1
-    print ("zi ", zi)
-    
-    #Calculate angle
-    ang = np.arccos((r_ac1-turn*dz)/r_ac1)
-    dr  = (r_ac1-turn*dz) * np.tan(ang) - r0
-    print("Angle ",ang*180.0/np.pi)
-    
-    while (t < t_vuelta): #VUELTAS  
-      # print ("t_inc %.3e t_ang %.3e"%(t_inc,t_ang))
-      xi = (r - p_D/2.0 - dr * t_inc/t_ang) *cos(2.0*pi*t_inc/t_ang)
-      yi = (r - p_D/2.0 - dr * t_inc/t_ang) *sin(2.0*pi*t_inc/t_ang)
-      zi -= vz * dt
-
-      xo = (r + p_D/2.0 - dr * t_inc/t_ang) *cos(2.0*pi*t_inc/t_ang)
-      yo = (r + p_D/2.0 - dr * t_inc/t_ang) *sin(2.0*pi*t_inc/t_ang)      
-      zo -= vz * dt #CAMBIAR A DZ
-      
-      f_test.write(str(xi) + ", " +str(yi) + "," + str(zi) + "\n")
-      
-      fi_x.write(writeFloatField(t,20,6) + writeFloatField(xi,20,6) + "\n")
-      fi_y.write(writeFloatField(t,20,6) + writeFloatField(yi,20,6) + "\n")
-      fi_z.write(writeFloatField(t,20,6) + writeFloatField(zi,20,6) + "\n")
-      if (double_sided):
-        fo_x.write(writeFloatField(t,20,6) + writeFloatField(xo,20,6) + "\n")
-        fo_y.write(writeFloatField(t,20,6) + writeFloatField(yo,20,6) + "\n")
-        fo_z.write(writeFloatField(t,20,6) + writeFloatField(zo,20,6) + "\n")
-      
-      
-      t_inc +=dt
-      t += dt
-
-      if (thermal):
-        e = model.part[0].mesh[0].findNearestElem(xi,yi,zi)
-        flog.write ("TIME %f, pos: %.6e %.6e, Found %d\n" % (t, xi, yi, e ))
-        coord = str (model.part[0].mesh[0].elcenter[e].components)
-        flog.write ("baricenter: %s\n" %(coord))  
-        model.load_fnc[e].Append(t,1.0e6)
-      
-    r0+=dr
-    r +=dr
-    turn += 1    
-
-
-    if (ang > end_angle):
-      end = True
-
 
   #SPRINGBACK
   fi_x.close;fi_y.close;fi_z.close
