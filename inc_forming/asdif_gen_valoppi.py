@@ -15,13 +15,13 @@ flog = open("log.txt","w")
 #################### INPUT VARS
 
 #WORKPIECE
-largo = 0.22
-delta = 0.004
-thck  = 6.5e-4      #Plate Thickness
+largo = 0.1
+delta = 0.002
+thck  = 5.0e-4      #Plate Thickness
 thck_rig = 1.0e-4   #BALL
 thck_supp = 1.0e-3  #SUPP
 
-vscal_fac     = 250.0 #Affects All magnitudes with s^-1: Tool Speed, HEAT CONDUCTIVIY, CONVECTION
+vscal_fac     = 1000.0 #Affects All magnitudes with s^-1: Tool Speed, HEAT CONDUCTIVIY, CONVECTION
 
 #TOOL 
 # SHAPE FROM
@@ -34,7 +34,7 @@ r_ac1 = 20.0e-3
 r_ac2 = 6.35e-3
 ang_1 = 40.0 #DEG
 ang_1 = 20.0 #DEG
-tool_speed    = 4.0 / 60.0 * vscal_fac #Exam,ple 4000 mm/min 
+tool_speed    = 0.6 / 60.0 * vscal_fac #Exam,ple 4000 mm/min 
 t_ind         = 1.0e-3
 dz            = 1.0e-4    #
 dtind         = 0.01/vscal_fac    #Indentation time for crve generation
@@ -42,7 +42,7 @@ da            = 2.5 #ANGLE FOR
 calc_path           = True
 move_tool_to_inipos = True # THIS IS CONVENIENT, OTHERWISE RADIOSS THROWS ERROR DUE TO LARGE DISP TO INITIAL POS
 ball_gap      = 1.0e-4  #THIS IS ASSIGNED SINCE IF NOT THE BALL INITIAL MOVEMENT DRAGS THE PLATE
-r0            = 0.065
+r0            = 0.0325
 
 #dang           = 5.0  #Angle (deg) increment for path gen
 p_D           = 2.5e-3     #ASDIF RADIAL DISTANCE BETWEEN TOOLS
@@ -63,10 +63,10 @@ dynrel_time   = 2.0
 ###### SUPPORT
 dens_supp_1 = 4
 dens_supp_2 = 50
-largo_supp = 0.01
+largo_supp = 0.0050
 
 ###### CENTER OF PIECE 
-thermal             = False
+thermal             = True
 cont_support        = True       #TRUE: SUPPORT IS MODELED BY CONTACT, FALSE: SUPPORT IS MODELED BY BCS ON NODES
 double_sided        = True
 manual_mass_scal    = False
@@ -80,8 +80,8 @@ mat.nu      = 0.33
 mat.vs_fac  = vscal_fac
 
 #thermal
-mat.k_th  = 15.0 # 15 //
-mat.cp_th = 419.11
+mat.k_th  = 6.0 # 15 //
+mat.cp_th = 530.0 #J/(kgK)
 
 mat.Ajc   = 359.0e6
 mat.Bjc   = 327.0e6

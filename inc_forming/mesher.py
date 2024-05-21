@@ -162,8 +162,9 @@ class Mesh:
     f.write("PART_RIG_SURF_%d\n"%self.id)
     f.write(writeIntField(self.id,10)+"\n")
 
+  #THIS IS ONLY USED FOR CONVECTION----------
   def printPartSurfRadioss(self,f): #ALREADY OPENED
-    f.write("/SURF/PART/%d\n"%(self.id))
+    f.write("/SURF/PART/%d\n"%(self.id*1e6))
     f.write("PART_WORKPIECE_SURF_%d\n"%self.id)
     f.write(writeIntField(self.id,10)+"\n")
     
@@ -187,11 +188,11 @@ class Mesh:
     f.write("/CONVEC/1/11\n")
     f.write("convect with ambient air \n")
     f.write("#  SURF_ID    FCT_ID   SENS_ID\n")
-    f.write(writeIntField(self.id,10)+"     10000         0\n")
+    f.write(writeIntField(self.id*1e6,10)+"   1000000         0\n")
     f.write("#             ASCALE              FSCALE              TSTART               TSTOP                   H\n")
     f.write("                   0                   0                   0                   0" + writeFloatField(30.0*vs_fac,20,6) +"\n")
     f.write("#---1----|----2----|----3----|----4----|----5----|----6----|----7----|----8----|----9----|---10----|\n")
-    f.write("/FUNCT/10000\n")
+    f.write("/FUNCT/1000000\n")
     f.write("temperature of ambient air (with constant temperature 293K)\n")
     f.write("#                  X                   Y\n")
     f.write("                   0                 20\n")
