@@ -67,7 +67,7 @@ dens_supp_2 = 50
 largo_supp = 0.0050
 
 ###### CENTER OF PIECE 
-thermal             = False
+thermal             = True
 cont_support        = True       #TRUE: SUPPORT IS MODELED BY CONTACT, FALSE: SUPPORT IS MODELED BY BCS ON NODES
 double_sided        = True
 manual_mass_scal    = False
@@ -641,19 +641,19 @@ if (calc_path):
   ec = model.part[0].mesh[0].elem_count
   r, t, zi, zo = make_init_curve(r_ac1, r,t, zi, zo, tool_speed, dz, da, ec)
 
-  print ("BEGINING CONE PART ----\n")
-  print ("Time: ", t)
-  print ("Initial radius ", r)
+  # print ("BEGINING CONE PART ----\n")
+  # print ("Time: ", t)
+  # print ("Initial radius ", r)
+  # ### make_line(angle, depth, r, t, turn, zi, zo)
+  # r, t, zi, zo = make_line(50.0, 0.010, r, t, turn, zi, zo, tool_speed, dz, da, ec)
+  # print ("BEGINING RADIUS PART ----\n")
+  # print ("Time: ", t)
+  # print ("Initial radius ", r)
+  # r, t, zi, zo = make_outer_curve(r_ac2, 50.0, 20.0, r,t, zi, zo, tool_speed, dz, da, ec)  
+  # print("MAKING 20 deg line ")
+  # print ("Time: ", t)
   ### make_line(angle, depth, r, t, turn, zi, zo)
-  r, t, zi, zo = make_line(50.0, 0.010, r, t, turn, zi, zo, tool_speed, dz, da, ec)
-  print ("BEGINING RADIUS PART ----\n")
-  print ("Time: ", t)
-  print ("Initial radius ", r)
-  r, t, zi, zo = make_outer_curve(r_ac2, 50.0, 20.0, r,t, zi, zo, tool_speed, dz, da, ec)  
-  print("MAKING 20 deg line ")
-  print ("Time: ", t)
-  ### make_line(angle, depth, r, t, turn, zi, zo)
-  r, t, zi, zo = make_line(20.0, 0.0025, r, t, turn, zi, zo, tool_speed, dz, da, ec)  
+  # r, t, zi, zo = make_line(20.0, 0.0025, r, t, turn, zi, zo, tool_speed, dz, da, ec)  
   
 
   #SPRINGBACK

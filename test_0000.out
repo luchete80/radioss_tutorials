@@ -1,0 +1,77 @@
+ test_0000.out
+************************************************************************
+**                                                                    **
+**                                                                    **
+**                        OpenRadioss Starter                         **
+**                                                                    **
+**            Non-linear Finite Element Analysis Software             **
+**                                                                    **
+**                                                                    **
+**                                                                    **
+**                    Linux 64 bits, GNU compiler                     **
+**                                                                    **
+**                                                                    **
+**                                                                    **
+** CommitID: d4f9d9503f37b2ae483d0eef7c09a700c672879e                 **
+************************************************************************
+** OpenRadioss Software                                               **
+** COPYRIGHT (C) 1986-2024 Altair Engineering, Inc.                   **
+** Licensed under GNU Affero General Public License.                  **
+** See License file.                                                  **
+************************************************************************
+ 
+  
+ COMPUTATION HARDWARE DESCRIPTION
+  
+ HOSTNAME     CPU TYPE, FREQUENCY AND MEMORY
+ weldform   Intel(R) Core(TM) i7-10700 CPU @ 2.90GHz (x86_64), 4699 MHz,  15849 MB RAM,   2047 MB swap
+  
+************************************************************************
+
+
+************************************************************************
+* INPUT READING PROCESS
+************************************************************************
+
+ERROR ID : 100001
+** ERROR IN INPUT FORMAT
+DESCRIPTION :  
+-- BLOCK: 
+-- LINE: 
+Model file test_0000.rad not found
+
+ERROR ID :   2000
+** ERROR WHILE READING INPUT FILE
+DESCRIPTION :  
+   1 ERRORS FOUND
+
+
+ RADIOSS STOP DUE TO INPUT ERROR
+
+
+------------------------------------------------------------------------------------------------------------------------
+|            ERROR(S) SUMMARY                               |             WARNING(S) SUMMARY                           |
+------------------------------------------------------------------------------------------------------------------------
+|                                                           |                                                          |
+|  --- GLOBAL UNITS                           2   ERROR(S)  |                                                          |
+|       |                                                   |                                                          |
+|       |                                                   |                                                          |
+|       |---     1   ERROR ID :         2000                |                                                          |
+|       | ** ERROR WHILE READING INPUT FILE                 |                                                          |
+|       |                                                   |                                                          |
+|       |---     1   ERROR ID :       100001                |                                                          |
+|       | ** ERROR IN INPUT FORMAT                          |                                                          |
+|       |                                                   |                                                          |
+|                                                           |                                                          |
+|                                                           |                                                          |
+------------------------------------------------------------------------------------------------------------------------
+
+
+
+
+
+
+
+     ERROR TERMINATION                  
+     ------------------                                                                  
+              2ERROR(S)            
