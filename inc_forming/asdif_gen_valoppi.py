@@ -32,13 +32,14 @@ vscal_fac     = 1000.0 #Affects All magnitudes with s^-1: Tool Speed, HEAT CONDU
 #--------------------------------------------------------------------
 r_ac1 = 20.0e-3 
 r_ac2 = 6.35e-3
-ang_1 = 40.0 #DEG
+ang_1 = 50.0 #DEG
 ang_1 = 20.0 #DEG
 tool_speed    = 0.6 / 60.0 * vscal_fac #Exam,ple 4000 mm/min 
 t_ind         = 1.0e-3
 dz            = 1.0e-4    #
 dtind         = 0.01/vscal_fac    #Indentation time for crve generation
-da            = 2.5 #ANGLE FOR 
+#!!!_ IMPORTANT THIS CAN BE enlarged if not thermal
+da            = 1.0 #ANGLE FOR delta t in process. 
 calc_path           = True
 move_tool_to_inipos = True # THIS IS CONVENIENT, OTHERWISE RADIOSS THROWS ERROR DUE TO LARGE DISP TO INITIAL POS
 ball_gap      = 1.0e-4  #THIS IS ASSIGNED SINCE IF NOT THE BALL INITIAL MOVEMENT DRAGS THE PLATE
@@ -50,8 +51,8 @@ p_S           = 4.3e-4     #ASDIF HEIGHT DISTANCE BETWEEN TOOLS
 
 tool_rad      = 0.0025    #Tool radius
 gap           = 0.0e-4
-gap_cont      = 1.3e-4
-dtout         = 1.0e-4
+gap_cont      = -2.0e-4
+dtout         = 5.0e-4
 end_time      = 2.1879884613e+00
 v_supp        = 1.0e-3
 supp_rel_time = 0.5
@@ -66,7 +67,7 @@ dens_supp_2 = 50
 largo_supp = 0.0050
 
 ###### CENTER OF PIECE 
-thermal             = True
+thermal             = False
 cont_support        = True       #TRUE: SUPPORT IS MODELED BY CONTACT, FALSE: SUPPORT IS MODELED BY BCS ON NODES
 double_sided        = True
 manual_mass_scal    = False
@@ -124,8 +125,14 @@ fo_x = open("movo_x.inc","w")
 fo_y = open("movo_y.inc","w")
 fo_z = open("movo_z.inc","w")
 
+
+
+
 #CHANGE r, t 
-def make_init_curve(rac, r, t, zi, zo, ts, dz, dt): #Convex radius is from outside
+def make_init_curve(rac, r, t, zi, zo, ts, dz, dt, ecount): #Convex radius is from outside
+  heat_on_prev= np.full(ecount, False)
+  heat_on     = np.full(ecount, False)
+  
   rinc = 0
   turn = 1
   ######################## VUELTAS ##############################
@@ -162,6 +169,7 @@ def make_init_curve(rac, r, t, zi, zo, ts, dz, dt): #Convex radius is from outsi
     print("Angle ",ang*180.0/np.pi, "deg, dr ", dr)
     print ("Initial turn radius ",r - p_D/2.0 - rinc )
     dt = t_ang * (np.pi /180.0 * da ) / (2.0*np.pi)
+
     while (t < t_vuelta): #VUELTAS  
       # print ("t_inc %.3e t_ang %.3e"%(t_inc,t_ang))
       ri_curr = r - p_D/2.0 - dr * t_inc/t_ang
@@ -188,13 +196,23 @@ def make_init_curve(rac, r, t, zi, zo, ts, dz, dt): #Convex radius is from outsi
       
       t_inc +=dt
       t += dt
-
+      heat_on[:] = False
       if (thermal):
         e = model.part[0].mesh[0].findNearestElem(xi,yi,zi)
-        flog.write ("TIME %f, pos: %.6e %.6e, Found %d\n" % (t, xi, yi, e ))
-        coord = str (model.part[0].mesh[0].elcenter[e].components)
-        flog.write ("baricenter: %s\n" %(coord))  
-        model.load_fnc[e].Append(t,1.0e6)
+        heat_on[e] = True
+        # print ("ELEMENT ", e , "found" )
+        # print ("heat is ", heat_on_prev[e])
+        if (not (heat_on_prev[e])):
+          flog.write ("TIME %f, pos: %.6e %.6e, Found %d\n" % (t, xi, yi, e ))
+          coord = str (model.part[0].mesh[0].elcenter[e].components)
+          flog.write ("baricenter: %s\n" %(coord))  
+          model.load_fnc[e].Append(t,1.0e6)
+         
+      for e in range(ecount):
+        if (not heat_on[e] and heat_on_prev[e]):
+          model.load_fnc[e].Append(t,0.0)       
+      
+      heat_on_prev[:] = heat_on[:]
       
     rinc+=dr
     r -=dr
@@ -213,7 +231,9 @@ def make_init_curve(rac, r, t, zi, zo, ts, dz, dt): #Convex radius is from outsi
 #------------ >> WORKPIECE SHAPE
 
 # ANGLES IN DEGs
-def make_outer_curve(rac, beta0, beta1, r, t, zi, zo, ts, dz, dt): #Convex radius is from outside
+def make_outer_curve(rac, beta0, beta1, r, t, zi, zo, ts, dz, dt, ecount): #Convex radius is from outside
+  heat_on_prev= np.full(ecount, False)
+  heat_on     = np.full(ecount, False)
   rinc = 0
   turn = 1
   ######################## VUELTAS ##############################
@@ -285,6 +305,24 @@ def make_outer_curve(rac, beta0, beta1, r, t, zi, zo, ts, dz, dt): #Convex radiu
       t_inc +=dt
       t += dt
 
+      heat_on[:] = False
+      if (thermal):
+        e = model.part[0].mesh[0].findNearestElem(xi,yi,zi)
+        heat_on[e] = True
+        # print ("ELEMENT ", e , "found" )
+        # print ("heat is ", heat_on_prev[e])
+        if (not (heat_on_prev[e])):
+          flog.write ("TIME %f, pos: %.6e %.6e, Found %d\n" % (t, xi, yi, e ))
+          coord = str (model.part[0].mesh[0].elcenter[e].components)
+          flog.write ("baricenter: %s\n" %(coord))  
+          model.load_fnc[e].Append(t,1.0e6)
+         
+      for e in range(ecount):
+        if (not heat_on[e] and heat_on_prev[e]):
+          model.load_fnc[e].Append(t,0.0)       
+      
+      heat_on_prev[:] = heat_on[:]
+
       if (thermal):
         e = model.part[0].mesh[0].findNearestElem(xi,yi,zi)
         flog.write ("TIME %f, pos: %.6e %.6e, Found %d\n" % (t, xi, yi, e ))
@@ -302,10 +340,14 @@ def make_outer_curve(rac, beta0, beta1, r, t, zi, zo, ts, dz, dt): #Convex radiu
   return r,t,zi,zo 
   
 #Make a cone 
-def make_line(angle, depth, r, t, turn, zi, zo, ts, dz, dt):
+def make_line(angle, depth, r, t, turn, zi, zo, ts, dz, dt, ecount):
+  heat_on_prev= np.full(ecount, False)
+  heat_on     = np.full(ecount, False)
   ######################## VUELTAS ##############################
   end = False
   rmin = r - depth / np.tan(angle * np.pi / 180.0)
+  if (rmin<0):
+    print ("ERROR, min line is negative, check depth/angle ratio")
   print ("Line (cone) rmin ", rmin)
   while ( not end):
     print ("r, ts ", r, ts)
@@ -343,6 +385,24 @@ def make_line(angle, depth, r, t, turn, zi, zo, ts, dz, dt):
       
       t_inc +=dt
       t += dt
+
+      heat_on[:] = False
+      if (thermal):
+        e = model.part[0].mesh[0].findNearestElem(xi,yi,zi)
+        heat_on[e] = True
+        # print ("ELEMENT ", e , "found" )
+        # print ("heat is ", heat_on_prev[e])
+        if (not (heat_on_prev[e])):
+          flog.write ("TIME %f, pos: %.6e %.6e, Found %d\n" % (t, xi, yi, e ))
+          coord = str (model.part[0].mesh[0].elcenter[e].components)
+          flog.write ("baricenter: %s\n" %(coord))  
+          model.load_fnc[e].Append(t,1.0e6)
+         
+      for e in range(ecount):
+        if (not heat_on[e] and heat_on_prev[e]):
+          model.load_fnc[e].Append(t,0.0)       
+      
+      heat_on_prev[:] = heat_on[:]
 
       if (thermal):
         e = model.part[0].mesh[0].findNearestElem(xi,yi,zi)
@@ -578,17 +638,22 @@ if (calc_path):
   
   r = r0
   turn = 1
-  r, t, zi, zo = make_init_curve(r_ac1, r,t, zi, zo, tool_speed, dz, da)
+  ec = model.part[0].mesh[0].elem_count
+  r, t, zi, zo = make_init_curve(r_ac1, r,t, zi, zo, tool_speed, dz, da, ec)
+
   print ("BEGINING CONE PART ----\n")
+  print ("Time: ", t)
   print ("Initial radius ", r)
   ### make_line(angle, depth, r, t, turn, zi, zo)
-  r, t, zi, zo = make_line(50.0, 0.015, r, t, turn, zi, zo, tool_speed, dz, da)
+  r, t, zi, zo = make_line(50.0, 0.010, r, t, turn, zi, zo, tool_speed, dz, da, ec)
   print ("BEGINING RADIUS PART ----\n")
+  print ("Time: ", t)
   print ("Initial radius ", r)
-  r, t, zi, zo = make_outer_curve(r_ac2, 50.0, 20.0, r,t, zi, zo, tool_speed, dz, da)  
+  r, t, zi, zo = make_outer_curve(r_ac2, 50.0, 20.0, r,t, zi, zo, tool_speed, dz, da, ec)  
   print("MAKING 20 deg line ")
+  print ("Time: ", t)
   ### make_line(angle, depth, r, t, turn, zi, zo)
-  r, t, zi, zo = make_line(20.0, 0.005, r, t, turn, zi, zo, tool_speed, dz, da)  
+  r, t, zi, zo = make_line(20.0, 0.0025, r, t, turn, zi, zo, tool_speed, dz, da, ec)  
   
 
   #SPRINGBACK
