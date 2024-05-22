@@ -21,7 +21,7 @@ thck  = 5.0e-4      #Plate Thickness
 thck_rig = 1.0e-4   #BALL
 thck_supp = 1.0e-3  #SUPP
 
-vscal_fac     = 1000.0 #Affects All magnitudes with s^-1: Tool Speed, HEAT CONDUCTIVIY, CONVECTION
+vscal_fac     = 2000.0 #Affects All magnitudes with s^-1: Tool Speed, HEAT CONDUCTIVIY, CONVECTION
 
 #TOOL 
 # SHAPE FROM
@@ -53,6 +53,7 @@ tool_rad      = 0.0025    #Tool radius
 gap           = 0.0e-4
 gap_cont      = -2.0e-4
 dtout         = 5.0e-4
+### --- ONLY USED WHEN NOT GENERATING PATH!!
 end_time      = 2.1879884613e+00
 v_supp        = 1.0e-3
 supp_rel_time = 0.5
@@ -67,7 +68,7 @@ dens_supp_2 = 50
 largo_supp = 0.0050
 
 ###### CENTER OF PIECE 
-thermal             = True
+thermal             = False
 cont_support        = True       #TRUE: SUPPORT IS MODELED BY CONTACT, FALSE: SUPPORT IS MODELED BY BCS ON NODES
 double_sided        = True
 manual_mass_scal    = False
@@ -84,13 +85,14 @@ mat.vs_fac  = vscal_fac
 mat.k_th  = 6.0 # 15 //
 mat.cp_th = 530.0 #J/(kgK)
 
-mat.Ajc   = 359.0e6
-mat.Bjc   = 327.0e6
-mat.njc   = 0.454
-mat.njc   = 0.454
-mat.mjc   = 0.919
-mat.Cjc   = 0.0786
-mat.e0jc  = 0.04
+#From Optimization on the Johnson-Cook parameters of
+#Ti-6Al-4V used for high speed cutting simulation
+mat.Ajc   = 790.0e6
+mat.Bjc   = 478.0e6
+mat.njc   = 0.28
+mat.mjc   = 1.0
+mat.Cjc   = 0.032
+mat.e0jc  = 1.0
 
 ##### SCALING
 # class Scaling(Enum):
@@ -207,6 +209,13 @@ def make_init_curve(rac, r, t, zi, zo, ts, dz, dt, ecount): #Convex radius is fr
           coord = str (model.part[0].mesh[0].elcenter[e].components)
           flog.write ("baricenter: %s\n" %(coord))  
           model.load_fnc[e].Append(t,1.0e6)
+          
+          
+              # for i in range (self.mesh[0].elem_count):
+      # line = writeIntField(i + self.mesh[0].ini_elem_id ,10)
+      # for d in range (4):
+        # # print (self.mesh[0].ini_node_id, ", ")
+        # line = line + writeIntField(self.mesh[0].elnod[i][d] 
          
       for e in range(ecount):
         if (not heat_on[e] and heat_on_prev[e]):
@@ -490,7 +499,6 @@ if (double_sided):
 # print("Shell node count", len(sph1_mesh.elnod))
 
 model = Model()
-model.end_proc_time = end_time
 model.double_sided = double_sided
 print ("Model size: ", len(model.part))
 shell = Part(1)
@@ -641,20 +649,26 @@ if (calc_path):
   ec = model.part[0].mesh[0].elem_count
   r, t, zi, zo = make_init_curve(r_ac1, r,t, zi, zo, tool_speed, dz, da, ec)
 
-  # print ("BEGINING CONE PART ----\n")
-  # print ("Time: ", t)
-  # print ("Initial radius ", r)
-  # ### make_line(angle, depth, r, t, turn, zi, zo)
-  # r, t, zi, zo = make_line(50.0, 0.010, r, t, turn, zi, zo, tool_speed, dz, da, ec)
-  # print ("BEGINING RADIUS PART ----\n")
-  # print ("Time: ", t)
-  # print ("Initial radius ", r)
-  # r, t, zi, zo = make_outer_curve(r_ac2, 50.0, 20.0, r,t, zi, zo, tool_speed, dz, da, ec)  
-  # print("MAKING 20 deg line ")
-  # print ("Time: ", t)
+  print ("BEGINING CONE PART ----\n")
+  print ("Time: ", t)
+  print ("Initial radius ", r)
   ### make_line(angle, depth, r, t, turn, zi, zo)
-  # r, t, zi, zo = make_line(20.0, 0.0025, r, t, turn, zi, zo, tool_speed, dz, da, ec)  
+  r, t, zi, zo = make_line(50.0, 0.010, r, t, turn, zi, zo, tool_speed, dz, da, ec)
+  print ("BEGINING RADIUS PART ----\n")
+  print ("Time: ", t)
+  print ("Initial radius ", r)
+  r, t, zi, zo = make_outer_curve(r_ac2, 50.0, 20.0, r,t, zi, zo, tool_speed, dz, da, ec)  
+  print("MAKING 20 deg line ")
+  print ("Time: ", t)
+  ## make_line(angle, depth, r, t, turn, zi, zo)
+  r, t, zi, zo = make_line(20.0, 0.0025, r, t, turn, zi, zo, tool_speed, dz, da, ec)  
+  print ("End process time (before release", t)
+#END TIME 
+  if (calc_path):
+    end_time = t
   
+  model.end_proc_time = end_time
+
 
   #SPRINGBACK
   fi_x.close;fi_y.close;fi_z.close
