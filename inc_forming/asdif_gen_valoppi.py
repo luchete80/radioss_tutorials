@@ -811,7 +811,7 @@ if (calc_path):
   print ("End     tool distance: ", dist_end)
 
   z_move = abs( dist_end - dist_0)
-  print ("Tool narrowing (S-thick): ", p_S - thck, ", tool moving :", z_move)
+  print ("Tool narrowing (S-thick): ", abs(p_S - thck), ", tool end distance :", z_move)
   
   if (double_sided):
     zi_end    = zi_0 - z_move/2.0 - ball_gap - dz
@@ -827,7 +827,8 @@ if (calc_path):
   
   print ("Movement of inner tool: ", (zi_end - zi_0))
   print ("Movement of outer tool: ", (zo_end - zo_0))
-  
+  print ("Calculated ending toolpos zi %.3e , zo %.3e \n" %(zi_end-zi_0,zo_end-zo_0))
+    
   #####################INDENTACION ######################### 
   xi = r0 - p_D/2.0
   xo = r0 + p_D/2.0
@@ -860,8 +861,9 @@ if (calc_path):
     # fo_y.write("%.6e, %.6e\n" % (t,0.0))
     # fo_z.write("%.6e, %.6e\n" % (t,zo))  
     t +=dtind 
- 
-  print("Initial zi %.3e , zo %.3e \n" %(zi,zo))
+  print ("-------------------------------------")
+  print ("Indentation ends: ")
+  print ("Initial zi %.3e , zo %.3e \n" %(zi,zo))
   
   
   r = r0
