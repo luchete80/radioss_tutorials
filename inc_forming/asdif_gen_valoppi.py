@@ -804,11 +804,14 @@ if (calc_path):
   #Both tools travel incremental depth dz 
   dist_0    = zi_0 - zo_0
   #travel from #zi_0 position to zo_0
-  dist_end  = abs(- tool_rad - thck + p_S - tool_rad)
+  dist_end  = abs(2.0 * tool_rad - thck + p_S )
   
+  print ("-------------------------------------------------------")
   print ("Initial tool distance: ", dist_0)  
   print ("End     tool distance: ", dist_end)
+
   z_move = abs( dist_end - dist_0)
+  print ("Tool narrowing (S-thick): ", p_S - thck, ", tool moving :", z_move)
   
   if (double_sided):
     zi_end    = zi_0 - z_move/2.0 - ball_gap - dz
