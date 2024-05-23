@@ -188,10 +188,10 @@ def make_init_curve(rac, ang_1, r, t, zi, zo, ts, dz, dt, ecount, asdif): #Conve
       if (not asdif):
         zi -= vz * dt
         zo -= vz * dt     
-      else:
-        #IF YOU WANT TO TEST SHAPE
-        zi += vz * dt
-        zo += vz * dt     
+      # else:
+        # #IF YOU WANT TO TEST SHAPE
+        # zi += vz * dt
+        # zo += vz * dt     
         
       xo = ro_curr*cos(2.0*pi*t_inc/t_ang)
       yo = ro_curr *sin(2.0*pi*t_inc/t_ang)      
@@ -335,10 +335,10 @@ def make_outer_curve(rac, beta0, beta1, r, t, zi, zo, ts, dz, dt, ecount, asdif)
       if (not asdif):
         zi -= vz * dt
         zo -= vz * dt     
-      else:
-        #ONLY! IF YOU WANT TO TEST SHAPE, TOOL IS IN PLANE
-        zi += vz * dt
-        zo += vz * dt     
+      # else:
+        # #ONLY! IF YOU WANT TO TEST SHAPE, TOOL IS IN PLANE
+        # zi += vz * dt
+        # zo += vz * dt     
         
       xo = ro_curr * cos(2.0*pi*t_inc/t_ang)
       yo = ro_curr * sin(2.0*pi*t_inc/t_ang)      
@@ -443,10 +443,10 @@ def make_line(angle, depth, r, t, turn, zi, zo, ts, dz, dt, ecount, asdif):
       if (not asdif):
         zi -= vz * dt
         zo -= vz * dt     
-      else:
-        #ONLY! IF YOU WANT TO TEST SHAPE, TOOL IS IN PLANE
-        zi += vz * dt
-        zo += vz * dt     
+      # else:
+        # #ONLY! IF YOU WANT TO TEST SHAPE, TOOL IS IN PLANE
+        # zi += vz * dt
+        # zo += vz * dt     
 
       f_test.write(str(xi) + ", " +str(yi) + "," + str(zi) + "\n")
       
