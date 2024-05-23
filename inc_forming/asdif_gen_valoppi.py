@@ -30,10 +30,10 @@ vscal_fac     = 2000.0 #Affects All magnitudes with s^-1: Tool Speed, HEAT CONDU
 ###### -------------------------------------------------------------
 # TOOL PATH GENERATION
 #--------------------------------------------------------------------
-r_ac1 = 20.0e-3 
-r_ac2 = 6.35e-3
-ang_1 = 50.0 #DEG
+r_ac1 = 10.0e-3 
+r_ac2 = 10.0e-3
 ang_1 = 20.0 #DEG
+ang_1 = 50.0 #DEG
 tool_speed    = 0.6 / 60.0 * vscal_fac #Exam,ple 4000 mm/min 
 t_ind         = 1.0e-3
 dz            = 1.0e-4    #
@@ -43,7 +43,7 @@ da            = 1.0 #ANGLE FOR delta t in process.
 calc_path           = True
 move_tool_to_inipos = True # THIS IS CONVENIENT, OTHERWISE RADIOSS THROWS ERROR DUE TO LARGE DISP TO INITIAL POS
 ball_gap      = 1.0e-4  #THIS IS ASSIGNED SINCE IF NOT THE BALL INITIAL MOVEMENT DRAGS THE PLATE
-r0            = 0.0325
+r0            = 0.005
 
 #dang           = 5.0  #Angle (deg) increment for path gen
 p_D           = 2.5e-3     #ASDIF RADIAL DISTANCE BETWEEN TOOLS
@@ -53,12 +53,13 @@ tool_rad      = 0.0025    #Tool radius
 gap           = 0.0e-4
 gap_cont      = -2.0e-4
 dtout         = 5.0e-4
-### --- ONLY USED WHEN NOT GENERATING PATH!!
+### --- ONLY USED WHEN NOT GENERATING PATH !!!
 end_time      = 2.1879884613e+00
 v_supp        = 1.0e-3
 supp_rel_time = 0.5
 supp_vel_ramp = True
 dynrel_time   = 2.0
+is_ASDIF      = True
 ## SCALING
 
 
@@ -74,16 +75,20 @@ double_sided        = True
 manual_mass_scal    = False
 
 
+#FROM XIAN 
+# Optimization on the Johnson-Cook parameters of
+# Ti-6Al-4V used for high speed cutting simulation
 ###### MATERIAL
 mat = Material(1,thermal) #ID, THERMAL
-mat.rho     = 7850.0
-mat.E       = 200.0e9
-mat.nu      = 0.33
+mat.rho     = 4430.0
+mat.E       = 105.0e9
+mat.nu      = 0.34
 mat.vs_fac  = vscal_fac
 
 #thermal
-mat.k_th  = 6.0 # 15 //
-mat.cp_th = 530.0 #J/(kgK)
+mat.k_th  = 7.4 # 15 //
+mat.cp_th = 520.0 #J/(kgK)
+
 
 #From Optimization on the Johnson-Cook parameters of
 #Ti-6Al-4V used for high speed cutting simulation
@@ -131,7 +136,7 @@ fo_z = open("movo_z.inc","w")
 
 
 #CHANGE r, t 
-def make_init_curve(rac, r, t, zi, zo, ts, dz, dt, ecount): #Convex radius is from outside
+def make_init_curve(rac, ang_1, r, t, zi, zo, ts, dz, dt, ecount, asdif): #Convex radius is from outside
   heat_on_prev= np.full(ecount, False)
   heat_on     = np.full(ecount, False)
   
@@ -152,12 +157,6 @@ def make_init_curve(rac, r, t, zi, zo, ts, dz, dt, ecount): #Convex radius is fr
     vz = dz / t_ang       #ORIGINAL, CONSTANT
     
     
-    #INITIAL VALUES
-    z_0i = zi
-    z_0o = zo
-    z_c = (zi + zo)/2.0 - rac
-    print ("zi ", zi)
-    
     #- 
     #  \
     #   |
@@ -174,16 +173,28 @@ def make_init_curve(rac, r, t, zi, zo, ts, dz, dt, ecount): #Convex radius is fr
 
     while (t < t_vuelta): #VUELTAS  
       # print ("t_inc %.3e t_ang %.3e"%(t_inc,t_ang))
-      ri_curr = r - p_D/2.0 - dr * t_inc/t_ang
+      if (not asdif):
+        ri_curr = r - p_D/2.0 - dr * t_inc/t_ang
+        ro_curr = r + p_D/2.0 - dr * t_inc/t_ang
+      else:
+        ri_curr = r - p_D/2.0 + dr * t_inc/t_ang
+        ro_curr = r + p_D/2.0 + dr * t_inc/t_ang
+      
+      # ri_curr = r - p_D/2.0 - dr * t_inc/t_ang
       # print ("rcurr, z, " + str(ri_curr) + str (zi))
       xi = ri_curr * cos(2.0*pi*t_inc/t_ang)
       yi = ri_curr * sin(2.0*pi*t_inc/t_ang)
-      zi -= vz * dt
-      
-      ro_curr = r + p_D/2.0 - dr * t_inc/t_ang
+
+      if (not asdif):
+        zi -= vz * dt
+        zo -= vz * dt     
+      else:
+        #IF YOU WANT TO TEST SHAPE
+        zi += vz * dt
+        zo += vz * dt     
+        
       xo = ro_curr*cos(2.0*pi*t_inc/t_ang)
       yo = ro_curr *sin(2.0*pi*t_inc/t_ang)      
-      zo -= vz * dt #CAMBIAR A DZ
       
       f_test.write(str(xi) + ", " +str(yi) + "," + str(zi) + "\n")
       
@@ -224,13 +235,17 @@ def make_init_curve(rac, r, t, zi, zo, ts, dz, dt, ecount): #Convex radius is fr
       heat_on_prev[:] = heat_on[:]
       
     rinc+=dr
-    r -=dr
+    if (asdif):
+      r += dr
+    else:
+      r -=dr
     turn += 1    
 
 
     if (ang > end_angle):
       end = True
   return r,t,zi,zo 
+
 
 #
 #Both angles are from the outside and respect oto horizontal 
@@ -240,23 +255,35 @@ def make_init_curve(rac, r, t, zi, zo, ts, dz, dt, ecount): #Convex radius is fr
 #------------ >> WORKPIECE SHAPE
 
 # ANGLES IN DEGs
-def make_outer_curve(rac, beta0, beta1, r, t, zi, zo, ts, dz, dt, ecount): #Convex radius is from outside
+# Beta is angle w/hor line
+# FOR SPIF
+#ALWAYS beta 0 is outside (LARGER) angle
+def make_outer_curve(rac, beta0, beta1, r, t, zi, zo, ts, dz, dt, ecount, asdif): #Convex radius is from outside
   heat_on_prev= np.full(ecount, False)
   heat_on     = np.full(ecount, False)
-  rinc = 0
+  rinc = 0.0
   turn = 1
   ######################## VUELTAS ##############################
 
     #ALPHA in incrementing and beta (PI/2 - alpha)
     # is decrementing
-    # |
-    # |alpha /
-    #  \    /
-    #   \  
-    #    ------- <<--- Workpiece curve
+    #   |
+    #   |alpha /
+    #    \    /
+    #     \  
+    # beta \ 
+    #       ------- <<--- Workpiece curve
+    #      b1
     # GIving an angle
+  #SPIF from 0 -> 1, alpha increasing
+  #ASDIF from 1->0
   alpha0 = np.pi/2.0 - beta0 * np.pi /180.0
   alpha1 = np.pi/2.0 - beta1 * np.pi /180.0
+  #USED FOR ASDIF VERSION------------------
+  #----------------------------------------
+  rini = rac * np.cos(alpha1)
+  zini = rac * np.sin(alpha1)
+
   racc = rac * (1.0 - np.cos(alpha0))
   zacc  = rac * np.sin(alpha0)  #SUPPOSED INITIAL DEPTH TO REACH INITIAL APHA
   print ("Alpha0, Acc z ", alpha0, zacc)
@@ -272,7 +299,9 @@ def make_outer_curve(rac, beta0, beta1, r, t, zi, zo, ts, dz, dt, ecount): #Conv
     t_inc = 0.0           # t - t_0
 
     vz = dz / t_ang       #ORIGINAL, CONSTANT
-    
+
+    if (asdif):  
+      ztest = zi    
     
     #INITIAL VALUES
     z_0i = zi
@@ -280,25 +309,40 @@ def make_outer_curve(rac, beta0, beta1, r, t, zi, zo, ts, dz, dt, ecount): #Conv
     z_c = (zi + zo)/2.0 - rac
     print ("zi ", zi)
     
-    
-    alpha = np.arcsin((zacc+turn*dz)/rac)
-    dr  = rac - ((zacc+turn*dz) / np.tan(alpha))  - rinc - racc
+    if (not asdif):
+      alpha = np.arcsin((zacc+turn*dz)/rac)
+      dr    = rac - ((zacc+turn*dz) / np.tan(alpha))  - rinc - racc
+    else:
+      alpha = np.arcsin((zini-turn*dz)/rac)
+      dr    = ((zini-turn*dz)/np.tan(alpha)) - rini - rinc
       
-    print("Angle ",alpha*180.0/np.pi, "deg, dr ", dr)
+    
+    print("Aim angle ",alpha*180.0/np.pi, "deg, dr ", dr)
     # print ("Initial turn radius ",r - p_D/2.0 - rinc )
     dt = t_ang * (np.pi / 180.0 * da ) / (2.0*np.pi)
     while (t < t_vuelta): #VUELTAS  
       # print ("t_inc %.3e t_ang %.3e"%(t_inc,t_ang))
-      ri_curr = r - p_D/2.0 - dr * t_inc/t_ang
+      if (not asdif):
+        ri_curr = r - p_D/2.0 - dr * t_inc/t_ang
+        ro_curr = r + p_D/2.0 - dr * t_inc/t_ang
+      else:
+        ri_curr = r - p_D/2.0 + dr * t_inc/t_ang
+        ro_curr = r + p_D/2.0 + dr * t_inc/t_ang
       # print ("rcurr, z, " + str(ri_curr) + str (zi))
       xi = ri_curr * cos(2.0*pi*t_inc/t_ang)
       yi = ri_curr * sin(2.0*pi*t_inc/t_ang)
-      zi -= vz * dt
+
+      if (not asdif):
+        zi -= vz * dt
+        zo -= vz * dt     
+      else:
+        #ONLY! IF YOU WANT TO TEST SHAPE, TOOL IS IN PLANE
+        zi += vz * dt
+        zo += vz * dt     
+        
+      xo = ro_curr * cos(2.0*pi*t_inc/t_ang)
+      yo = ro_curr * sin(2.0*pi*t_inc/t_ang)      
       
-      ro_curr = r + p_D/2.0 - dr * t_inc/t_ang
-      xo = ro_curr*cos(2.0*pi*t_inc/t_ang)
-      yo = ro_curr *sin(2.0*pi*t_inc/t_ang)      
-      zo -= vz * dt #CAMBIAR A DZ
       
       f_test.write(str(xi) + ", " +str(yi) + "," + str(zi) + "\n")
       
@@ -340,24 +384,34 @@ def make_outer_curve(rac, beta0, beta1, r, t, zi, zo, ts, dz, dt, ecount): #Conv
         model.load_fnc[e].Append(t,1.0e6)
       
     rinc+=dr
-    r -=dr
+    if (asdif):
+      if (alpha < alpha0):
+        end = True
+      r += dr
+    else:
+      if (alpha > alpha1):
+        end = True
+      r -=dr
     turn += 1    
 
 
-    if (alpha > alpha1):
-      end = True
+
   return r,t,zi,zo 
   
 #Make a cone 
-def make_line(angle, depth, r, t, turn, zi, zo, ts, dz, dt, ecount):
+def make_line(angle, depth, r, t, turn, zi, zo, ts, dz, dt, ecount, asdif):
   heat_on_prev= np.full(ecount, False)
   heat_on     = np.full(ecount, False)
   ######################## VUELTAS ##############################
   end = False
-  rmin = r - depth / np.tan(angle * np.pi / 180.0)
-  if (rmin<0):
+  if (asdif):
+    rlim = r + depth / np.tan(angle * np.pi / 180.0)
+  else:
+    rlim = r - depth / np.tan(angle * np.pi / 180.0)
+
+  if (rlim<0):
     print ("ERROR, min line is negative, check depth/angle ratio")
-  print ("Line (cone) rmin ", rmin)
+  print ("Line (cone) limit radius  ", rlim)
   while ( not end):
     print ("r, ts ", r, ts)
     t_ang = 2.0 * np.pi * r / ts #Tiempo (incremento) de cada vuelta (ASUMIENDO RADIO CONSTANTE)
@@ -370,13 +424,29 @@ def make_line(angle, depth, r, t, turn, zi, zo, ts, dz, dt, ecount):
     dt = t_ang * (np.pi / 180.0 * da ) / (2.0*np.pi)
     while (t < t_vuelta): #VUELTAS  
       # print ("t_inc %.3e t_ang %.3e"%(t_inc,t_ang))
-      xi = (r - p_D/2.0 - dr * t_inc/t_ang) *cos(2.0*pi*t_inc/t_ang)
-      yi = (r - p_D/2.0 - dr * t_inc/t_ang) *sin(2.0*pi*t_inc/t_ang)
-      zi -= vz * dt
 
-      xo = (r + p_D/2.0 - dr * t_inc/t_ang) *cos(2.0*pi*t_inc/t_ang)
-      yo = (r + p_D/2.0 - dr * t_inc/t_ang) *sin(2.0*pi*t_inc/t_ang)      
-      zo -= vz * dt #CAMBIAR A DZ
+      if (not asdif):
+        ri_curr = r - p_D/2.0 - dr * t_inc/t_ang
+        ro_curr = r + p_D/2.0 - dr * t_inc/t_ang
+      else:
+        ri_curr = r - p_D/2.0 + dr * t_inc/t_ang
+        ro_curr = r + p_D/2.0 + dr * t_inc/t_ang
+      
+      xi = ri_curr *cos(2.0*pi*t_inc/t_ang)
+      yi = ri_curr *sin(2.0*pi*t_inc/t_ang)
+
+
+      xo = ro_curr *cos(2.0*pi*t_inc/t_ang)
+      yo = ro_curr *sin(2.0*pi*t_inc/t_ang)      
+
+
+      if (not asdif):
+        zi -= vz * dt
+        zo -= vz * dt     
+      else:
+        #ONLY! IF YOU WANT TO TEST SHAPE, TOOL IS IN PLANE
+        zi += vz * dt
+        zo += vz * dt     
 
       f_test.write(str(xi) + ", " +str(yi) + "," + str(zi) + "\n")
       
@@ -420,22 +490,19 @@ def make_line(angle, depth, r, t, turn, zi, zo, ts, dz, dt, ecount):
         flog.write ("baricenter: %s\n" %(coord))  
         model.load_fnc[e].Append(t,1.0e6)
       
-    r -=dr
+    if (asdif):
+      r += dr
+      if (r >= rlim):
+        end = True
+    else:
+      r -=dr
+      if (r <= rlim):
+        end = True
     turn += 1  
     
-    if (r <= rmin):
-      end = True
+
 
   return r,t,zi,zo
-  
-  
-  
-test = [(1,1),(2,2)]
-test.append((3,4))
-print (test)
-print (test[2][0])
-
-
 
 supp_mesh = []
 supp_part = []
@@ -445,6 +512,7 @@ shell_elnod = [(1,2,3,4)]
 
 shell_mesh = Plane_Mesh(1,largo,delta)
 
+solid_mesh = Rect_Solid_Mesh(1,largo,largo,thck,delta,delta,thck)
 
 sph1_mesh = Sphere_Mesh(2, tool_rad-thck_rig/2.0 +ball_gap,        \
                         0.0, 0.0,(tool_rad + thck/2.0 + gap + thck_rig), \
@@ -453,7 +521,7 @@ sph1_mesh = Sphere_Mesh(2, tool_rad-thck_rig/2.0 +ball_gap,        \
 if (double_sided):
   sph2_mesh = Sphere_Mesh(3, tool_rad-thck_rig/2.0-ball_gap,        \
                         0.0, 0.0,(-tool_rad - thck/2.0 - gap-thck_rig), \
-                                        5) #(id, radius, divisions):
+                                          5) #(id, radius, divisions):
                                         
 
 if (cont_support):
@@ -573,15 +641,14 @@ if (thermal):
 for e in range (model.part[0].mesh[0].elem_count):
   lf = Function(0.0,.0,0)
   model.AppendLoadFunction (lf)
-# sphere_mesh = Sphere_Mesh(2,1.0, 10,1) #(self, id, radius, divisions, ininode):
 
-# shell_mesh.printRadioss("radioss.rad")
+# THERMAL SOLID MODEL --------------------------------------------------------
+th_solid_model = ThermalSolidModel()
+solid_pt =Part(1)
+solid_pt.AppendMesh(solid_mesh)
 
-# sphere_mesh.printRadioss("radioss.rad")
-
-#IMPORTANTE: LA VELOCIDAD SE ASUME PARA RADIO CONSTANTE EN CADA VUELTAS
-#CON LO CUAL EN LA REALIDAD DISMINUYE UN POCO
-# def save(lin):
+th_solid_model.AppendPart(solid_pt)
+th_solid_model.AppendMat(mat)
 
 if (calc_path):
 # f= open(textField.get(),"w+")
@@ -647,23 +714,41 @@ if (calc_path):
   r = r0
   turn = 1
   ec = model.part[0].mesh[0].elem_count
-  r, t, zi, zo = make_init_curve(r_ac1, r,t, zi, zo, tool_speed, dz, da, ec)
+  r, t, zi, zo = make_init_curve(r_ac1, 20.0, r,t, zi, zo, tool_speed, dz, da, ec, is_ASDIF)
 
   print ("BEGINING CONE PART ----\n")
   print ("Time: ", t)
   print ("Initial radius ", r)
-  ### make_line(angle, depth, r, t, turn, zi, zo)
-  r, t, zi, zo = make_line(50.0, 0.010, r, t, turn, zi, zo, tool_speed, dz, da, ec)
+
+  r, t, zi, zo = make_line(20.0, 0.0025, r, t, turn, zi, zo, tool_speed, dz, da, ec, is_ASDIF)
   print ("BEGINING RADIUS PART ----\n")
   print ("Time: ", t)
-  print ("Initial radius ", r)
-  r, t, zi, zo = make_outer_curve(r_ac2, 50.0, 20.0, r,t, zi, zo, tool_speed, dz, da, ec)  
+  print ("Initial radius ", r) 
+  #-------------------------------------angout  angin
+  r, t, zi, zo = make_outer_curve(r_ac2, 50.0,  20.0, r,t, zi, zo, tool_speed, dz, da, ec, is_ASDIF)  
   print("MAKING 20 deg line ")
   print ("Time: ", t)
-  ## make_line(angle, depth, r, t, turn, zi, zo)
-  r, t, zi, zo = make_line(20.0, 0.0025, r, t, turn, zi, zo, tool_speed, dz, da, ec)  
+  ### make_line(angle, depth, r, t, turn, zi, zo)
+  r, t, zi, zo = make_line(50.0, 0.015, r, t, turn, zi, zo, tool_speed, dz, da, ec, is_ASDIF)  
   print ("End process time (before release", t)
-#END TIME 
+
+
+
+  t +=10.0*dt
+  
+  #TOOL RETIREMENT
+  fi_x.write(writeFloatField(t,20,6) + writeFloatField(xi,20,6) + "\n")
+  fi_y.write(writeFloatField(t,20,6) + writeFloatField(0.,20,6) + "\n")
+  fi_z.write(writeFloatField(t,20,6) + writeFloatField(zi+10.0*tool_rad,20,6) + "\n")
+  
+  f_test.write(str(xi) + ", " +str(0) + "," + str(zi) + "\n")
+  
+  if (double_sided):
+    fo_x.write(writeFloatField(t,20,6) + writeFloatField(xo,20,6) + "\n")
+    fo_y.write(writeFloatField(t,20,6) + writeFloatField(0.,20,6) + "\n")
+    fo_z.write(writeFloatField(t,20,6) + writeFloatField(zo-10.0*tool_rad,20,6) + "\n")
+  
+  #END TIME 
   if (calc_path):
     end_time = t
   
@@ -703,10 +788,15 @@ model.printRadioss("test")
 model.printEngine(1, end_time,dtout)
 model.printRelease(2, end_time+supp_rel_time,dtout)
 model.printDynRelax(3,end_time+supp_rel_time+dynrel_time,dtout)
+
+
+#---------------------------------------------------------------
+th_solid_model.printRadioss("solid")
+
 # #Si no se coloca lambda no funciona
 # b = Button(window, text="Generate", width=10, command=lambda:save(linea_g))
 # b.grid(column=3, row=10)
-# #b.pack()
+# #b.pack()s
 
 # window.title('Incremental Forming PATH Script')
 # window.geometry("400x200+10+10")

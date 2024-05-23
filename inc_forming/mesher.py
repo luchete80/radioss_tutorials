@@ -114,6 +114,7 @@ class Mesh:
   ini_node_id = 1
   ini_elem_id = 1
   id = 0
+  type = "shell"
   # elnod = [(1,2,3,4)]
   def __init__(self, largo, delta):
     elem_xy = largo/delta
@@ -146,7 +147,10 @@ class Mesh:
         line = line + writeFloatField(self.nodes[i][d],20,6) 
       # f.write("%.6e, %.6e\n" % (self.nodes[i][0],self.nodes[i][1]))
       f.write(line + '\n')
-    f.write('/SHELL/' + str(self.id) + '\n')
+    if (type=="shell"):
+      f.write('/SHELL/' + str(self.id) + '\n')
+    if (type=="solid"):
+      f.write('/SOLID/' + str(self.id) + '\n')
     for i in range (self.elem_count):
       line = writeIntField(i+1,10)
       for d in range (4):
@@ -316,6 +320,69 @@ class Rect_Plane_Mesh(Mesh):
               # print *, "Element ", i , "Elnod", elem%elnod(i,:) 
     # print(self.elnod)
     self.writeCenters()
+
+class Rect_Solid_Mesh(Mesh):
+  ini_node_id = 1 
+  ini_elem_id = 1
+  nodes = []
+  elnod = []
+  elcenter = []
+  z = 0.0
+  type = "solid" #for writing
+  def set_ini_nod_ele (inin, inie):
+    ini_node_id = inin 
+    ini_elem_id = inie
+  def __init__(self, id, lx, ly, lz, dx, dy, dz, ox=0, oy=0, oz=0):
+    self.nodes = []
+    self.elnod = []
+    self.id = id
+    elem_x = int(lx/dx)
+    print ("dx: ",dx)
+    elem_y = int(ly/dy)
+    elem_z = int(lz/dz)
+
+    
+    ncx = (int)(elem_x+1)
+    ncy = (int)(elem_y+1)
+    ncz = (int)(elem_z+1)
+    
+    self.node_count = ncx * ncy * ncz
+    self.elem_count = (int)((elem_x)*(elem_y)*(elem_z))
+    print ('Nodes Count: ' + str(self.node_count))
+    print ('Elem Count: ' + str(self.node_count), elem_x,elem_y,elem_z)
+    z = oz
+    for k in range (ncz):
+      y = oy
+      for j in range (ncy):
+        x = ox
+        for i in range (ncx):
+          self.nodes.append((x,y,z))
+          x += dx 
+          # print ('x y ', x, y)
+        y += dy
+      z += dz
+          # int nb1 = nnodz*ez + (nel[0]+1)*ey + ex;
+          # int nb2 = nnodz*ez + (nel[0]+1)*(ey+1) + ex;
+          
+          # elnod_h[ei  ] = nb1;                      nodel_count_h[nb1  ] ++;          
+          # elnod_h[ei+1] = nb1+1;                    nodel_count_h[nb1+1] ++;
+          # elnod_h[ei+2] = nb2+1;                    nodel_count_h[nb2+1] ++;
+          # elnod_h[ei+3] = nb2;                      nodel_count_h[nb2  ] ++;
+          
+          # elnod_h[ei+4] = nb1 + nnodz*(ez+1);       nodel_count_h[nb1 + nnodz*(ez+1)    ]++;   
+          # elnod_h[ei+5] = nb1 + nnodz*(ez+1) + 1;   nodel_count_h[nb1 + nnodz*(ez+1) + 1]++;  
+          # elnod_h[ei+6] = nb2 + nnodz*(ez+1) + 1;   nodel_count_h[nb2 + nnodz*(ez+1) + 1]++;  
+          # elnod_h[ei+7] = nb2 + nnodz*(ez+1);       nodel_count_h[nb2 + nnodz*(ez+1)    ]++;  
+    for ez in range (elem_z):          
+      for ey in range (elem_y):    
+        for ex in range (elem_x):   
+          nb1 = ncz*ez + (elem_x + 1)*ey + ex
+          nb2 = ncz*ez + (elem_x + 1)*(ey+1) + ex
+          
+          self.elnod.append((nb1           , nb1 + 1             ,nb2 + 1             ,nb2,
+                             nb1+ncz*(ez+1), nb1 + ncz*(ez+1) + 1,nb2 + ncz*(ez+1) + 1,nb2 + ncz*(ez+1)))
+
+    self.writeCenters()
     
 #Based on: https://github.com/caosdoar/spheres/blob/master/src/spheres.cpp 
 #https://medium.com/@oscarsc/four-ways-to-create-a-mesh-for-a-sphere-d7956b825db4
@@ -481,7 +548,7 @@ class Material:
     f.write("/MAT/PLAS_JOHNS/2\n")  
     f.write("MAT_PIECEWISE_LINEAR_PLASTICITY:2 TITLE:mat_probe   \n")
     f.write(writeFloatField(self.rho,20,6) + "\n")
-    #f.write("              7850.0\n")  
+    #f.write("                7850.0\n")  
     f.write("#                  E                  Nu     Iflag  \n")
 #    f.write("      200000000000.0                0.33\n")  
     f.write(writeFloatField(self.E,20,6) + writeFloatField(self.nu,20,6) +"\n")    
@@ -530,7 +597,6 @@ class Part:
   is_moving = False
   id_grn_move = 0 #GROUP NODE FOR MOVING
   pid         = 1
-  
   def __init__(self, mid):
     self.id = mid
     self.mesh = []
@@ -547,11 +613,14 @@ class Part:
     else:
       self.mesh.append(m)
   
-  def printRadioss(self,f):                          
-    f.write('/SHELL/' + str(self.id) + '\n')
+  def printRadioss(self,f): 
+    if (self.mesh[0].type == "shell"):
+      f.write('/SHELL/' + str(self.id) + '\n')
+    if (self.mesh[0].type == "solid"):
+      f.write('/BRICK/' + str(self.id) + '\n')    
     for i in range (self.mesh[0].elem_count):
       line = writeIntField(i + self.mesh[0].ini_elem_id ,10)
-      for d in range (4):
+      for d in range (np.size(self.mesh[0].elnod,1)):
         # print (self.mesh[0].ini_node_id, ", ")
         line = line + writeIntField(self.mesh[0].elnod[i][d] + self.mesh[0].ini_node_id,10)
       f.write(line + '\n')   
@@ -1015,3 +1084,79 @@ class Model:
     f.write(" \n")
     f.write("/ANIM/ELEM/HOUR             \n")                       
     f.write("/ANIM/SHELL/TENS\n")
+
+
+class ThermalSolidModel(Model):
+  def __init__(self):
+    self.part_count = 0
+    self.part = []
+    self.mat = []
+    self.prop = []
+    self.load_fnc = []
+    self.inter = []
+    self.node_group = []
+    self.starter_file = ""
+    self.supp_fnc = []
+    
+  def printRadioss(self,fname):
+    self.starter_file = fname
+    print ("WRITING RADIOSS INPUT\n")
+    f = open(fname + "_0000.rad","w+")
+    f.write("#RADIOSS STARTER\n")
+    f.write("/BEGIN\n")
+    f.write("test                                                        \n")                   
+    f.write("      2019         0 \n")
+    f.write("                  kg                   m                   s\n")
+    f.write("                  kg                   m                   s\n")
+    f.write("#include movi_x.inc\n")
+    f.write("#include movi_y.inc\n")
+    f.write("#include movi_z.inc\n")
+    if (self.double_sided):
+      f.write("#include movo_x.inc\n")
+      f.write("#include movo_y.inc\n")
+      f.write("#include movo_z.inc\n")
+    f.write('/NODE\n')
+    for p in range (self.part_count):
+      print ("part node count ", self.part[p].mesh[0].node_count)
+      for i in range (self.part[p].mesh[0].node_count):
+        # print ("Node ", self.part[p].mesh[0].nodes[i])
+        line = writeIntField(i + self.part[p].mesh[0].ini_node_id,10)
+        for d in range (3):
+          line = line + writeFloatField(self.part[p].mesh[0].nodes[i][d],20,6) 
+        f.write(line + '\n')
+
+    # Print element connectivity
+    for p in range (self.part_count):
+      self.part[p].printRadioss(f)
+      if (not self.part[p].is_rigid):
+        self.part[p].mesh[0].printConvRadioss(self.vscal_fac,f)
+        
+    
+    print ("printing materials: ", len(self.mat))
+    for m in range (len(self.mat)):
+      self.mat[m].printRadioss(f)
+    
+    
+    if (self.thermal):
+      # f.write("#include thermal.inc\n")  
+      print ("Load function count: ", len(self.load_fnc))
+      ### LOAD FNC
+      for lf in range (len(self.load_fnc)):
+        # print ("fn ", self.load_fnc[lf][0], "\n")
+        line = "/FUNCT/%d\n" % (lf+1)
+        line = line + "F_ELEM_%d\n" % (lf+1)
+        for val in range (self.load_fnc[lf].val_count):
+          line = line + writeFloatField(self.load_fnc[lf].getVal(val)[0],20,6) + \
+                        writeFloatField(self.load_fnc[lf].getVal(val)[1],20,6) + "\n"
+        f.write(line)
+
+      f.write("################################### ELEMENT FLUXES #####################################\n")
+      for lf in range (len(self.load_fnc)):
+        # print ("fn ", self.load_fnc[lf][0], "\n")
+        line = "/IMPFLUX/%d\nFLUX_ELEM%d\n" % (lf+1,lf+1)
+        line = line + writeIntField(lf+1,10)+ writeIntField(lf+1,10) + "\n"
+        line = line + "       1.0       1.0\n"
+        f.write(line)
+      
+    for p in range(len(self.prop)):
+      self.mat[p].printRadioss(f)
