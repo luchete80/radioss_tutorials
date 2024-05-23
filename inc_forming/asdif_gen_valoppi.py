@@ -810,7 +810,7 @@ if (calc_path):
   print ("End     tool distance: ", dist_end)
   z_move = abs( dist_end - dist_0)
   
-  if (double-sided):
+  if (double_sided):
     zi_end    = zi_0 - z_move/2.0 - ball_gap - dz
     zo_end    = zo_0 + z_move/2.0 + ball_gap - dz
   else:
@@ -818,8 +818,6 @@ if (calc_path):
     
   #   INNER TOOL TIP - THICKNESS + ps_S = OUTER TOOL TIP
   #
-  print ("Inner tool tip - thck + ps_S = ..", zi_end -tool_rad - thck + p_S)
-  print ("Should be equal to outer tool tip: , tool tip pos: ", zo_end + tool_rad)
   
   vz  = (zi_end - zi_0)/t_ind
   vzo = (zo_end - zo_0)/t_ind
