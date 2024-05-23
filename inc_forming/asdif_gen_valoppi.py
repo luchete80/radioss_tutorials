@@ -732,21 +732,24 @@ if (calc_path):
   r, t, zi, zo = make_line(50.0, 0.015, r, t, turn, zi, zo, tool_speed, dz, da, ec, is_ASDIF)  
   print ("End process time (before release", t)
 
-
-
-  t +=10.0*dt
+  
+  dist = 10.0*tool_rad
+  dt = dist / tool_speed
+  t +=dt
+  zi += dist
+  zo -= dist
   
   #TOOL RETIREMENT
   fi_x.write(writeFloatField(t,20,6) + writeFloatField(xi,20,6) + "\n")
   fi_y.write(writeFloatField(t,20,6) + writeFloatField(0.,20,6) + "\n")
-  fi_z.write(writeFloatField(t,20,6) + writeFloatField(zi+10.0*tool_rad,20,6) + "\n")
+  fi_z.write(writeFloatField(t,20,6) + writeFloatField(zi,20,6) + "\n")
   
   f_test.write(str(xi) + ", " +str(0) + "," + str(zi) + "\n")
   
   if (double_sided):
     fo_x.write(writeFloatField(t,20,6) + writeFloatField(xo,20,6) + "\n")
     fo_y.write(writeFloatField(t,20,6) + writeFloatField(0.,20,6) + "\n")
-    fo_z.write(writeFloatField(t,20,6) + writeFloatField(zo-10.0*tool_rad,20,6) + "\n")
+    fo_z.write(writeFloatField(t,20,6) + writeFloatField(zo,20,6) + "\n")
   
   #END TIME 
   if (calc_path):
