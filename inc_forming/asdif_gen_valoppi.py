@@ -37,7 +37,7 @@ ang_1 = 20.0 #DEG
 ang_1 = 50.0 #DEG
 tool_speed    = 0.6 / 60.0 * vscal_fac #Exam,ple 4000 mm/min 
 t_ind         = 1.0e-3
-dz_up         = 5.0e-4
+dz_up         = 0.0e-4
 dz            = 1.0e-4    
 dtind         = 0.01/vscal_fac    #Indentation time for crve generation
 #!!!_ IMPORTANT THIS CAN BE enlarged if not thermal
@@ -803,11 +803,9 @@ if (calc_path):
   #ORIGINALLY ONLY INNER TOOL WAS DOWN
   # AS LIKE THIS; ASSUMING THAT is displaces at p_S
   #DOWNWARDS!
-  # vz  = (thck + p_S + ball_gap +dz) / t_ind # EN PRINCIPIO S EDESPLAZA SOLO LA INTERIOR  
-  # vzo = (ball_gap -dz)/ t_ind
+  vz  = (thck + p_S + ball_gap -dz_up+dz) / t_ind # EN PRINCIPIO S EDESPLAZA SOLO LA INTERIOR  
+  vzo = (ball_gap +dz_up-dz)/ t_ind
 
-  vz  = (thck + p_S + ball_gap -dz_up) / t_ind # EN PRINCIPIO S EDESPLAZA SOLO LA INTERIOR  
-  vzo = (ball_gap +dz_up)/ t_ind
   #-----------
   
   #INITIAL INNER TOOL POS:   zi_0 =  tool_rad + thck/2.0 + ball_gap + thck_rig
