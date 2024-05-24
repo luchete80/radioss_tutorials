@@ -802,7 +802,7 @@ if (calc_path):
   #ORIGINALLY ONLY INNER TOOL WAS DOWN
   # AS LIKE THIS; ASSUMING THAT is displaces at p_S
   #DOWNWARDS!
-  vz  = (thck + p_S + ball_gap -dz) / t_ind # EN PRINCIPIO S EDESPLAZA SOLO LA INTERIOR  
+  vz  = (thck + p_S + ball_gap +dz) / t_ind # EN PRINCIPIO S EDESPLAZA SOLO LA INTERIOR  
   vzo = (ball_gap -dz)/ t_ind
   #-----------
   
@@ -839,8 +839,7 @@ if (calc_path):
     # vz  = (zi_end - zi_0)/t_ind
     # vzo = (zo_end - zo_0)/t_ind
   # else:
-  vz  = (thck + p_S + ball_gap)
-  vzo =  ball_gap / t_ind
+
   
   # print ("Movement of inner tool: ", (zi_end - zi_0))
   # print ("Movement of outer tool: ", (zo_end - zo_0))
