@@ -32,6 +32,7 @@ vscal_fac     = 2000.0 #Affects All magnitudes with s^-1: Tool Speed, HEAT CONDU
 #--------------------------------------------------------------------
 r_ac1 = 5.0e-3 
 r_ac2 = 5.0e-3
+r_ac3 = 5.0e-3
 ang_1 = 20.0 #DEG
 ang_1 = 50.0 #DEG
 tool_speed    = 0.6 / 60.0 * vscal_fac #Exam,ple 4000 mm/min 
@@ -132,10 +133,8 @@ fo_y = open("movo_y.inc","w")
 fo_z = open("movo_z.inc","w")
 
 
-
-
 #CHANGE r, t 
-def make_init_curve(rac, ang_1, r, t, zi, zo, ts, dz, dt, ecount, asdif): #Convex radius is from outside
+def make_init_curve(rac, ang_1, r, t, zi, zo, ts, dz, dt, zt, ecount, asdif): #Convex radius is from outside
   heat_on_prev= np.full(ecount, False)
   heat_on     = np.full(ecount, False)
   
@@ -144,7 +143,7 @@ def make_init_curve(rac, ang_1, r, t, zi, zo, ts, dz, dt, ecount, asdif): #Conve
   ######################## VUELTAS ##############################
   end_angle = ang_1 *np.pi / 180.0
   end = False
-  zt = (zi + zo)/2.0
+
   while (not end):
   
   
@@ -159,10 +158,11 @@ def make_init_curve(rac, ang_1, r, t, zi, zo, ts, dz, dt, ecount, asdif): #Conve
     
     #- 
     #  \
-    #   |
+    # a |
     # GIving an angle
 
     #Calculate angle
+
     ang = np.arccos((rac-turn*dz)/rac)
     dr  = (rac-turn*dz) * np.tan(ang) - rinc
 
@@ -246,17 +246,21 @@ def make_init_curve(rac, ang_1, r, t, zi, zo, ts, dz, dt, ecount, asdif): #Conve
   return r,t,zi,zo, zt
 
 
-#CHANGE r, t 
-def make_end_curve(rac, ang_1, r, t, zi, zo, ts, dz, dt, ecount, asdif): #Convex radius is from outside
+# NOT VERIFIED FOR SPIF
+# IE OUT TO IN
+#Alpha dimninisesh to zero
+def make_end_curve(rac, ang_1, r, t, zi, zo, ts, dz, dt, zt, ecount, asdif): #Convex radius is from outside
   heat_on_prev= np.full(ecount, False)
   heat_on     = np.full(ecount, False)
   
   rinc = 0
   turn = 1
   ######################## VUELTAS ##############################
-  end_angle = ang_1 *np.pi / 180.0
+  end_angle = 0.0
   end = False
-  zt = (zi + zo)/2.0
+
+  rini = np.sin(ang_1 *np.pi / 180.0)*rac
+  zini = np.cos(ang_1 *np.pi / 180.0)*rac
   while (not end):
   
   
@@ -268,94 +272,101 @@ def make_end_curve(rac, ang_1, r, t, zi, zo, ts, dz, dt, ecount, asdif): #Convex
 
     vz = dz / t_ang       #ORIGINAL, CONSTANT
     
-    
-    #- 
-    #  \
-    #   |
+    #+----> ASDIF
+    # - -------
+    #     /
+    #    /
+    # a |
     # GIving an angle
 
     #Calculate angle
-    ang = np.arccos((rac-turn*dz)/rac)
-    dr  = (rac-turn*dz) * np.tan(ang) - rinc
-
+    if (zini+turn*dz < rac):
+      ang = np.arccos((zini+turn*dz)/rac)
+      dr  = rini - rinc - (zini+turn*dz)*np.tan(ang) 
       
-    print("Angle ",ang*180.0/np.pi, "deg, dr ", dr)
-    print ("Initial turn radius ",r - p_D/2.0 - rinc )
-    dt = t_ang * (np.pi /180.0 * da ) / (2.0*np.pi)
-
-    while (t < t_vuelta): #VUELTAS  
-      # print ("t_inc %.3e t_ang %.3e"%(t_inc,t_ang))
-      if (not asdif):
-        ri_curr = r - p_D/2.0 - dr * t_inc/t_ang
-        ro_curr = r + p_D/2.0 - dr * t_inc/t_ang
-      else:
-        ri_curr = r - p_D/2.0 + dr * t_inc/t_ang
-        ro_curr = r + p_D/2.0 + dr * t_inc/t_ang
-      
-      # ri_curr = r - p_D/2.0 - dr * t_inc/t_ang
-      # print ("rcurr, z, " + str(ri_curr) + str (zi))
-      xi = ri_curr * cos(2.0*pi*t_inc/t_ang)
-      yi = ri_curr * sin(2.0*pi*t_inc/t_ang)
-
-      if (not asdif):
-        zi -= vz * dt
-        zo -= vz * dt      
-        zt -= vz * dt
-      else:
-        zt += vz * dt
+      print ("rini ", rini, "rinc", rinc)
         
-      xo = ro_curr*cos(2.0*pi*t_inc/t_ang)
-      yo = ro_curr *sin(2.0*pi*t_inc/t_ang)      
+      print("Angle ",ang*180.0/np.pi, "deg, dr ", dr)
+      print ("Initial turn radius ",r - p_D/2.0 - rinc )
+      print ("zini+turn*dz", zini+turn*dz, "rac", rac)
       
-      f_test.write(str(xi) + ", " +str(yi) + "," + str(zt) + "\n")
-      
-      fi_x.write(writeFloatField(t,20,6) + writeFloatField(xi,20,6) + "\n")
-      fi_y.write(writeFloatField(t,20,6) + writeFloatField(yi,20,6) + "\n")
-      fi_z.write(writeFloatField(t,20,6) + writeFloatField(zi,20,6) + "\n")
-      if (double_sided):
-        fo_x.write(writeFloatField(t,20,6) + writeFloatField(xo,20,6) + "\n")
-        fo_y.write(writeFloatField(t,20,6) + writeFloatField(yo,20,6) + "\n")
-        fo_z.write(writeFloatField(t,20,6) + writeFloatField(zo,20,6) + "\n")
-      
-      
-      t_inc +=dt
-      t += dt
-      heat_on[:] = False
-      if (thermal):
-        e = model.part[0].mesh[0].findNearestElem(xi,yi,zi)
-        heat_on[e] = True
-        # print ("ELEMENT ", e , "found" )
-        # print ("heat is ", heat_on_prev[e])
-        if (not (heat_on_prev[e])):
-          flog.write ("TIME %f, pos: %.6e %.6e, Found %d\n" % (t, xi, yi, e ))
-          coord = str (model.part[0].mesh[0].elcenter[e].components)
-          flog.write ("baricenter: %s\n" %(coord))  
-          model.load_fnc[e].Append(t,1.0e6)
+      dt = t_ang * (np.pi /180.0 * da ) / (2.0*np.pi)
+      if (zini+turn*dz < rac):
+
+        while (t < t_vuelta): #VUELTAS  
+          # print ("t_inc %.3e t_ang %.3e"%(t_inc,t_ang))
+          if (not asdif):
+            ri_curr = r - p_D/2.0 - dr * t_inc/t_ang
+            ro_curr = r + p_D/2.0 - dr * t_inc/t_ang
+          else:
+            ri_curr = r - p_D/2.0 + dr * t_inc/t_ang
+            ro_curr = r + p_D/2.0 + dr * t_inc/t_ang
+          
+          # ri_curr = r - p_D/2.0 - dr * t_inc/t_ang
+          # print ("rcurr, z, " + str(ri_curr) + str (zi))
+          xi = ri_curr * cos(2.0*pi*t_inc/t_ang)
+          yi = ri_curr * sin(2.0*pi*t_inc/t_ang)
+
+          if (not asdif):
+            zi -= vz * dt
+            zo -= vz * dt
+            zt -= vz * dt        
+          else:
+            zt += vz * dt
+            
+          xo = ro_curr*cos(2.0*pi*t_inc/t_ang)
+          yo = ro_curr *sin(2.0*pi*t_inc/t_ang)      
+          
+          f_test.write(str(xi) + ", " +str(yi) + "," + str(zt) + "\n")
+          
+          fi_x.write(writeFloatField(t,20,6) + writeFloatField(xi,20,6) + "\n")
+          fi_y.write(writeFloatField(t,20,6) + writeFloatField(yi,20,6) + "\n")
+          fi_z.write(writeFloatField(t,20,6) + writeFloatField(zi,20,6) + "\n")
+          if (double_sided):
+            fo_x.write(writeFloatField(t,20,6) + writeFloatField(xo,20,6) + "\n")
+            fo_y.write(writeFloatField(t,20,6) + writeFloatField(yo,20,6) + "\n")
+            fo_z.write(writeFloatField(t,20,6) + writeFloatField(zo,20,6) + "\n")
           
           
-              # for i in range (self.mesh[0].elem_count):
-      # line = writeIntField(i + self.mesh[0].ini_elem_id ,10)
-      # for d in range (4):
-        # # print (self.mesh[0].ini_node_id, ", ")
-        # line = line + writeIntField(self.mesh[0].elnod[i][d] 
-         
-      for e in range(ecount):
-        if (not heat_on[e] and heat_on_prev[e]):
-          model.load_fnc[e].Append(t,0.0)       
-      
-      heat_on_prev[:] = heat_on[:]
-      
-    rinc+=dr
-    if (asdif):
-      r += dr
+          t_inc +=dt
+          t += dt
+          heat_on[:] = False
+          if (thermal):
+            e = model.part[0].mesh[0].findNearestElem(xi,yi,zi)
+            heat_on[e] = True
+            # print ("ELEMENT ", e , "found" )
+            # print ("heat is ", heat_on_prev[e])
+            if (not (heat_on_prev[e])):
+              flog.write ("TIME %f, pos: %.6e %.6e, Found %d\n" % (t, xi, yi, e ))
+              coord = str (model.part[0].mesh[0].elcenter[e].components)
+              flog.write ("baricenter: %s\n" %(coord))  
+              model.load_fnc[e].Append(t,1.0e6)
+              
+              
+                  # for i in range (self.mesh[0].elem_count):
+          # line = writeIntField(i + self.mesh[0].ini_elem_id ,10)
+          # for d in range (4):
+            # # print (self.mesh[0].ini_node_id, ", ")
+            # line = line + writeIntField(self.mesh[0].elnod[i][d] 
+             
+          for e in range(ecount):
+            if (not heat_on[e] and heat_on_prev[e]):
+              model.load_fnc[e].Append(t,0.0)       
+          
+          heat_on_prev[:] = heat_on[:]
+          
+        rinc+=dr
+        if (asdif):
+          r += dr
+        else:
+          r -=dr
+        turn += 1    
+    
     else:
-      r -=dr
-    turn += 1    
+      end =True
 
-
-    if (ang > end_angle):
-      end = True
   return r,t,zi,zo, zt
+
 
 
 #
@@ -369,7 +380,7 @@ def make_end_curve(rac, ang_1, r, t, zi, zo, ts, dz, dt, ecount, asdif): #Convex
 # Beta is angle w/hor line
 # FOR SPIF
 #ALWAYS beta 0 is outside (LARGER) angle
-def make_outer_curve(rac, beta0, beta1, r, t, zi, zo, ts, dz, dt, ecount, asdif): #Convex radius is from outside
+def make_outer_curve(rac, beta0, beta1, r, t, zi, zo, ts, dz, dt, zt, ecount, asdif): #Convex radius is from outside
   heat_on_prev= np.full(ecount, False)
   heat_on     = np.full(ecount, False)
   rinc = 0.0
@@ -400,7 +411,7 @@ def make_outer_curve(rac, beta0, beta1, r, t, zi, zo, ts, dz, dt, ecount, asdif)
   print ("Alpha0, Acc z ", alpha0, zacc)
   
   end = False
-  zt = (zi+zo)/2.0
+
   while (not end):
   
   
@@ -510,7 +521,7 @@ def make_outer_curve(rac, beta0, beta1, r, t, zi, zo, ts, dz, dt, ecount, asdif)
   return r,t,zi,zo, zt 
   
 #Make a cone 
-def make_line(angle, depth, r, t, turn, zi, zo, ts, dz, dt, ecount, asdif):
+def make_line(angle, depth, r, t, turn, zi, zo, ts, dz, dt, zt, ecount, asdif):
   heat_on_prev= np.full(ecount, False)
   heat_on     = np.full(ecount, False)
   ######################## VUELTAS ##############################
@@ -524,7 +535,6 @@ def make_line(angle, depth, r, t, turn, zi, zo, ts, dz, dt, ecount, asdif):
     print ("ERROR, min line is negative, check depth/angle ratio")
   print ("Line (cone) limit radius  ", rlim)
   
-  ztest = (zi + zo)/ 2
   while ( not end):
     print ("r, ts ", r, ts)
     t_ang = 2.0 * np.pi * r / ts #Tiempo (incremento) de cada vuelta (ASUMIENDO RADIO CONSTANTE)
@@ -556,14 +566,14 @@ def make_line(angle, depth, r, t, turn, zi, zo, ts, dz, dt, ecount, asdif):
       if (not asdif):
         zi -= vz * dt
         zo -= vz * dt     
-        ztest -= vz * dt
+        zt -= vz * dt
       else:
-        ztest += vz * dt
+        zt += vz * dt
         # #ONLY! IF YOU WANT TO TEST SHAPE, TOOL IS IN PLANE
         # zi += vz * dt
         # zo += vz * dt     
 
-      f_test.write(str(xi) + ", " +str(yi) + "," + str(ztest) + "\n")
+      f_test.write(str(xi) + ", " +str(yi) + "," + str(zt) + "\n")
       
       # print("zi %.3e , zo %.3e \n" %(zi,zo))
       # z -= t_inc/t_ang * dr # CAMBIAR A dz
@@ -617,7 +627,7 @@ def make_line(angle, depth, r, t, turn, zi, zo, ts, dz, dt, ecount, asdif):
     
 
 
-  return r,t,zi,zo, ztest
+  return r,t,zi,zo, zt
 
 supp_mesh = []
 supp_part = []
@@ -857,9 +867,7 @@ if (calc_path):
       fo_y.write(writeFloatField(t,20,6) + writeFloatField(0.,20,6) + "\n")
       fo_z.write(writeFloatField(t,20,6) + writeFloatField(zo,20,6) + "\n")
     
-    # fo_x.write("%.6e, %.6e\n" % (t,xo))
-    # fo_y.write("%.6e, %.6e\n" % (t,0.0))
-    # fo_z.write("%.6e, %.6e\n" % (t,zo))  
+
     t +=dtind 
   print ("-------------------------------------")
   print ("Indentation ends: ")
@@ -869,24 +877,25 @@ if (calc_path):
   r = r0
   turn = 1
   ec = model.part[0].mesh[0].elem_count
-  #zt = (zi + zo)/2.0 # Z TEST IS USED BECAUSE ON ASDIF Z IS NOT MOVING
-  r, t, zi, zo, zt = make_init_curve(r_ac1, 20.0, r,t, zi, zo, tool_speed, dz, da, ec, is_ASDIF)
+  zt = (zi + zo)/2.0 # Z TEST IS USED BECAUSE ON ASDIF Z IS NOT MOVING
+  r, t, zi, zo, zt = make_init_curve(r_ac1, 20.0, r,t, zi, zo, tool_speed, dz, da, zt, ec, is_ASDIF)
 
   print ("BEGINING CONE PART ----\n")
   print ("Time: ", t)
   print ("Initial radius ", r)
 
-  r, t, zi, zo, zt = make_line(20.0, 0.003, r, t, turn, zi, zo, tool_speed, dz, da, ec, is_ASDIF)
+  r, t, zi, zo, zt = make_line(20.0, 0.003, r, t, turn, zi, zo, tool_speed, dz, da, zt, ec, is_ASDIF)
   print ("BEGINING RADIUS PART ----\n")
   print ("Time: ", t)
   print ("Initial radius ", r) 
   #-------------------------------------angout  angin
-  r, t, zi, zo, zt = make_outer_curve(r_ac2, 50.0,  20.0, r,t, zi, zo, tool_speed, dz, da, ec, is_ASDIF)  
+  r, t, zi, zo, zt = make_outer_curve(r_ac2, 50.0,  20.0, r,t, zi, zo, tool_speed, dz, da, zt, ec, is_ASDIF)  
   print("MAKING 20 deg line ")
   print ("Time: ", t)
   ### make_line(angle, depth, r, t, turn, zi, zo)
-  r, t, zi, zo,zt = make_line(50.0, 0.015, r, t, turn, zi, zo, tool_speed, dz, da, ec, is_ASDIF)  
-
+  r, t, zi, zo,zt = make_line(50.0, 0.015, r, t, turn, zi, zo, tool_speed, dz, da, zt, ec, is_ASDIF)  
+  print ("MAKING END CURVE")
+  make_end_curve(r_ac3, 50.0, r, t, zi, zo, tool_speed, dz, da, zt, ec, is_ASDIF)
 
   
   dist = 10.0*tool_rad
