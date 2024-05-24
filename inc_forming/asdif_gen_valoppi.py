@@ -802,8 +802,8 @@ if (calc_path):
   #ORIGINALLY ONLY INNER TOOL WAS DOWN
   # AS LIKE THIS; ASSUMING THAT is displaces at p_S
   #DOWNWARDS!
-  vz  = (thck + p_S + ball_gap) / t_ind # EN PRINCIPIO S EDESPLAZA SOLO LA INTERIOR  
-  vzo =  ball_gap / t_ind
+  vz  = (thck + p_S + ball_gap -dz) / t_ind # EN PRINCIPIO S EDESPLAZA SOLO LA INTERIOR  
+  vzo = (ball_gap -dz)/ t_ind
   #-----------
   
   #INITIAL INNER TOOL POS:   zi_0 =  tool_rad + thck/2.0 + ball_gap + thck_rig
