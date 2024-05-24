@@ -801,8 +801,9 @@ if (calc_path):
   
   #ORIGINALLY ONLY INNER TOOL WAS DOWN
   # AS LIKE THIS; ASSUMING THAT is displaces at p_S
-  # vz  = (thck + p_S + ball_gap) / t_ind # EN PRINCIPIO S EDESPLAZA SOLO LA INTERIOR  
-  # vzo =  ball_gap / t_ind
+  #DOWNWARDS!
+  vz  = (thck + p_S + ball_gap) / t_ind # EN PRINCIPIO S EDESPLAZA SOLO LA INTERIOR  
+  vzo =  ball_gap / t_ind
   #-----------
   
   #INITIAL INNER TOOL POS:   zi_0 =  tool_rad + thck/2.0 + ball_gap + thck_rig
@@ -818,7 +819,7 @@ if (calc_path):
   
   print ("-------------------------------------------------------")
   print ("Initial tool distance: ", dist_0 - 2*tool_rad)  
-  print ("Thck + 2 x (gap + tool_thck): ", thck + 2.0 * (ball_gap + thck_rig))  
+  print ("DISTANCE TO CONTACT BETWEEN TOOLS : Thck + 2 x (gap + tool_thck): ", thck + 2.0 * (ball_gap + thck_rig))  
   print ("End     tool distance: ", dist_end)
 
   z_move = abs( dist_end - dist_0)
@@ -826,21 +827,24 @@ if (calc_path):
   print ("Tool moving distance (discarding gap):", z_move - 2.0 * ball_gap)
 
   
-  if (double_sided):
-    zi_end    = zi_0 - z_move/2.0 - ball_gap - dz
-    zo_end    = zo_0 + z_move/2.0 + ball_gap - dz
-  else:
-    zi_end = zi_0 - ball_gap; #Only this tool
+  # if (double_sided):
+    # zi_end    = zi_0 - z_move/2.0 - ball_gap - dz
+    # zo_end    = zo_0 + z_move/2.0 + ball_gap - dz
+  # else:
+    # zi_end = zi_0 - ball_gap; #Only this tool
     
   #   INNER TOOL TIP - THICKNESS + ps_S = OUTER TOOL TIP
   #
+  # if (double_sided):
+    # vz  = (zi_end - zi_0)/t_ind
+    # vzo = (zo_end - zo_0)/t_ind
+  # else:
+  vz  = (thck + p_S + ball_gap)
+  vzo =  ball_gap / t_ind
   
-  vz  = (zi_end - zi_0)/t_ind
-  vzo = (zo_end - zo_0)/t_ind
-  
-  print ("Movement of inner tool: ", (zi_end - zi_0))
-  print ("Movement of outer tool: ", (zo_end - zo_0))
-  print ("Calculated ending toolpos zi %.3e , zo %.3e \n" %(zi_end-zi_0,zo_end-zo_0))
+  # print ("Movement of inner tool: ", (zi_end - zi_0))
+  # print ("Movement of outer tool: ", (zo_end - zo_0))
+  # print ("Calculated ending toolpos zi %.3e , zo %.3e \n" %(zi_end-zi_0,zo_end-zo_0))
     
   #####################INDENTACION ######################### 
   xi = r0 - p_D/2.0
