@@ -896,28 +896,29 @@ if (calc_path):
   print("MAKING 20 deg line ")
   print ("Time: ", t)
   ### make_line(angle, depth, r, t, turn, zi, zo)
-  r, t, zi, zo,zt = make_line(50.0, 0.015, r, t, turn, zi, zo, tool_speed, dz, da, zt, ec, is_ASDIF)  
+  r, t, zi, zo,zt = make_line(50.0, 0.013, r, t, turn, zi, zo, tool_speed, dz, da, zt, ec, is_ASDIF)  
   print ("MAKING END CURVE")
-  make_end_curve(r_ac3, 50.0, r, t, zi, zo, tool_speed, dz, da, zt, ec, is_ASDIF)
+  r, t, zi, zo,zt = make_end_curve(r_ac3, 50.0, r, t, zi, zo, tool_speed, dz, da, zt, ec, is_ASDIF)
 
-  
+
   dist = 10.0*tool_rad
   dt = dist / tool_speed
+  print ("TOOL RETIREMENT TIME ", dt)
   t +=dt
   zi += dist
   zo -= dist
   
-  #TOOL RETIREMENT
-  fi_x.write(writeFloatField(t,20,6) + writeFloatField(xi,20,6) + "\n")
-  fi_y.write(writeFloatField(t,20,6) + writeFloatField(0.,20,6) + "\n")
-  fi_z.write(writeFloatField(t,20,6) + writeFloatField(zi,20,6) + "\n")
+  # #TOOL RETIREMENT
+  # fi_x.write(writeFloatField(t,20,6) + writeFloatField(xi,20,6) + "\n")
+  # fi_y.write(writeFloatField(t,20,6) + writeFloatField(0.,20,6) + "\n")
+  # fi_z.write(writeFloatField(t,20,6) + writeFloatField(zi,20,6) + "\n")
   
-  f_test.write(str(xi) + ", " +str(0) + "," + str(zi) + "\n")
+  # f_test.write(str(xi) + ", " +str(0) + "," + str(zi) + "\n")
   
-  if (double_sided):
-    fo_x.write(writeFloatField(t,20,6) + writeFloatField(xo,20,6) + "\n")
-    fo_y.write(writeFloatField(t,20,6) + writeFloatField(0.,20,6) + "\n")
-    fo_z.write(writeFloatField(t,20,6) + writeFloatField(zo,20,6) + "\n")
+  # if (double_sided):
+    # fo_x.write(writeFloatField(t,20,6) + writeFloatField(xo,20,6) + "\n")
+    # fo_y.write(writeFloatField(t,20,6) + writeFloatField(0.,20,6) + "\n")
+    # fo_z.write(writeFloatField(t,20,6) + writeFloatField(zo,20,6) + "\n")
   
   #END TIME 
   if (calc_path):
