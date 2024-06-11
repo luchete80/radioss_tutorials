@@ -36,11 +36,11 @@ tool_rad      = 0.00755    #Tool radius
 gap           = 0.0e-4
 gap_cont      = 1.3e-4
 dtout         = 5.0e-3
-end_time      = 2.1879884613e+00
+end_time      = 3.1133275547e+00
 v_supp        = 1.0e-3
 supp_rel_time = 0.5
 supp_vel_ramp = True
-dynrel_time   = 2.0
+dynrel_time   = 1.0
 ## SCALING
 vscal_fac     = 250.0 #Affects All magnitudes with s^-1: Tool Speed, HEAT CONDUCTIVIY, CONVECTION
 
