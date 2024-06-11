@@ -22,7 +22,7 @@ thck_rig = 1.0e-4   #BALL
 thck_supp = 1.0e-3  #SUPP
 
 #TOOL 
-r_i           = 88.2414e-3      #Inner Path Radius
+r_i           = 88.7233e-3      #Inner Path Radius
 r_o           = 0.0325    #Outer Path Radius
 r             = 0.0325
 dr            = 5.0e-4    #DESAPARECE DE ACUERDO A LA GEOMETRIA
