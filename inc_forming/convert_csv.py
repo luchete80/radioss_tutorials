@@ -87,10 +87,10 @@ for i in range (2, len(data)) :
   else:
     print("ERROR, POINT DISTANCE LESS THAN 1E-5")
   
-  t +=10.0*dt
-  out_x.write(writeFloatField(t*60.0,20,10) + writeFloatField(f*x[0] - xo, 20,10) + "\n")
-  out_y.write(writeFloatField(t*60.0,20,10) + writeFloatField(f*x[1] - yo, 20,10) + "\n")
-  out_z.write(writeFloatField(t*60.0,20,10) + writeFloatField(0.0,20,10) + "\n")
+t +=10.0*dt
+out_x.write(writeFloatField(t*60.0,20,10) + writeFloatField(f*x[0] - xo, 20,10) + "\n")
+out_y.write(writeFloatField(t*60.0,20,10) + writeFloatField(f*x[1] - yo, 20,10) + "\n")
+out_z.write(writeFloatField(t*60.0,20,10) + writeFloatField(0.0,20,10) + "\n")
     
 # The type of file is “_io.TextIOWrapper” which is a file object that is returned by the open()
 # type(file)
