@@ -897,10 +897,17 @@ class Model:
     # f.write("\n")
     
     
-    f.write("/TH/RBODY/1\n")
+    # f.write("/TH/RBODY/1\n")
+    # f.write("TH_NAME1 \n")
+    # f.write("FX        FY        FZ        \n")
+    # f.write("200\n")  
+    
+    f.write("/TH/PART/1\n")
     f.write("TH_NAME1 \n")
-    f.write("FX        FY        FZ        \n")
-    f.write("200\n")  
+    f.write("DEF\n")
+
+        
+    
     
     ## SUPPORT RELEASE THING
     for velf in range(len(self.supp_fnc)):
@@ -924,7 +931,7 @@ class Model:
       
     f.write('/END\n')
     
-  def printEngine(self, run, time, dt):
+  def printEngine(self, run, time, dt, dthis):
     f = open(self.starter_file + "_000" + str(run) + ".rad","w+")
     f.write("/ANIM/DT\n")
     f.write("0 " +str(dt) + "\n")
@@ -961,12 +968,12 @@ class Model:
 # ASCII
 # = 4 (Default)
 # Binary IEEE 32-bit
-    f.write("0.1\n")
+    f.write(str(dthis) + "\n")
     f.write("/STOP\n")
     f.write("0 1e+08 0 1 1\n") 
 
 
-  def printRelease(self, run, time, dt):
+  def printRelease(self, run, time, dt, dthis):
     f = open(self.starter_file + "_000" + str(run) + ".rad","w+")
     f.write("/RUN/" + self.starter_file + "/" + str(run) + "\n")
     f.write(str(time)+"\n")
@@ -997,7 +1004,7 @@ class Model:
     f.write("\n")
     
     f.write("/TFILE\n")
-    f.write("2.\n")
+    f.write(str(dthis) + "\n")
     f.write("/PRINT/-1\n")
     f.write("/RFILE\n")
     f.write(" 20000 0 0\n")
@@ -1046,7 +1053,7 @@ class Model:
     # f.write(" 6 .0 20 0.67 0.0\n")
     # f.write("/IMPL/SPRBACK\n")
     
-  def printDynRelax(self, run, time, dt):
+  def printDynRelax(self, run, time, dt, dthis):
     f = open(self.starter_file + "_000" + str(run) + ".rad","w+")
     f.write("/RUN/" + self.starter_file + "/" + str(run) + "\n")
     f.write(str(time)+"\n")
@@ -1074,7 +1081,7 @@ class Model:
     # /RBODY/ON
     # 3392 3648 3904 4160 4416 4672 4928 5184 5337 
     f.write("/TFILE\n")
-    f.write("2.\n")
+    f.write(str(dthis) + "\n")
     f.write("/PRINT/-1\n")
     f.write("/RFILE\n")
     f.write(" 20000 0 0\n")

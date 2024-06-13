@@ -36,6 +36,7 @@ tool_rad      = 0.00755    #Tool radius
 gap           = 0.0e-4
 gap_cont      = 1.3e-4
 dtout         = 5.0e-3
+dtout_his     = 5.0e-4
 end_time      = 3.1133275547e+00
 v_supp        = 1.0e-3
 supp_rel_time = 0.5
@@ -389,9 +390,9 @@ for e in range (model.part[0].mesh[0].elem_count):
 
 model.printRadioss("test")
 
-model.printEngine(1, end_time,dtout)
-model.printRelease(2, end_time+supp_rel_time,dtout)
-model.printDynRelax(3,end_time+supp_rel_time+dynrel_time,dtout)
+model.printEngine(1, end_time,dtout, dtout_his)
+model.printRelease(2, end_time+supp_rel_time,dtout, dtout_his)
+model.printDynRelax(3,end_time+supp_rel_time+dynrel_time,dtout, dtout_his)
 # #Si no se coloca lambda no funciona
 # b = Button(window, text="Generate", width=10, command=lambda:save(linea_g))
 # b.grid(column=3, row=10)
