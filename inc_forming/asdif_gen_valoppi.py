@@ -54,6 +54,7 @@ p_S           = 4.3e-4     #ASDIF HEIGHT DISTANCE BETWEEN TOOLS
 tool_rad      = 0.0025    #Tool radius
 gap_cont      = -2.0e-4
 dtout         = 5.0e-4
+dtout_his     = 5.0e-4
 ### --- ONLY USED WHEN NOT GENERATING PATH !!!
 end_time      = 2.1879884613e+00
 v_supp        = 1.0e-3
@@ -965,9 +966,9 @@ for e in range (model.part[0].mesh[0].elem_count):
 
 model.printRadioss("test")
 
-model.printEngine(1, end_time,dtout)
-model.printRelease(2, end_time+supp_rel_time,dtout)
-model.printDynRelax(3,end_time+supp_rel_time+dynrel_time,dtout)
+model.printEngine(1, end_time,dtout,dtout_his)
+model.printRelease(2, end_time+supp_rel_time,dtout,dtout_his)
+model.printDynRelax(3,end_time+supp_rel_time+dynrel_time,dtout,dtout_his)
 
 
 #---------------------------------------------------------------
