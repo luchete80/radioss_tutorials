@@ -38,14 +38,14 @@ ang_1 = 50.0 #DEG
 tool_speed    = 0.6 / 60.0 * vscal_fac #Exam,ple 4000 mm/min 
 t_ind         = 1.0e-3
 dz_up         = 0.0e-4
-dz            = 4.3e-4    
+dz            = 1.0e-4    
 dtind         = 0.01/vscal_fac    #Indentation time for crve generation
 #!!!_ IMPORTANT THIS CAN BE enlarged if not thermal
 da            = 1.0 #ANGLE FOR delta t in process. 
 calc_path           = True
 move_tool_to_inipos = True # THIS IS CONVENIENT, OTHERWISE RADIOSS THROWS ERROR DUE TO LARGE DISP TO INITIAL POS
 ball_gap      = 1.0e-4  #THIS IS ASSIGNED SINCE IF NOT THE BALL INITIAL MOVEMENT DRAGS THE PLATE
-r0            = 0.005   #INITIAL RADIUS OF THE SHAPE
+r0            = 0.005
 
 #dang           = 5.0  #Angle (deg) increment for path gen
 p_D           = 2.5e-3     #ASDIF RADIAL DISTANCE BETWEEN TOOLS
@@ -804,8 +804,8 @@ if (calc_path):
   #ORIGINALLY ONLY INNER TOOL WAS DOWN
   # AS LIKE THIS; ASSUMING THAT is displaces at p_S
   #DOWNWARDS!
-  vz  = (thck + p_S + ball_gap -dz_up+dz) / t_ind # EN PRINCIPIO S EDESPLAZA SOLO LA INTERIOR  
-  vzo = (ball_gap +dz_up-dz)/ t_ind
+  vz  = (thck + p_S + ball_gap -dz_up) / t_ind # EN PRINCIPIO S EDESPLAZA SOLO LA INTERIOR  
+  vzo = (ball_gap +dz_up)/ t_ind
 
   #-----------
   
