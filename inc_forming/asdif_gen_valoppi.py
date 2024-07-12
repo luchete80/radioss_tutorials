@@ -804,7 +804,8 @@ if (calc_path):
   #ORIGINALLY ONLY INNER TOOL WAS DOWN
   # AS LIKE THIS; ASSUMING THAT is displaces at p_S
   #DOWNWARDS!
-  vz  = (thck + p_S + ball_gap -dz_up+dz) / t_ind # EN PRINCIPIO S EDESPLAZA SOLO LA INTERIOR  
+  #vz  = (thck + p_S + ball_gap -dz_up+dz) / t_ind # EN PRINCIPIO S EDESPLAZA SOLO LA INTERIOR  
+  vz  = (p_S + ball_gap -dz_up+dz) / t_ind # EN PRINCIPIO S EDESPLAZA SOLO LA INTERIOR  
   vzo = (ball_gap +dz_up-dz)/ t_ind
 
   #-----------
