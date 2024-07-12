@@ -15,8 +15,8 @@ flog = open("log.txt","w")
 #################### INPUT VARS
 
 #WORKPIECE
-largo = 0.1
-delta = 0.002
+largo = 0.08
+delta = 0.0015
 thck  = 5.0e-4      #Plate Thickness
 thck_rig = 1.0e-4   #BALL
 thck_supp = 1.0e-3  #SUPP
@@ -37,7 +37,7 @@ ang_1 = 20.0 #DEG
 ang_1 = 50.0 #DEG
 tool_speed    = 0.6 / 60.0 * vscal_fac #Exam,ple 4000 mm/min 
 t_ind         = 1.0e-3
-dz_up         = 0.0e-4
+dz_up         = 0.0
 dz            = 1.0e-4    
 dtind         = 0.01/vscal_fac    #Indentation time for crve generation
 #!!!_ IMPORTANT THIS CAN BE enlarged if not thermal
@@ -54,9 +54,9 @@ p_S           = 4.3e-4     #ASDIF HEIGHT DISTANCE BETWEEN TOOLS
 tool_rad      = 0.0025    #Tool radius
 gap_cont      = -2.0e-4
 dtout         = 5.0e-4
-dtout_his     = 5.0e-4
+dtout_his     = 1.0e-4
 ### --- ONLY USED WHEN NOT GENERATING PATH !!!
-end_time      = 2.1879884613e+00
+end_time      = 2.0e-3
 v_supp        = 1.0e-3
 supp_rel_time = 0.5
 supp_vel_ramp = True
@@ -641,13 +641,13 @@ shell_mesh = Plane_Mesh(1,largo,delta)
 
 solid_mesh = Rect_Solid_Mesh(1,largo,largo,thck,delta,delta,thck)
 #(self, id, radius, ox,oy,oz, divisions):
-zi_0 = tool_rad + thck/2.0 + ball_gap + thck_rig
-sph1_mesh = Sphere_Mesh(2, tool_rad-thck_rig/2.0,        \
+zi_0 = tool_rad + thck/2.0 + ball_gap + thck_rig/2.0
+sph1_mesh = Sphere_Mesh(2, tool_rad,        \
                         0.0, 0.0,zi_0, \
                                         5) #(id, radius, divisions):
-zo_0 = -tool_rad - thck/2.0 - ball_gap-thck_rig
+zo_0 = -tool_rad - thck/2.0 - ball_gap-thck_rig/2.0
 if (double_sided):
-  sph2_mesh = Sphere_Mesh(3, tool_rad-thck_rig/2.0,        \
+  sph2_mesh = Sphere_Mesh(3, tool_rad,        \
                         0.0, 0.0,zo_0, \
                                           5) #(id, radius, divisions):
                                         
@@ -804,8 +804,8 @@ if (calc_path):
   #ORIGINALLY ONLY INNER TOOL WAS DOWN
   # AS LIKE THIS; ASSUMING THAT is displaces at p_S
   #DOWNWARDS!
-  vz  = (thck + p_S + ball_gap -dz_up) / t_ind # EN PRINCIPIO S EDESPLAZA SOLO LA INTERIOR  
-  vzo = (ball_gap +dz_up)/ t_ind
+  vz  = (thck + p_S + ball_gap -dz_up+dz) / t_ind # EN PRINCIPIO S EDESPLAZA SOLO LA INTERIOR  
+  vzo = (ball_gap +dz_up-dz)/ t_ind
 
   #-----------
   
