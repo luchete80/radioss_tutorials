@@ -688,7 +688,9 @@ model = Model()
 model.double_sided = double_sided
 print ("Model size: ", len(model.part))
 shell = Part(1)
-shell.AppendMesh(solid_mesh) 
+shell.AppendMesh(solid_mesh)
+shell.asignPropID(1)
+ 
 model.vscal_fac = vscal_fac
 
 bcpos = largo/2.0 - largo_supp
@@ -725,11 +727,11 @@ if (double_sided):
   model.AppendPart(sph2_pt)
 
 model.AppendMat(mat)
-model.AppendProp(Prop(1,thck))
+model.AppendProp(Prop(1,"solid", 0))
 
-model.AppendProp(Prop(2,thck_rig))
+model.AppendProp(Prop(2,"shell", thck_rig))
 
-model.AppendProp(Prop(3,thck_supp))
+model.AppendProp(Prop(3,"shell", thck_supp))
 
 #BALLS AND PLATE
 inter_1 = Interface(2,1)
@@ -761,10 +763,11 @@ for e in range (model.part[0].mesh[0].elem_count):
   model.AppendLoadFunction (lf)
 
 
-# THERMAL SOLID MODEL --------------------------------------------------------
+# SOLID MODEL --------------------------------------------------------
 th_solid_model = ThermalSolidModel()
 solid_pt =Part(1)
 solid_pt.AppendMesh(solid_mesh)
+
 
 th_solid_model.AppendPart(solid_pt)
 th_solid_model.AppendMat(mat)
@@ -975,7 +978,7 @@ model.printDynRelax(3,end_time+supp_rel_time+dynrel_time,dtout,dtout_his)
 
 
 #---------------------------------------------------------------
-th_solid_model.printRadioss("solid")
+#th_solid_model.printRadioss("solid")
 
 # #Si no se coloca lambda no funciona
 # b = Button(window, text="Generate", width=10, command=lambda:save(linea_g))

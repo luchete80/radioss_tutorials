@@ -374,14 +374,15 @@ class Rect_Solid_Mesh(Mesh):
           # elnod_h[ei+5] = nb1 + nnodz*(ez+1) + 1;   nodel_count_h[nb1 + nnodz*(ez+1) + 1]++;  
           # elnod_h[ei+6] = nb2 + nnodz*(ez+1) + 1;   nodel_count_h[nb2 + nnodz*(ez+1) + 1]++;  
           # elnod_h[ei+7] = nb2 + nnodz*(ez+1);       nodel_count_h[nb2 + nnodz*(ez+1)    ]++;  
+    nnodz = (elem_x + 1 )* (elem_y + 1 )
     for ez in range (elem_z):          
       for ey in range (elem_y):    
         for ex in range (elem_x):   
-          nb1 = ncz*ez + (elem_x + 1)*ey + ex
-          nb2 = ncz*ez + (elem_x + 1)*(ey+1) + ex
+          nb1 = nnodz*ez + (elem_x + 1)*ey + ex
+          nb2 = nnodz*ez + (elem_x + 1)*(ey+1) + ex
           
-          self.elnod.append((nb1           , nb1 + 1             ,nb2 + 1             ,nb2,
-                             nb1+ncz*(ez+1), nb1 + ncz*(ez+1) + 1,nb2 + ncz*(ez+1) + 1,nb2 + ncz*(ez+1)))
+          self.elnod.append((nb1      , nb1 + 1        , nb2 + 1        , nb2,
+                             nb1+nnodz, nb1 + nnodz + 1, nb2 + nnodz + 1, nb2 + nnodz))
 
     self.writeCenters()
     
@@ -517,23 +518,38 @@ class NodeGroup:
 
 class Prop: 
   thck = 5.0e-4
-  def __init__(self, pid, t):
+  def __init__(self, pid, type, t):
     self.pid = pid
     self.thck = t
-  def printRadioss(self,f):     
-    f.write("##--------------------------------------------------------------------------------------------------\n")
-    f.write("## Shell Property Set (pid 1)\n")
-    f.write("##--------------------------------------------------------------------------------------------------\n")
-    f.write("/PROP/SOLID/" + str(self.pid) + "\n")
-    f.write("SECTION_SHELL:1 TITLE:probe_section  \n")                                                               
-    f.write("#Ishell	Ismstr	Ish3n	Idril	 	 	P_thickfail\n")
-    f.write("         4         2                         \n")                                   
-    f.write("#hm	hf	hr	dm	dn\n")
-    f.write("\n")
-    f.write("#---1----|----2----|----3----|----4----|----5----|----6----|----7----|----8----|----9----|---10----|\n")
-    f.write("#N	       Istrain	 Thick	             Ashear	 	           Ithick	Iplas    \n")                                                                                                
-    f.write(writeIntField(2, 10) + "          " + writeFloatField(self.thck,20,6) + "                                       1         1\n")
-             
+    self.type = type
+  def printRadioss(self,f):
+    if (self.type == "shell"):
+      f.write("##--------------------------------------------------------------------------------------------------\n")
+      f.write("## Shell Property Set (pid 1)\n")
+      f.write("##--------------------------------------------------------------------------------------------------\n")
+      f.write("/PROP/SHELL/" + str(self.pid) + "\n")
+      f.write("SECTION_SHELL:1 TITLE:probe_section  \n")                                                               
+      f.write("#Ishell	Ismstr	Ish3n	Idril	 	 	P_thickfail\n")
+      f.write("         4         2                         \n")                                   
+      f.write("#hm	hf	hr	dm	dn\n")
+      f.write("\n")
+      f.write("#---1----|----2----|----3----|----4----|----5----|----6----|----7----|----8----|----9----|---10----|\n")
+      f.write("#N	       Istrain	 Thick	             Ashear	 	           Ithick	Iplas    \n")                                                                                                
+      f.write(writeIntField(2, 10) + "          " + writeFloatField(self.thck,20,6) + "                                       1         1\n")
+    if (self.type  == "solid"):
+      f.write("##--------------------------------------------------------------------------------------------------\n")
+      f.write("## Solid Property Set (pid 1)\n")
+      f.write("##--------------------------------------------------------------------------------------------------\n")
+      f.write("/PROP/SOLID/" + str(self.pid) + "\n")
+      f.write("SECTION_SHELL:1 TITLE:probe_section  \n")                                                               
+      f.write("#Ishell	Ismstr	Ish3n	Idril	 	 	P_thickfail\n")
+      f.write("         4         2                         \n")                                   
+      f.write("#hm	hf	hr	dm	dn\n")
+      f.write("\n")
+      f.write("#---1----|----2----|----3----|----4----|----5----|----6----|----7----|----8----|----9----|---10----|\n")
+      f.write("#N	       Istrain	 Thick	             Ashear	 	           Ithick	Iplas    \n")                                                                                                
+      f.write(writeIntField(2, 10) + "          " + writeFloatField(self.thck,20,6) + "                                       1         1\n")        
+    
         
          
      
@@ -717,7 +733,7 @@ class Model:
       
   def AppendMat(self, m):
     if (not isinstance(m, Material)):
-      print ("ERROR: added object is not a part ")
+      print ("ERROR: added object is not a material ")
     else:
       self.mat.append(m)
 
@@ -726,9 +742,9 @@ class Model:
     
   def AppendProp(self, p):
     if (not isinstance(p, Prop)):
-      print ("ERROR: added object is not a part ")
+      print ("ERROR: added object is not a prop")
     else:
-      self.mat.append(p)
+      self.prop.append(p)
       
   def printInterfaces(self,f):
     f.write("#-  9. INTERFACES:\n")  
@@ -884,7 +900,7 @@ class Model:
         f.write(line)
       
     for p in range(len(self.prop)):
-      self.mat[p].printRadioss(f)
+      self.prop[p].printRadioss(f)
       
     self.printInterfaces(f)
     
