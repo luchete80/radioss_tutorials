@@ -524,7 +524,7 @@ class Prop:
     f.write("##--------------------------------------------------------------------------------------------------\n")
     f.write("## Shell Property Set (pid 1)\n")
     f.write("##--------------------------------------------------------------------------------------------------\n")
-    f.write("/PROP/SHELL/" + str(self.pid) + "\n")
+    f.write("/PROP/SOLID/" + str(self.pid) + "\n")
     f.write("SECTION_SHELL:1 TITLE:probe_section  \n")                                                               
     f.write("#Ishell	Ismstr	Ish3n	Idril	 	 	P_thickfail\n")
     f.write("         4         2                         \n")                                   
@@ -827,6 +827,7 @@ class Model:
     print ("WRITING RADIOSS INPUT\n")
     f = open(fname + "_0000.rad","w+")
     f.write("#RADIOSS STARTER\n")
+    
     f.write("/BEGIN\n")
     f.write("test                                                        \n")                   
     f.write("      2019         0 \n")

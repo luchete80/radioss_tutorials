@@ -123,17 +123,6 @@ mat.e0jc  = 1.0
 # textField.grid(column=2, row=0)
 # textField.insert(0,"test")
 
-fi_x = open("movi_x.inc","w")
-fi_y = open("movi_y.inc","w")
-fi_z = open("movi_z.inc","w")
-
-f_test = open("tool_i.csv","w")
-
- 
-fo_x = open("movo_x.inc","w")
-fo_y = open("movo_y.inc","w")
-fo_z = open("movo_z.inc","w")
-
 
 #CHANGE r, t 
 def make_init_curve(rac, ang_1, r, t, zi, zo, ts, dz, dt, zt, ecount, asdif): #Convex radius is from outside
@@ -719,8 +708,6 @@ if (double_sided):
 
 model.AppendPart(shell) #FIRST PART TO ADD!
 
-supp_part[:].is_moving = True
-
 if (cont_support):
   for sp in range (2*4):
     supp_part.append(Part(4+sp))
@@ -728,8 +715,6 @@ if (cont_support):
     supp_part[sp].is_rigid = True #REMEMBER LAST NODE OF THE PART IS THE PIVOT
     supp_part[sp].asignPropID(3)
     print("support part length", len(supp_part))
-    if (cont support):
-      supp_part[sp].is_moving = True
     model.AppendPart(supp_part[sp])
 
 if (not cont_support):
@@ -785,6 +770,17 @@ th_solid_model.AppendPart(solid_pt)
 th_solid_model.AppendMat(mat)
 
 if (calc_path):
+  fi_x = open("movi_x.inc","w")
+  fi_y = open("movi_y.inc","w")
+  fi_z = open("movi_z.inc","w")
+
+  f_test = open("tool_i.csv","w")
+
+   
+  fo_x = open("movo_x.inc","w")
+  fo_y = open("movo_y.inc","w")
+  fo_z = open("movo_z.inc","w")
+
 # f= open(textField.get(),"w+")
   # LA HERRAMIENTA INTERNA ESTA EN EL TOP, LA EXTERNA EN EL BOTTOM
   # PERO TOP Y BOTTOM CONFUNDE POR LAS INDENTACIONES
