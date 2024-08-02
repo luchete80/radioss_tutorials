@@ -16,10 +16,10 @@ flog = open("log.txt","w")
 
 #WORKPIECE
 largo = 0.08
-delta = 0.001
+delta = 0.0008
 thck  = 5.0e-4      #Plate Thickness
 thck_rig = 1.0e-4   #BALL
-thck_supp = 1.0e-3  #SUPP
+thck_supp = 1.0e-4  #SUPP
 
 #TOOL 
 r_i           = 5.1118e-3      #Inner Path Radius
@@ -33,8 +33,8 @@ p_S           = 4.3e-4     #ASDIF HEIGHT DISTANCE BETWEEN TOOLS
 tool_speed    = 0.6 / 60.0 * 5000 #600mm/min according to Valoppi
 t_ind         = 1.0e-3
 tool_rad      = 0.0025    #Tool radius
-gap           = 0.0e-4
-gap_cont      = -1.2e-4
+gap           = -1.0e-4
+gap_cont      = -1.5e-4
 dtout         = 5.0e-4
 dtout_his     = 5.0e-4
 end_time      = 3.1133275547e+00
@@ -43,11 +43,11 @@ supp_rel_time = 0.5
 supp_vel_ramp = True
 dynrel_time   = 1.0
 ## SCALING
-vscal_fac     = 250.0 #Affects All magnitudes with s^-1: Tool Speed, HEAT CONDUCTIVIY, CONVECTION
+vscal_fac     = 1000.0 #Affects All magnitudes with s^-1: Tool Speed, HEAT CONDUCTIVIY, CONVECTION
 
 ###### SUPPORT
-dens_supp_1 = 4
-dens_supp_2 = 50
+dens_supp_1 = 5
+dens_supp_2 = 60
 largo_supp = 0.005
 
 ###### CENTER OF PIECE 
@@ -55,7 +55,7 @@ x_init              = r_i  #DO NOT PUT xo! USED AS x OUTPUT IN DOUBLE SIDED
 x_init_o            = r_o  #DO NOT PUT xo! USED AS x OUTPUT IN DOUBLE SIDED
 move_tool_to_inipos = True # THIS IS CONVENIENT, OTHERWISE RADIOSS THROWS ERROR DUE TO LARGE DISP TO INITIAL POS
 thermal             = False
-cont_support        = True       #TRUE: SUPPORT IS MODELED BY CONTACT, FALSE: SUPPORT IS MODELED BY BCS ON NODES
+cont_support        = False       #TRUE: SUPPORT IS MODELED BY CONTACT, FALSE: SUPPORT IS MODELED BY BCS ON NODES
 double_sided        = True
 calc_path           = False
 manual_mass_scal    = False
