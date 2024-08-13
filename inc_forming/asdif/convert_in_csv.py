@@ -4,16 +4,19 @@ import numpy as np
 ###### PARAM ENTRADA ##############
 ##### ASSUMES THAT UNITS ARE MM####
 ## AND CSV IS IN MM
-vel = 600000.0; #mm/min
+vel = 60000.0; #mm/min
 #THEY ARE USED TO CORRECT INITIAL Z
 gap_0       = 0.0e-4
 dt_dum      = 1.0e-3 #Positioning
+thck        = 5.0e-4
 
 av_dist = 0.9
 dt = av_dist  / vel
 
 #NEW, THIS ACCOMODATES TOOL TO ABS Z POSITION
 t_interf = 1.0e-3
+#### IN TOP TOOL t/2 + disp = zabs
+#ZABS IS GIVEN BY TOOLTIP POINTS
 
 ###################################
 def writeFloatField(number, length, decimals):
@@ -72,7 +75,7 @@ out_z.write(writeFloatField(t*60.0,20,10) + writeFloatField(0.0,20,10) + "\n")
 
 out_x.write(writeFloatField(t_interf,20,10) + writeFloatField(0.0,20,10) + "\n")
 out_y.write(writeFloatField(t_interf,20,10) + writeFloatField(0.0,20,10) + "\n")
-out_z.write(writeFloatField(t_interf,20,10) + writeFloatField(zo, 20,10) + "\n")
+out_z.write(writeFloatField(t_interf,20,10) + writeFloatField(zo-thck/2.0, 20,10) + "\n")
 
 
 for i in range (2, len(data)) :
@@ -96,7 +99,7 @@ for i in range (2, len(data)) :
 
     out_x.write(writeFloatField(t*60.0+t_interf,20,10) + writeFloatField(f*x[0] - xo,20,10) + "\n")
     out_y.write(writeFloatField(t*60.0+t_interf,20,10) + writeFloatField(f*x[1] - yo,20,10) + "\n")
-    out_z.write(writeFloatField(t*60.0+t_interf,20,10) + writeFloatField(zo,20,10) + "\n")
+    out_z.write(writeFloatField(t*60.0+t_interf,20,10) + writeFloatField(zo-thck/2.0,20,10) + "\n")
   else:
     print("ERROR, POINT DISTANCE LESS THAN 1E-5")
   
