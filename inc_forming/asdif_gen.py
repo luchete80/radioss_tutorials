@@ -24,8 +24,6 @@ thck_supp = 1.0e-4  #SUPP
 #TOOL 
 r_i           = 5.2371e-3     #Inner Path Radius
 r_o           = 5.4078e-3     #Outer Path Radius
-z0_i          = -0.5012e-3
-z0_o          = -0.8984e-3
 r             = 0.0325
 dr            = 5.0e-4    #DESAPARECE DE ACUERDO A LA GEOMETRIA
 dt            = 1.0e-5    #Time increment for path gen
@@ -120,12 +118,12 @@ shell_mesh = Plane_Mesh(1,largo,delta)
 if (not move_tool_to_inipos):
   x_init = 0.0
 sph1_mesh = Sphere_Mesh(2, tool_rad,        \
-                        x_init, 0.0,(tool_rad + thck/2.0 + gap + thck_rig/2.0 + z0_i), \
+                        x_init, 0.0,(tool_rad + thck/2.0 + gap + thck_rig/2.0), \
                                         5) #(id, radius, divisions):
 
 if (double_sided):
   sph2_mesh = Sphere_Mesh(3, tool_rad,        \
-                        x_init_o, 0.0,(-tool_rad - thck/2.0 - gap-thck_rig/2.0 + z0_o), \
+                        x_init_o, 0.0,(-tool_rad - thck/2.0 - gap-thck_rig/2.0), \
                                         5) #(id, radius, divisions):
                                         
 
