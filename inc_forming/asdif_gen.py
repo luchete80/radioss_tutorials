@@ -15,15 +15,17 @@ flog = open("log.txt","w")
 #################### INPUT VARS
 
 #WORKPIECE
-largo = 0.22
-delta = 0.004
-thck  = 6.5e-4      #Plate Thickness
+largo = 0.08
+delta = 0.0008
+thck  = 5.0e-4      #Plate Thickness
 thck_rig = 1.0e-4   #BALL
-thck_supp = 1.0e-3  #SUPP
+thck_supp = 1.0e-4  #SUPP
 
 #TOOL 
-r_i           = 88.7233e-3      #Inner Path Radius
-r_o           = 0.0325    #Outer Path Radius
+r_i           = 5.2371e-3     #Inner Path Radius
+r_o           = 5.4078e-3     #Outer Path Radius
+z0_i          = -0.5012e-3
+z0_o          = -0.8984e-3
 r             = 0.0325
 dr            = 5.0e-4    #DESAPARECE DE ACUERDO A LA GEOMETRIA
 dt            = 1.0e-5    #Time increment for path gen
@@ -32,10 +34,10 @@ p_D           = 2.5e-3     #ASDIF RADIAL DISTANCE BETWEEN TOOLS
 p_S           = 4.3e-4     #ASDIF HEIGHT DISTANCE BETWEEN TOOLS
 tool_speed    = 0.6 / 60.0 * 5000 #600mm/min according to Valoppi
 t_ind         = 1.0e-3
-tool_rad      = 0.00755    #Tool radius
+tool_rad      = 0.0025    #Tool radius
 gap           = 0.0e-4
-gap_cont      = 1.3e-4
-dtout         = 5.0e-3
+gap_cont      = -1.5e-4
+dtout         = 5.0e-4
 dtout_his     = 5.0e-4
 end_time      = 3.1133275547e+00
 v_supp        = 1.0e-3
@@ -46,16 +48,17 @@ dynrel_time   = 1.0
 vscal_fac     = 250.0 #Affects All magnitudes with s^-1: Tool Speed, HEAT CONDUCTIVIY, CONVECTION
 
 ###### SUPPORT
-dens_supp_1 = 4
-dens_supp_2 = 50
-largo_supp = 0.01
+dens_supp_1 = 5
+dens_supp_2 = 60
+largo_supp = 0.005
 
 ###### CENTER OF PIECE 
 x_init              = r_i  #DO NOT PUT xo! USED AS x OUTPUT IN DOUBLE SIDED
+x_init_o            = r_o  #DO NOT PUT xo! USED AS x OUTPUT IN DOUBLE SIDED
 move_tool_to_inipos = True # THIS IS CONVENIENT, OTHERWISE RADIOSS THROWS ERROR DUE TO LARGE DISP TO INITIAL POS
 thermal             = False
-cont_support        = True       #TRUE: SUPPORT IS MODELED BY CONTACT, FALSE: SUPPORT IS MODELED BY BCS ON NODES
-double_sided        = False
+cont_support        = False       #TRUE: SUPPORT IS MODELED BY CONTACT, FALSE: SUPPORT IS MODELED BY BCS ON NODES
+double_sided        = True
 calc_path           = False
 manual_mass_scal    = False
 
@@ -116,13 +119,13 @@ shell_elnod = [(1,2,3,4)]
 shell_mesh = Plane_Mesh(1,largo,delta)
 if (not move_tool_to_inipos):
   x_init = 0.0
-sph1_mesh = Sphere_Mesh(2, tool_rad-thck_rig/2.0,        \
-                        x_init, 0.0,(tool_rad + thck/2.0 + gap + thck_rig), \
+sph1_mesh = Sphere_Mesh(2, tool_rad,        \
+                        x_init, 0.0,(tool_rad + thck/2.0 + gap + thck_rig/2.0 + z0_i), \
                                         5) #(id, radius, divisions):
 
 if (double_sided):
-  sph2_mesh = Sphere_Mesh(3, tool_rad-thck_rig/2.0,        \
-                        0.0, 0.0,(-tool_rad - thck/2.0 - gap-thck_rig), \
+  sph2_mesh = Sphere_Mesh(3, tool_rad,        \
+                        x_init_o, 0.0,(-tool_rad - thck/2.0 - gap-thck_rig/2.0 + z0_o), \
                                         5) #(id, radius, divisions):
                                         
 

@@ -54,7 +54,7 @@ p_D           = 2.5e-3     #ASDIF RADIAL DISTANCE BETWEEN TOOLS
 p_S           = 4.3e-4     #ASDIF HEIGHT DISTANCE BETWEEN TOOLS
 
 tool_rad      = 0.0025    #Tool radius
-gap           = -5.0e-5
+gap           = -8.0e-5
 gap_cont      = -2.0e-4
 dtout         = 5.0e-4
 dtout_his     = 1.0e-4

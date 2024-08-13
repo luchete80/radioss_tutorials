@@ -291,7 +291,7 @@ class Rect_Plane_Mesh(Mesh):
     print ("dx: ",dx)
     dy = ly/elem_y
     z = z_
-    
+    print ("Adding rect on z: ", z_)
     ncx = (int)(elem_x+1)
     ncy = (int)(elem_y+1)
     
@@ -908,25 +908,25 @@ class Model:
 
         
     
-    
-    ## SUPPORT RELEASE THING
-    for velf in range(len(self.supp_fnc)):
-      self.supp_fnc[velf].print(f)
-    
-    print ("Printing Node groups %d \n" % (self.node_group_count))
-    for lf in range (1, 9):
-      # print ("fn ", self.load_fnc[lf][0], "\n")
-      line = "/IMPVEL/%d\nVEL_SUPP%d\n" % (lf+1,lf+1)
-      line = line + "#funct_IDT       Dir   skew_ID sensor_ID  grnod_ID  frame_ID     Icoor\n"
-      line = line + writeIntField(self.supp_fnc[0].id,10) + "         Z         0         0" + writeIntField (103+lf,10) + "         0         0\n"
-      line = line + "#           Ascale_x            Fscale_Y              Tstart               Tstop\n"
-      if lf % 2 == 0:
-        fscale = writeIntField(1,20)
-      else:
-        fscale = writeIntField(-1,20)
-      line = line + "                   0" + fscale + "                   0               11000\n"
-      line = line + "#---1----|----2----|----3----|----4----|----5----|----6----|----7----|----8----|----9----|---10----|\n"
-      f.write(line)
+    if (self.cont_support):
+      ## SUPPORT RELEASE THING
+      for velf in range(len(self.supp_fnc)):
+        self.supp_fnc[velf].print(f)
+      
+      print ("Printing Node groups %d \n" % (self.node_group_count))
+      for lf in range (1, 9):
+        # print ("fn ", self.load_fnc[lf][0], "\n")
+        line = "/IMPVEL/%d\nVEL_SUPP%d\n" % (lf+1,lf+1)
+        line = line + "#funct_IDT       Dir   skew_ID sensor_ID  grnod_ID  frame_ID     Icoor\n"
+        line = line + writeIntField(self.supp_fnc[0].id,10) + "         Z         0         0" + writeIntField (103+lf,10) + "         0         0\n"
+        line = line + "#           Ascale_x            Fscale_Y              Tstart               Tstop\n"
+        if lf % 2 == 0:
+          fscale = writeIntField(1,20)
+        else:
+          fscale = writeIntField(-1,20)
+        line = line + "                   0" + fscale + "                   0               11000\n"
+        line = line + "#---1----|----2----|----3----|----4----|----5----|----6----|----7----|----8----|----9----|---10----|\n"
+        f.write(line)
 
       
     f.write('/END\n')
