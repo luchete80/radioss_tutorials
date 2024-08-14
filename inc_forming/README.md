@@ -75,3 +75,20 @@ INTERFACE 4
 #  Slav_id   Mast_id      Istf      Ithe      Igap                Ibag      Idel     Icurv      Iadm
          1   1000006         0         0         0                   0         0         0         0
 ```
+
+Things to add for Damping and MS
+```
+/DAMP/1
+MASS_DAMP_1
+100.0                                   1
+/AMS
+1
+/GRPART/PART/1
+PART_1
+1
+```
+And, in engine file
+```
+/DT/AMS/0
+0.67
+```
