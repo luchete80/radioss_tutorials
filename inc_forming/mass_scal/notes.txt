@@ -1,0 +1,15 @@
+https://github.com/orgs/OpenRadioss/discussions/1775
+
+
+Hi Fabien,
+
+yes, /DT/NODA/CST/Iflag should be used for mass scaling.
+Besides the elementary time step, OpenRadioss has also another (optional)one: nodal time step which Abaqus and Ls-dyna have not.
+there is 2 main advantages of this nodal time step :
+
+generally nodal time step >= elementary time due to the fact that nodal one uses global assembled (at node) terms instead of local elementary terms, and nodal time step (almost all elements in Radioss) is computed based on the elementary one (stiffness&mass are then distributed to nodes); you can find the same time step value when the model contains only one element.
+2)time step compute involving contact, rigid body... can be easily estimated by nodal time step, that's why in OpenRadioss, when penalty contact happened during the run, elementary time step (if initially) will passe to nodal time step automatically.
+For your question how to convert Abaqus mass scaling to OpenRadioss, i think converting the same target time step value to OpenRadioss could be already fine, then OpenRadioss will add less masses if they have the same elementary time step. (if OpenRadioss added more masses, there is a big chance that elementary time step is higher than Radioss' one)
+hope this helps.
+
+Qiang.
