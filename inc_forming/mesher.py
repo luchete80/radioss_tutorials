@@ -974,7 +974,7 @@ class Model:
     f.write(str(dthis) + "\n")
     f.write("/STOP\n")
     f.write("0 1e+08 0 1 1\n")
-    if (self.mass_scal)
+    if (self.mass_scal):
       f.write("/DT/NODA/CST/0\n")
       f.write("0.67   "+str(self.ms_dtsize)+"\n")
 
