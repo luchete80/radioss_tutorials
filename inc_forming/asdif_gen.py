@@ -16,7 +16,7 @@ flog = open("log.txt","w")
 
 #WORKPIECE
 largo = 0.08
-delta = 0.0008
+delta = 0.0006
 thck  = 5.0e-4      #Plate Thickness
 thck_rig = 1.0e-4   #BALL
 thck_supp = 1.0e-4  #SUPP
