@@ -43,7 +43,7 @@ supp_rel_time = 0.5
 supp_vel_ramp = True
 dynrel_time   = 1.0
 ## SCALING
-vscal_fac     = 250.0 #Affects All magnitudes with s^-1: Tool Speed, HEAT CONDUCTIVIY, CONVECTION
+vscal_fac     = 1.0 #Affects All magnitudes with s^-1: Tool Speed, HEAT CONDUCTIVIY, CONVECTION
 
 ###### SUPPORT
 dens_supp_1 = 5
@@ -58,7 +58,8 @@ thermal             = False
 cont_support        = False       #TRUE: SUPPORT IS MODELED BY CONTACT, FALSE: SUPPORT IS MODELED BY BCS ON NODES
 double_sided        = True
 calc_path           = False
-manual_mass_scal    = False
+mass_scal           = True
+ms_dtsize           = 1.0e-4
 
 
 ###### MATERIAL
@@ -119,12 +120,12 @@ if (not move_tool_to_inipos):
   x_init = 0.0
 sph1_mesh = Sphere_Mesh(2, tool_rad,        \
                         x_init, 0.0,(tool_rad + thck/2.0 + gap + thck_rig/2.0), \
-                                        5) #(id, radius, divisions):
+                                        8) #(id, radius, divisions):
 
 if (double_sided):
   sph2_mesh = Sphere_Mesh(3, tool_rad,        \
                         x_init_o, 0.0,(-tool_rad - thck/2.0 - gap-thck_rig/2.0), \
-                                        5) #(id, radius, divisions):
+                                        8) #(id, radius, divisions):
                                         
 
 if (cont_support):
@@ -176,6 +177,9 @@ print ("Model size: ", len(model.part))
 shell = Part(1)
 shell.AppendMesh(shell_mesh) 
 model.vscal_fac = vscal_fac
+
+model.mass_scal = mass_scal
+model.ms_dtsize = ms_dtsize 
 
 bcpos = largo/2.0 - largo_supp
 

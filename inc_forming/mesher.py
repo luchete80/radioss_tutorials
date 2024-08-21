@@ -680,6 +680,9 @@ class Model:
   min_dt = 1.0e-4
   end_proc_time = 0.0 #Before release
   vscal_fac = 1.0
+  mass_scal = False
+  ms_dtsize = 1.0e-4
+  
   def __init__(self):
     self.part_count = 0
     self.part = []
@@ -970,8 +973,10 @@ class Model:
 # Binary IEEE 32-bit
     f.write(str(dthis) + "\n")
     f.write("/STOP\n")
-    f.write("0 1e+08 0 1 1\n") 
-
+    f.write("0 1e+08 0 1 1\n")
+    if (self.mass_scal)
+      f.write("/DT/NODA/CST/0\n")
+      f.write("0.67   "+str(self.ms_dtsize)+"\n")
 
   def printRelease(self, run, time, dt, dthis):
     f = open(self.starter_file + "_000" + str(run) + ".rad","w+")
