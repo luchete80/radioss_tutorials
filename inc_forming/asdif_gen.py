@@ -29,6 +29,7 @@ r_o           = 0.0     #Outer Path Radius
 #TOOL (IT NOT CALC PATH)
 topfname = "myToolpath_topToolTipPnts.csv"
 botfname = "myToolpath_botToolTipPnts.csv"
+mm       = 1.0e-3 #IF UNITS ARE IN MM
 
 r             = 0.0325
 dr            = 5.0e-4    #DESAPARECE DE ACUERDO A LA GEOMETRIA
@@ -41,8 +42,8 @@ t_ind         = 1.0e-3
 tool_rad      = 0.0025    #Tool radius
 gap           = 0.0e-4
 gap_cont      = -1.5e-4
-dtout         = 5.0e-4
-dtout_his     = 5.0e-4
+dtout         = 1.0e-1
+dtout_his     = 1.0e-1
 end_time      = 3.1133275547e+00
 v_supp        = 1.0e-3
 supp_rel_time = 0.5
@@ -117,8 +118,10 @@ if (not calc_path):
     botf = open(botfname) #OUT
     topdata = list(csv.reader(topf, delimiter=','))
     botdata = list(csv.reader(botf, delimiter=','))
-    xy_i = [float(topdata[1][0]),float(topdata[1][1])]
-    xy_o = [float(botdata[1][0]),float(botdata[1][1])]
+
+    xy_i = [float(topdata[1][0])*mm,float(topdata[1][1])*mm]
+    xy_o = [float(botdata[1][0])*mm,float(botdata[1][1])*mm]
+
     print ("Top    Init X and Y positions: ", xy_i[0],xy_i[1])
     print ("Bottom Init X and Y positions: ", xy_o[0],xy_o[1])  
   except IOError:
