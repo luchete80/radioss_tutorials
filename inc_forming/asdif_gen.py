@@ -2,6 +2,8 @@
 from math import *
 from mesher import *
 import numpy as np
+import csv
+import sys
 
 # from tkinter import *
 # from tkinter.ttk import Combobox
@@ -21,9 +23,13 @@ thck  = 5.0e-4      #Plate Thickness
 thck_rig = 1.0e-4   #BALL
 thck_supp = 1.0e-4  #SUPP
 
-#TOOL 
-r_i           = 5.2371e-3     #Inner Path Radius
-r_o           = 5.4078e-3     #Outer Path Radius
+#TOOL (IF CALC PATH)
+r_i           = 0.0     #Inner Path Radius
+r_o           = 0.0     #Outer Path Radius
+#TOOL (IT NOT CALC PATH)
+topfname = "myToolpath_topToolTipPnts.csv"
+botfname = "myToolpath_botToolTipPnts.csv"
+
 r             = 0.0325
 dr            = 5.0e-4    #DESAPARECE DE ACUERDO A LA GEOMETRIA
 dt            = 1.0e-5    #Time increment for path gen
@@ -54,6 +60,7 @@ largo_supp = 0.005
 x_init              = r_i  #DO NOT PUT xo! USED AS x OUTPUT IN DOUBLE SIDED
 x_init_o            = r_o  #DO NOT PUT xo! USED AS x OUTPUT IN DOUBLE SIDED
 move_tool_to_inipos = True # THIS IS CONVENIENT, OTHERWISE RADIOSS THROWS ERROR DUE TO LARGE DISP TO INITIAL POS
+                           #ONLY USED IF NOT CALC PATH
 thermal             = False
 cont_support        = False       #TRUE: SUPPORT IS MODELED BY CONTACT, FALSE: SUPPORT IS MODELED BY BCS ON NODES
 double_sided        = True
@@ -102,6 +109,23 @@ mat.e0jc  = 0.04
 # textField.grid(column=2, row=0)
 # textField.insert(0,"test")
 
+if (not calc_path):
+  try:
+    print ("Reading Tool Path files to position tool")
+    print (topfname + ", " + topfname)
+    topf = open(topfname) #IN
+    botf = open(botfname) #OUT
+    topdata = list(csv.reader(topf, delimiter=','))
+    botdata = list(csv.reader(botf, delimiter=','))
+    xy_i = [float(topdata[1][0]),float(topdata[1][1])]
+    xy_o = [float(botdata[1][0]),float(botdata[1][1])]
+    print ("Top    Init X and Y positions: ", xy_i[0],xy_i[1])
+    print ("Bottom Init X and Y positions: ", xy_o[0],xy_o[1])  
+  except IOError:
+    print('There was an error opening the toolpaths files!')
+    #return
+    sys.exit()
+
 test = [(1,1),(2,2)]
 test.append((3,4))
 print (test)
@@ -116,15 +140,25 @@ shell_elnod = [(1,2,3,4)]
 
 
 shell_mesh = Plane_Mesh(1,largo,delta)
-if (not move_tool_to_inipos):
-  x_init = 0.0
+if (calc_path):
+  y_init = 0.0
+  y_init_o = 0.0
+  if (not move_tool_to_inipos):
+    x_init   = 0.0  
+    x_init_o = 0.0  
+else:
+  x_init=xy_i[0]     
+  y_init=xy_i[1]
+  x_init_o=xy_o[0]  
+  y_init_o=xy_o[1]
+  
 sph1_mesh = Sphere_Mesh(2, tool_rad,        \
-                        x_init, 0.0,(tool_rad + thck/2.0 + gap + thck_rig/2.0), \
+                        x_init, y_init_o,(tool_rad + thck/2.0 + gap + thck_rig/2.0), \
                                         8) #(id, radius, divisions):
 
 if (double_sided):
   sph2_mesh = Sphere_Mesh(3, tool_rad,        \
-                        x_init_o, 0.0,(-tool_rad - thck/2.0 - gap-thck_rig/2.0), \
+                        x_init_o, y_init_o,(-tool_rad - thck/2.0 - gap-thck_rig/2.0), \
                                         8) #(id, radius, divisions):
                                         
 
@@ -366,6 +400,7 @@ if (calc_path):
     turn += 1    
 
   #SPRINGBACK
+  
   fi_x.close;fi_y.close;fi_z.close
   if (double_sided):
     fo_x.close;fo_y.close;fo_z.close
