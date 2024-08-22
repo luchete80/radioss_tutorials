@@ -41,14 +41,14 @@ tool_speed    = 0.6 / 60.0 * 5000 #600mm/min according to Valoppi
 t_ind         = 1.0e-3
 tool_rad      = 0.0025    #Tool radius
 gap           = 0.0e-4
-gap_cont      = -1.5e-4
-dtout         = 1.0e-1
-dtout_his     = 1.0e-1
-end_time      = 3.1133275547e+00
+gap_cont      = -2.2e-4
+dtout         = 1.0
+dtout_his     = 1.0
+end_time      = 2145.0
 v_supp        = 1.0e-3
-supp_rel_time = 0.5
+supp_rel_time = 10.0
 supp_vel_ramp = True
-dynrel_time   = 1.0
+dynrel_time   = 5.0
 ## SCALING
 vscal_fac     = 1.0 #Affects All magnitudes with s^-1: Tool Speed, HEAT CONDUCTIVIY, CONVECTION
 
@@ -72,21 +72,21 @@ ms_dtsize           = 1.0e-4
 
 ###### MATERIAL
 mat = Material(1,thermal) #ID, THERMAL
-mat.rho     = 7850.0
-mat.E       = 200.0e9
-mat.nu      = 0.33
+mat.rho     = 4430.0
+mat.E       = 105.0e9
+mat.nu      = 0.34
 mat.vs_fac  = vscal_fac
 
 #thermal
-mat.k_th  = 15.0 # 15 //
-mat.cp_th = 419.11
+mat.k_th  = 7.4 # 15 //
+mat.cp_th = 520.0
 
-mat.Ajc   = 359.0e6
-mat.Bjc   = 327.0e6
-mat.njc   = 0.454
-mat.mjc   = 0.919
-mat.Cjc   = 0.0786
-mat.e0jc  = 0.04
+mat.Ajc   = 790.0e6
+mat.Bjc   = 478.0e6
+mat.njc   = 0.28
+mat.mjc   = 1.0
+mat.Cjc   = 0.032
+mat.e0jc  = 1.0
 
 ##### SCALING
 # class Scaling(Enum):
@@ -414,8 +414,9 @@ f_upper_supp.Append(end_time, 0.0)
 if (not supp_vel_ramp):
   f_upper_supp.Append(end_time+1.0e-4, v_supp)
 f_upper_supp.Append(end_time+supp_rel_time, v_supp)
-f_upper_supp.Append(end_time+supp_rel_time+1.0e-4,  10.0*v_supp)
-f_upper_supp.Append(end_time+supp_rel_time+1.0e-4+dynrel_time,      10.0*v_supp)
+#f_upper_supp.Append(end_time+supp_rel_time+1.0e-4,  10.0*v_supp)
+#f_upper_supp.Append(end_time+supp_rel_time+1.0e-4+dynrel_time,      10.0*v_supp)
+f_upper_supp.Append(end_time+supp_rel_time+dynrel_time,      10.0*v_supp)
 model.supp_fnc.append(f_upper_supp)
 
 
