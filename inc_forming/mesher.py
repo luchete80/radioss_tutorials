@@ -682,6 +682,7 @@ class Model:
   vscal_fac = 1.0
   mass_scal = False
   ms_dtsize = 1.0e-4
+  dampfac   = 0.0
   
   def __init__(self):
     self.part_count = 0
@@ -931,6 +932,12 @@ class Model:
         line = line + "#---1----|----2----|----3----|----4----|----5----|----6----|----7----|----8----|----9----|---10----|\n"
         f.write(line)
 
+    if (self.dampfac > 0.0):
+      print("Added Dampint factor of "+str(self.dampfac))
+      line = "/DAMP/1\n"+"MASS_DAMP_1\n"+writeFloatField(self.dampfac,20,6)+writeFloatField(0.0,20,6)+"         1\n"
+      f.write(line)
+    else:
+      print("No Damping was added.")
       
     f.write('/END\n')
     

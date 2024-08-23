@@ -51,6 +51,7 @@ supp_vel_ramp = True
 dynrel_time   = 5.0
 ## SCALING
 vscal_fac     = 1.0 #Affects All magnitudes with s^-1: Tool Speed, HEAT CONDUCTIVIY, CONVECTION
+dampfac       = 100.0
 
 ###### SUPPORT
 dens_supp_1 = 5
@@ -217,6 +218,7 @@ model.vscal_fac = vscal_fac
 
 model.mass_scal = mass_scal
 model.ms_dtsize = ms_dtsize 
+model.dampfac   = dampfac
 
 bcpos = largo/2.0 - largo_supp
 
