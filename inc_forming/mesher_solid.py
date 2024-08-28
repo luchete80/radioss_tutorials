@@ -558,7 +558,7 @@ class Material:
     self.thermal = th
     id = mid
   def printRadioss(self,f):
-    if (self.mech):
+    #if (self.mech):
       f.write("/MAT/PLAS_JOHNS/2\n")  
       f.write("MAT_PIECEWISE_LINEAR_PLASTICITY:2 TITLE:mat_probe   \n")
       f.write(writeFloatField(self.rho,20,6) + "\n")
@@ -582,14 +582,14 @@ class Material:
         f.write("                20.0" + writeFloatField(self.rho*self.cp_th*self.ms_fac,20,6) + writeFloatField(self.vs_fac*self.k_th,20,6) + "                 0.0        1\n")
         f.write(" \n") #REQUIRED
 
-    else:
-      if (not self.mech):
-        f.write("#/MAT/THERM/mat_ID/unit_ID\n")
-        f.write("/MAT/THERM/2\n")
-        f.write("TITLE\n")
-        f.write(writeFloatField(self.rho,20,6) + "\n")
-        f.write(writeFloatField(self.rho*self.cp_th,20,6) + writeFloatField(self.k_th,20,6) + "\n")
-        f.write("\n\n\n")
+#    else:
+#      if (not self.mech):
+#        f.write("#/MAT/THERM/mat_ID/unit_ID\n")
+#        f.write("/MAT/THERM/2\n")
+#        f.write("TITLE\n")
+#        f.write(writeFloatField(self.rho,20,6) + "\n")
+#        f.write(writeFloatField(self.rho*self.cp_th,20,6) + writeFloatField(self.k_th,20,6) + "\n")
+#        f.write("\n\n\n")
     
     
 class Function:

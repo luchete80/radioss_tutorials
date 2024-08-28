@@ -2,6 +2,7 @@
 from math import *
 from mesher_solid import *
 import numpy as np
+import csv
 
 # from tkinter import *
 # from tkinter.ttk import Combobox
@@ -78,7 +79,7 @@ x_init              = r_i  #DO NOT PUT xo! USED AS x OUTPUT IN DOUBLE SIDED
 x_init_o            = r_o  #DO NOT PUT xo! USED AS x OUTPUT IN DOUBLE SIDED
 move_tool_to_inipos = True # THIS IS CONVENIENT, OTHERWISE RADIOSS THROWS ERROR DUE TO LARGE DISP TO INITIAL POS
 mech                = False
-thermal             = False
+thermal             = True
 cont_support        = False       #TRUE: SUPPORT IS MODELED BY CONTACT, FALSE: SUPPORT IS MODELED BY BCS ON NODES
 double_sided        = True
 manual_mass_scal    = False
@@ -456,8 +457,9 @@ else: #NO PATH CALCULATION
     reader = csv.reader(file)
     data = list(csv.reader(file, delimiter=','))
     i = 1
-    while (t < end_time):
-      xi = np.array([float(data[i][0]), float(data[i][1]), float (data[i][2])])      
+    print ("Path size ", len(data))
+    while (i < len(data)):
+      xi = np.array([float(data[i][0]), float(data[i][1]), 0.0])      
       e = model.part[0].mesh[0].findNearestElem(xi,yi,0.0)
       flog.write ("TIME %f, pos: %.6e %.6e, Found %d\n" % (t, xi[0], xi[1], e ))
       coord = str (model.part[0].mesh[0].elcenter[e].components)
