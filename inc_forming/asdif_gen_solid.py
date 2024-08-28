@@ -17,11 +17,11 @@ flog = open("log.txt","w")
 
 #WORKPIECE
 largo = 0.08
-delta = 0.0015
+delta = 0.0006
 thck  = 5.0e-4      #Plate Thickness
 thck_rig = 1.0e-4   #BALL
 thck_supp = 1.0e-3  #SUPP
-
+mech = True
 vscal_fac     = 2000.0 #Affects All magnitudes with s^-1: Tool Speed, HEAT CONDUCTIVIY, CONVECTION
 
 #TOOL 
@@ -78,8 +78,8 @@ largo_supp = 0.0050
 x_init              = r_i  #DO NOT PUT xo! USED AS x OUTPUT IN DOUBLE SIDED
 x_init_o            = r_o  #DO NOT PUT xo! USED AS x OUTPUT IN DOUBLE SIDED
 move_tool_to_inipos = True # THIS IS CONVENIENT, OTHERWISE RADIOSS THROWS ERROR DUE TO LARGE DISP TO INITIAL POS
-mech                = False
-thermal             = True
+
+thermal             = False
 cont_support        = False       #TRUE: SUPPORT IS MODELED BY CONTACT, FALSE: SUPPORT IS MODELED BY BCS ON NODES
 double_sided        = True
 manual_mass_scal    = False
@@ -90,7 +90,7 @@ manual_mass_scal    = False
 # Ti-6Al-4V used for high speed cutting simulation
 ###### MATERIAL
 mat = Material(1,thermal) #ID, THERMAL
-mat.mech    = mech
+mat.mech    = True
 mat.rho     = 4430.0
 mat.E       = 105.0e9
 mat.nu      = 0.34
@@ -449,7 +449,6 @@ if (calc_path):
   if (double_sided):
     fo_x.close;fo_y.close;fo_z.close
 
-
 else: #NO PATH CALCULATION
   t = 0.0    
   if (thermal):
@@ -460,7 +459,7 @@ else: #NO PATH CALCULATION
     print ("Path size ", len(data))
     while (i < len(data)):
       xi = np.array([float(data[i][0]), float(data[i][1]), 0.0])      
-      e = model.part[0].mesh[0].findNearestElem(xi,yi,0.0)
+      e = model.part[0].mesh[0].findNearestElem(xi[0],xi[1],0.0)
       flog.write ("TIME %f, pos: %.6e %.6e, Found %d\n" % (t, xi[0], xi[1], e ))
       coord = str (model.part[0].mesh[0].elcenter[e].components)
       flog.write ("baricenter: %s\n" %(coord))  
