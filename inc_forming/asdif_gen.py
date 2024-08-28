@@ -4,6 +4,8 @@ from mesher import *
 import numpy as np
 import csv
 import sys
+from  convert_in_csv import *
+from  convert_out_csv import *
 
 # from tkinter import *
 # from tkinter.ttk import Combobox
@@ -27,8 +29,19 @@ thck_supp = 1.0e-4  #SUPP
 r_i           = 0.0     #Inner Path Radius
 r_o           = 0.0     #Outer Path Radius
 #TOOL (IT NOT CALC PATH)
+#OUTPUT
 topfname = "myToolpath_topToolTipPnts.csv"
 botfname = "myToolpath_botToolTipPnts.csv"
+
+print ("Generating tool paths")
+convert_in (topfname)
+convert_out(botfname)
+
+print ("TOP TOOL Initial Pos")
+ini_xy_in  = get_InitialXY(topfname)
+print ("BOT TOOL Initial Pos")
+ini_xy_out = get_InitialXY(botfname)
+
 mm       = 1.0e-3 #IF UNITS ARE IN MM
 
 r             = 0.0325
@@ -63,7 +76,7 @@ x_init              = r_i  #DO NOT PUT xo! USED AS x OUTPUT IN DOUBLE SIDED
 x_init_o            = r_o  #DO NOT PUT xo! USED AS x OUTPUT IN DOUBLE SIDED
 move_tool_to_inipos = True # THIS IS CONVENIENT, OTHERWISE RADIOSS THROWS ERROR DUE TO LARGE DISP TO INITIAL POS
                            #ONLY USED IF NOT CALC PATH
-thermal             = False
+thermal             = True
 cont_support        = True       #TRUE: SUPPORT IS MODELED BY CONTACT, FALSE: SUPPORT IS MODELED BY BCS ON NODES
 double_sided        = True
 calc_path           = False
@@ -113,6 +126,8 @@ mat.e0jc  = 1.0
 
 if (not calc_path):
   try:
+    #first convert output from moser output to radioss format. 
+    
     print ("Reading Tool Path files to position tool")
     print (topfname + ", " + topfname)
     topf = open(topfname) #IN
@@ -410,6 +425,21 @@ if (calc_path):
   if (double_sided):
     fo_x.close;fo_y.close;fo_z.close
 
+else: #NO PATH CALCULATION
+  t = 0.0    
+  if (thermal):
+    file = open(topfname)
+    reader = csv.reader(file)
+    data = list(csv.reader(file, delimiter=','))
+    i = 1
+    while (t < end_time):
+      xi = np.array([float(data[i][0]), float(data[i][1]), float (data[i][2])])      
+      e = model.part[0].mesh[0].findNearestElem(xi,yi,0.0)
+      flog.write ("TIME %f, pos: %.6e %.6e, Found %d\n" % (t, xi[0], xi[1], e ))
+      coord = str (model.part[0].mesh[0].elcenter[e].components)
+      flog.write ("baricenter: %s\n" %(coord))  
+      model.load_fnc[e].Append(t,1.0e6)  
+  
               #filename, name, id, init_time, veloc):
 f_upper_supp = Function(1000007,0.0,0.0) 
 f_upper_supp.Append(end_time, 0.0)
