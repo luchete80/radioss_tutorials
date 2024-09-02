@@ -17,11 +17,11 @@ flog = open("log.txt","w")
 
 #WORKPIECE
 largo = 0.08
-delta = 0.0006
+delta = 0.001
 thck  = 5.0e-4      #Plate Thickness
 thck_rig = 1.0e-4   #BALL
 thck_supp = 1.0e-3  #SUPP
-mech = True
+mech = False
 vscal_fac     = 2000.0 #Affects All magnitudes with s^-1: Tool Speed, HEAT CONDUCTIVIY, CONVECTION
 
 #TOOL 
@@ -79,7 +79,7 @@ x_init              = r_i  #DO NOT PUT xo! USED AS x OUTPUT IN DOUBLE SIDED
 x_init_o            = r_o  #DO NOT PUT xo! USED AS x OUTPUT IN DOUBLE SIDED
 move_tool_to_inipos = True # THIS IS CONVENIENT, OTHERWISE RADIOSS THROWS ERROR DUE TO LARGE DISP TO INITIAL POS
 
-thermal             = False
+thermal             = True
 cont_support        = False       #TRUE: SUPPORT IS MODELED BY CONTACT, FALSE: SUPPORT IS MODELED BY BCS ON NODES
 double_sided        = True
 manual_mass_scal    = False
@@ -117,6 +117,12 @@ shell_elnod = [(1,2,3,4)]
 
 topfname = "myToolpath_topToolTipPnts.csv"
 botfname = "myToolpath_botToolTipPnts.csv"
+
+##### THERMAL HEAT GEN
+t_interf = 1.0
+vel = 600.0; #mm/min
+av_dist = 0.9
+dt = av_dist  / vel
 
 #shell_mesh = Plane_Mesh(1,largo,delta)
 
@@ -449,21 +455,38 @@ if (calc_path):
   if (double_sided):
     fo_x.close;fo_y.close;fo_z.close
 
+
 else: #NO PATH CALCULATION
-  t = 0.0    
-  if (thermal):
+  print ("Writing heat source functions")  
+  prev_elem = -1
+  print("Calculating heat source")
+  
+  if (thermal): 
     file = open(topfname)
     reader = csv.reader(file)
     data = list(csv.reader(file, delimiter=','))
     i = 1
     print ("Path size ", len(data))
-    while (i < len(data)):
+    #while (i < len(data)):
+    for e in range(model.part[0].mesh[0].elem_count):
+      model.load_fnc[e].Append(t_interf,0.0)
+    t = t_interf
+    while (i < 100):
+      if (i%100==0):
+        print("Time  " +str(i) + " of " +str(len(data)))
       xi = np.array([float(data[i][0]), float(data[i][1]), 0.0])      
       e = model.part[0].mesh[0].findNearestElem(xi[0],xi[1],0.0)
       flog.write ("TIME %f, pos: %.6e %.6e, Found %d\n" % (t, xi[0], xi[1], e ))
       coord = str (model.part[0].mesh[0].elcenter[e].components)
-      flog.write ("baricenter: %s\n" %(coord))  
-      model.load_fnc[e].Append(t,1.0e6)  
+      flog.write ("baricenter: %s\n" %(coord)) 
+      prev_elem = e
+      t+=dt
+      model.load_fnc[e].Append(t,1.0e6)
+      if (e != prev_elem):
+        model.load_fnc[prev_elem].Append(t,0.0)  
+      
+      i += 1
+      
 
               #filename, name, id, init_time, veloc):
 f_upper_supp = Function(1000007,0.0,0.0) 
@@ -487,7 +510,7 @@ for e in range (model.part[0].mesh[0].elem_count):
   # for f in range (model.load_fnc[e].val_count):
     # print ("Load Fnction ", e, model.load_fnc[e].getVal(f))
   
-
+print ("Writing input")
 model.printRadioss("test")
 
 model.printEngine(1, end_time,dtout,dtout_his)

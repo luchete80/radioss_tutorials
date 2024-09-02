@@ -543,7 +543,7 @@ class Prop:
       f.write("/PROP/SOLID/" + str(self.pid) + "\n")
       f.write("SECTION_SHELL:1 TITLE:probe_section  \n")                                                               
       f.write("#Ishell	Ismstr	Ish3n	Idril	 	 	P_thickfail\n")
-      f.write("         1\n\n\n")                                   
+      f.write("        14\n\n\n") #SOLID TYPE 1 DOES NOT WORK WITH TEMP COUPLING
     
         
          
@@ -640,13 +640,17 @@ class Part:
     if (self.mesh[0].type == "shell"):
       f.write('/SHELL/' + str(self.id) + '\n')
     if (self.mesh[0].type == "solid"):
-      f.write('/BRICK/' + str(self.id) + '\n')    
+      f.write('/BRICK/' + str(self.id) + '\n')  
+    print ("Writing elements")
     for i in range (self.mesh[0].elem_count):
+      if (i%100==0):
+        print ("Element " + str(i) + "of / " + str(self.mesh[0].elem_count))
       line = writeIntField(i + self.mesh[0].ini_elem_id ,10)
       for d in range (np.size(self.mesh[0].elnod,1)):
         # print (self.mesh[0].ini_node_id, ", ")
         line = line + writeIntField(self.mesh[0].elnod[i][d] + self.mesh[0].ini_node_id,10)
       f.write(line + '\n')   
+    print ("Done.")
     
     line = "/PART/%d\n" % self.id
     f.write(line)
@@ -703,6 +707,9 @@ class Model:
   min_dt = 1.0e-4
   end_proc_time = 0.0 #Before release
   vscal_fac = 1.0
+  mass_scal = True
+  ms_dtsize = 1.0e-4
+  
   def __init__(self):
     self.part_count = 0
     self.part = []
@@ -995,7 +1002,9 @@ class Model:
     f.write(str(dthis) + "\n")
     f.write("/STOP\n")
     f.write("0 1e+08 0 1 1\n") 
-
+    if (self.mass_scal):
+      f.write("/DT/NODA/CST/0\n")
+      f.write("0.67   "+str(self.ms_dtsize)+"\n")
 
   def printRelease(self, run, time, dt, dthis):
     f = open(self.starter_file + "_000" + str(run) + ".rad","w+")
