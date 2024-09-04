@@ -92,3 +92,7 @@ And, in engine file
 /DT/AMS/0
 0.67
 ```
+
+Too see examples with contact heating
+https://2021.help.altair.com/2021/hwsolvers/rad/topics/solvers/rad/thermal_analysis_example_r.htm
+

@@ -744,13 +744,20 @@ class Model:
       line = writeIntField(self.inter[i].id_slave,10) + writeIntField(self.inter[i].id_master+1000000,10) 
       f.write(line)
       # WITHOUT ENDLINE
-      f.write("         0         0         0                   0         0         0         0\n")
+      if (not self.thermal):
+        f.write("         0         0         0                   0         0         0         0\n")
+      else:
+        if (self.inter[i].id_master<4):
+          f.write("         0         1         0                   0         0         0         0\n")          
+        else: #Ithe=1
+          f.write("         0         0         0                   0         0         0         0\n")
+          
       f.write("#          Fscalegap             GAP_MAX             Fpenmax\n")
       f.write("                   0                   0                   0\n")
       f.write("#              Stmin               Stmax          %mesh_size               dtmin  Irem_gap\n")
       f.write("                   0                   0                   0                   0         0\n")
       f.write("#              Stfac                Fric              Gapmin              Tstart               Tstop\n")
-      if (self.inter[i].id_master<4):
+      if (self.inter[i].id_master<4): #FRICTION
         f.write("#                  1                  0.                  .0                   0                   0\n")
       else :
         f.write("#                  1                 1.0                  .0                   0                   0\n")
@@ -759,6 +766,17 @@ class Model:
       f.write("       000                             0                   1                   1                   0\n")
       f.write("#    Ifric    Ifiltr               Xfreq     Iform   sens_ID\n")
       f.write("         0         0                   0         0         0\n")
+      
+      #TEHRMAL CONTACT FIELD
+      if (self.thermal):
+        if (self.inter[i].id_master<4):
+          f.write("#---1----|----2----|----3----|----4----|----5----|----6----|----7----|----8----|----9----|---10----|\n")
+          f.write("#-- Kthe	          |fct_IDK  |	 	      |         Tint	    |Ithe_form| -----AscaleK ---  |\n")
+          f.write("15000               0\n")
+          f.write("#---1----|----2----|----3----|----4----|----5----|----6----|----7----|----8----|----9----|---10----|\n")
+          f.write("#----   Frad	      |       Drad	      |       Fheats	    |    Fheatm     -----\n")
+          f.write("0                   0                   0                   0\n")
+
   
   # def printMovingPart(self,id,fid,f):
   def printMovingParts(self,f):
@@ -865,11 +883,9 @@ class Model:
     
     
     if (self.thermal):
-      # f.write("#include thermal.inc\n")  
       print ("Load function count: ", len(self.load_fnc))
       ### LOAD FNC
       for lf in range (len(self.load_fnc)):
-        # print ("fn ", self.load_fnc[lf][0], "\n")
         line = "/FUNCT/%d\n" % (lf+1)
         line = line + "F_ELEM_%d\n" % (lf+1)
         for val in range (self.load_fnc[lf].val_count):
@@ -877,14 +893,17 @@ class Model:
                         writeFloatField(self.load_fnc[lf].getVal(val)[1],20,6) + "\n"
         f.write(line)
 
-      f.write("################################### ELEMENT FLUXES #####################################\n")
-      for lf in range (len(self.load_fnc)):
-        # print ("fn ", self.load_fnc[lf][0], "\n")
-        line = "/IMPFLUX/%d\nFLUX_ELEM%d\n" % (lf+1,lf+1)
-        line = line + writeIntField(lf+1,10)+ writeIntField(lf+1,10) + "\n"
-        line = line + "       1.0       1.0\n"
-        f.write(line)
-      
+      #f.write("################################### ELEMENT FLUXES #####################################\n")
+      #for lf in range (len(self.load_fnc)):
+      #  line = "/IMPFLUX/%d\nFLUX_ELEM%d\n" % (lf+1,lf+1)
+      #  line = line + writeIntField(lf+1,10)+ writeIntField(lf+1,10) + "\n"
+      #  line = line + "       1.0       1.0\n"
+      #  f.write(line)
+      lf = 0
+      line = "/IMPTEMP/%d\nFLUX_ELEM%d\n" % (lf+1,lf+1)
+      line = line + writeIntField(lf+1,10)+ writeIntField(lf+1,10) + "\n"      
+    
+    
     for p in range(len(self.prop)):
       self.mat[p].printRadioss(f)
       

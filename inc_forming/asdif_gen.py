@@ -44,7 +44,7 @@ gap           = 0.0e-4
 gap_cont      = -2.2e-4
 dtout         = 1.0
 dtout_his     = 1.0
-end_time      = 2145.0
+end_time      = 2405.0
 v_supp        = 1.0e-3
 supp_rel_time = 10.0
 supp_vel_ramp = True
@@ -63,7 +63,7 @@ x_init              = r_i  #DO NOT PUT xo! USED AS x OUTPUT IN DOUBLE SIDED
 x_init_o            = r_o  #DO NOT PUT xo! USED AS x OUTPUT IN DOUBLE SIDED
 move_tool_to_inipos = True # THIS IS CONVENIENT, OTHERWISE RADIOSS THROWS ERROR DUE TO LARGE DISP TO INITIAL POS
                            #ONLY USED IF NOT CALC PATH
-thermal             = False
+thermal             = True
 cont_support        = True       #TRUE: SUPPORT IS MODELED BY CONTACT, FALSE: SUPPORT IS MODELED BY BCS ON NODES
 double_sided        = True
 calc_path           = False
@@ -278,8 +278,8 @@ model.cont_support = cont_support
 
 
 
-if (thermal):
-  model.part[0].mesh[0].print_segments = True #THERMAL SEGMENTS, RESERVED IDS TO PARTS
+#if (thermal):
+#  model.part[0].mesh[0].print_segments = True #THERMAL SEGMENTS, RESERVED IDS TO PARTS
 
 if (thermal):
   model.thermal = True
@@ -394,12 +394,13 @@ if (calc_path):
       t_inc +=dt
       t += dt
 
-      if (thermal):
-        e = model.part[0].mesh[0].findNearestElem(xi,yi,zi)
-        flog.write ("TIME %f, pos: %.6e %.6e, Found %d\n" % (t, xi, yi, e ))
-        coord = str (model.part[0].mesh[0].elcenter[e].components)
-        flog.write ("baricenter: %s\n" %(coord))  
-        model.load_fnc[e].Append(t,1.0e6)
+
+#      if (thermal):
+#        e = model.part[0].mesh[0].findNearestElem(xi,yi,zi)
+#        flog.write ("TIME %f, pos: %.6e %.6e, Found %d\n" % (t, xi, yi, e ))
+#        coord = str (model.part[0].mesh[0].elcenter[e].components)
+#        flog.write ("baricenter: %s\n" %(coord))  
+#        model.load_fnc[e].Append(t,1.0e6)
       
     r +=dr
     turn += 1    
