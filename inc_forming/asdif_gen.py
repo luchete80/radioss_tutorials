@@ -285,9 +285,9 @@ if (thermal):
   model.thermal = True
 
 # THERMAL
-for e in range (model.part[0].mesh[0].elem_count):
-  lf = Function(0.0,.0,0)
-  model.AppendLoadFunction (lf)
+#for e in range (model.part[0].mesh[0].elem_count):
+  #lf = Function(0.0,.0,0)
+  #model.AppendLoadFunction (lf)
 # sphere_mesh = Sphere_Mesh(2,1.0, 10,1) #(self, id, radius, divisions, ininode):
 
 # shell_mesh.printRadioss("radioss.rad")
@@ -422,10 +422,17 @@ f_upper_supp.Append(end_time+supp_rel_time, v_supp)
 f_upper_supp.Append(end_time+supp_rel_time+dynrel_time,      10.0*v_supp)
 model.supp_fnc.append(f_upper_supp)
 
+tool_count = 1
+if (double_sided):
+  tool_count = 2
 
-  
-for e in range (model.part[0].mesh[0].elem_count):  
-  model.load_fnc[e].Append(1.0e3,0.0)
+for p in range(tool_count):
+  model.part[p+1].temp_fnc.Append(1.0e-3, 500.)
+  model.part[p+1].temp_fnc.Append(end_time+supp_rel_time+dynrel_time, 500.)
+
+#OLD; TEMP IN NODES  
+#for e in range (model.part[0].mesh[0].elem_count):  
+#  model.load_fnc[e].Append(1.0e3,0.0)
 
 
 

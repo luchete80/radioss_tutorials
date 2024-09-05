@@ -141,6 +141,7 @@ class Mesh:
     f = open(fname,"w+")
     # self.writeFloatField(-100.0,20,6)
     f.write('/NODES\n')
+    print("Printing nodes..\n")
     for i in range (self.node_count):
       line = writeIntField(i+1,10)
       for d in range (3):
@@ -151,6 +152,7 @@ class Mesh:
       f.write('/SHELL/' + str(self.id) + '\n')
     if (type=="solid"):
       f.write('/SOLID/' + str(self.id) + '\n')
+    print("Printing elements..\n")
     for i in range (self.elem_count):
       line = writeIntField(i+1,10)
       for d in range (4):
@@ -576,6 +578,7 @@ class Function:
     self.vals = []
     self.vals.append((x,y))
     self.id = id
+    print ("function id ", id)
   def Append (self,x,y):
     self.vals.append((x,y))
     self.val_count = self.val_count + 1
@@ -585,7 +588,7 @@ class Function:
     return self.vals[i][j]
   def print(self,f):
     line = "/FUNCT/%d\n" % (self.id)
-    line = line + "F_VEL_%d\n" % (self.id)
+    line = line + "F_FUNC_%d\n" % (self.id)
     for val in range (self.val_count):
       line = line + writeFloatField(self.getVal(val)[0],20,6) + \
                     writeFloatField(self.getVal(val)[1],20,6) + "\n"
@@ -597,12 +600,15 @@ class Part:
   is_moving = False
   id_grn_move = 0 #GROUP NODE FOR MOVING
   pid         = 1
+  
   def __init__(self, mid):
     self.id = mid
     self.mesh = []
     self.title = "PART_ID_%d\n" %mid
     self.mid = 0
     self.id_grn_move = mid + 100
+    print("Creating part " + str(self.id,) + " function\n")
+    self.temp_fnc = Function(self.id,0.0,0.0)
     
   def asignPropID (self, pi):
     self.pid = pi
@@ -617,12 +623,15 @@ class Part:
     if (self.mesh[0].type == "shell"):
       f.write('/SHELL/' + str(self.id) + '\n')
     if (self.mesh[0].type == "solid"):
-      f.write('/BRICK/' + str(self.id) + '\n')    
-    for i in range (self.mesh[0].elem_count):
+      f.write('/BRICK/' + str(self.id) + '\n')
+    print("Printing Elements..\n")
+    for i in range (1):#self.mesh[0].elem_count):
       line = writeIntField(i + self.mesh[0].ini_elem_id ,10)
       for d in range (np.size(self.mesh[0].elnod,1)):
         # print (self.mesh[0].ini_node_id, ", ")
         line = line + writeIntField(self.mesh[0].elnod[i][d] + self.mesh[0].ini_node_id,10)
+      if (i%100==0):
+        print ("Element ",i)
       f.write(line + '\n')   
     
     line = "/PART/%d\n" % self.id
@@ -772,7 +781,7 @@ class Model:
         if (self.inter[i].id_master<4):
           f.write("#---1----|----2----|----3----|----4----|----5----|----6----|----7----|----8----|----9----|---10----|\n")
           f.write("#-- Kthe	          |fct_IDK  |	 	      |         Tint	    |Ithe_form| -----AscaleK ---  |\n")
-          f.write("15000               0\n")
+          f.write("15000               0                   0                   1\n")
           f.write("#---1----|----2----|----3----|----4----|----5----|----6----|----7----|----8----|----9----|---10----|\n")
           f.write("#----   Frad	      |       Drad	      |       Fheats	    |    Fheatm     -----\n")
           f.write("0                   0                   0                   0\n")
@@ -871,8 +880,11 @@ class Model:
         f.write(line + '\n')
 
     # Print element connectivity
+
     for p in range (self.part_count):
+      print("Printing part"+str(p))
       self.part[p].printRadioss(f)
+      print("Printing convection...\n")
       if (not self.part[p].is_rigid):
         self.part[p].mesh[0].printConvRadioss(self.vscal_fac,f)
         
@@ -881,17 +893,29 @@ class Model:
     for m in range (len(self.mat)):
       self.mat[m].printRadioss(f)
     
-    
+
     if (self.thermal):
-      print ("Load function count: ", len(self.load_fnc))
+      print("Printing heat things\n")
+      for lf in range(2):
+        print("Temperature Part"+str(lf+1))
+        self.part[lf+1].temp_fnc.print(f)
+        #print("part count \n", lf+2)
+        #line = "/FUNCT/%d\n" % (lf+2)
+        #line = line + "F_TOOL_%d\n" % (lf+2)
+        #for val in range (self.part[p].temp_fnc.val_count):
+        #  line = line + writeFloatField(self.part[p].temp_fnc.getVal(val)[0],20,6) + \
+        #                writeFloatField(self.part[p].temp_fnc.getVal(val)[1],20,6) + "\n"
+        #f.write(line)
+
+      #print ("Load function count: ", len(self.load_fnc))
       ### LOAD FNC
-      for lf in range (len(self.load_fnc)):
-        line = "/FUNCT/%d\n" % (lf+1)
-        line = line + "F_ELEM_%d\n" % (lf+1)
-        for val in range (self.load_fnc[lf].val_count):
-          line = line + writeFloatField(self.load_fnc[lf].getVal(val)[0],20,6) + \
-                        writeFloatField(self.load_fnc[lf].getVal(val)[1],20,6) + "\n"
-        f.write(line)
+      #for lf in range (len(self.load_fnc)):
+      #  line = "/FUNCT/%d\n" % (lf+1)
+      #  line = line + "F_ELEM_%d\n" % (lf+1)
+      #  for val in range (self.load_fnc[lf].val_count):
+      #    line = line + writeFloatField(self.load_fnc[lf].getVal(val)[0],20,6) + \
+      #                   writeFloatField(self.load_fnc[lf].getVal(val)[1],20,6) + "\n"
+      #  f.write(line)
 
       #f.write("################################### ELEMENT FLUXES #####################################\n")
       #for lf in range (len(self.load_fnc)):
@@ -899,10 +923,15 @@ class Model:
       #  line = line + writeIntField(lf+1,10)+ writeIntField(lf+1,10) + "\n"
       #  line = line + "       1.0       1.0\n"
       #  f.write(line)
-      lf = 0
-      line = "/IMPTEMP/%d\nFLUX_ELEM%d\n" % (lf+1,lf+1)
-      line = line + writeIntField(lf+1,10)+ writeIntField(lf+1,10) + "\n"      
-    
+      #APPLY TEMP TO THE TOOL
+        if (lf== 0 or (lf==1 and self.double_sided) ):
+          line = "/IMPTEMP/%d\nTOOL_TEMP%d\n" % (lf+2,lf+2)
+          line = line + "#---1----|----2----|----3----|----4----|----5----|----6----|----7----|----8----|\n"
+          line = line + "#fct_IDT	 sens_ID	 grnd_ID\n"	
+          line = line + writeIntField(lf+2,10)+ "         0" + writeIntField(lf+2,10) + "\n"      
+          line = line + "#---1----|----2----|----3----|----4----|----5----|----6----|----7----|----8----|\n"
+          line = line + "       1.0       1.0\n"
+          f.write(line)
     
     for p in range(len(self.prop)):
       self.mat[p].printRadioss(f)
