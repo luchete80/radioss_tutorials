@@ -16,10 +16,10 @@ flog = open("log.txt","w")
 
 #WORKPIECE
 largo = 0.08
-delta = 0.008
+delta = 0.004
 thck  = 5.0e-4      #Plate Thickness
 thck_rig = 1.0e-4   #BALL
-thck_supp = 1.0e-3  #SUPP
+thck_supp = 1.0e-4  #SUPP
 
 vscal_fac     = 1.0 #Affects All magnitudes with s^-1: Tool Speed, HEAT CONDUCTIVIY, CONVECTION
 dampfac       = 100.0
@@ -52,27 +52,27 @@ p_D           = 2.5e-3     #ASDIF RADIAL DISTANCE BETWEEN TOOLS
 p_S           = 4.3e-4     #ASDIF HEIGHT DISTANCE BETWEEN TOOLS
 
 tool_rad      = 0.0025    #Tool radius
-gap_cont      = -2.0e-4
-dtout         = 5.0e-4
-dtout_his     = 1.0e-4
+gap_cont      = -2.2e-4
+dtout         = 1.0
+dtout_his     = 1.0
 ### --- ONLY USED WHEN NOT GENERATING PATH !!!
 end_time      = 2.0e-3
 v_supp        = 1.0e-3
-supp_rel_time = 0.5
+supp_rel_time = 10.0
 supp_vel_ramp = True
-dynrel_time   = 2.0
+dynrel_time   = 5.0
 is_ASDIF      = True
 ## SCALING
 
 
 ###### SUPPORT
-dens_supp_1 = 4
-dens_supp_2 = 50
-largo_supp = 0.0050
+dens_supp_1 = 5
+dens_supp_2 = 60
+largo_supp = 0.005
 
 ###### CENTER OF PIECE 
 thermal             = False
-cont_support        = True       #TRUE: SUPPORT IS MODELED BY CONTACT, FALSE: SUPPORT IS MODELED BY BCS ON NODES
+cont_support        = False       #TRUE: SUPPORT IS MODELED BY CONTACT, FALSE: SUPPORT IS MODELED BY BCS ON NODES
 double_sided        = True
 mass_scal           = True
 ms_dtsize           = 1.0e-4
@@ -647,12 +647,12 @@ solid_mesh = Rect_Solid_Mesh(1,largo,largo,thck,delta,delta,thck)
 zi_0 = tool_rad + thck/2.0 + ball_gap + thck_rig/2.0
 sph1_mesh = Sphere_Mesh(2, tool_rad,        \
                         0.0, 0.0,zi_0, \
-                                        5) #(id, radius, divisions):
+                                        8) #(id, radius, divisions):
 zo_0 = -tool_rad - thck/2.0 - ball_gap-thck_rig/2.0
 if (double_sided):
   sph2_mesh = Sphere_Mesh(3, tool_rad,        \
                         0.0, 0.0,zo_0, \
-                                          5) #(id, radius, divisions):
+                                          8) #(id, radius, divisions):
                                         
 
 if (cont_support):
@@ -703,6 +703,10 @@ print ("Model size: ", len(model.part))
 shell = Part(1)
 shell.AppendMesh(shell_mesh) 
 model.vscal_fac = vscal_fac
+
+model.mass_scal = mass_scal
+model.ms_dtsize = ms_dtsize 
+model.dampfac   = dampfac
 
 bcpos = largo/2.0 - largo_supp
 
@@ -951,10 +955,10 @@ f_upper_supp.Append(end_time, 0.0)
 if (not supp_vel_ramp):
   f_upper_supp.Append(end_time+1.0e-4, v_supp)
 f_upper_supp.Append(end_time+supp_rel_time, v_supp)
-f_upper_supp.Append(end_time+supp_rel_time+1.0e-4,  10.0*v_supp)
-f_upper_supp.Append(end_time+supp_rel_time+1.0e-4+dynrel_time,      10.0*v_supp)
+#f_upper_supp.Append(end_time+supp_rel_time+1.0e-4,  10.0*v_supp)
+#f_upper_supp.Append(end_time+supp_rel_time+1.0e-4+dynrel_time,      10.0*v_supp)
+f_upper_supp.Append(end_time+supp_rel_time+dynrel_time,      10.0*v_supp)
 model.supp_fnc.append(f_upper_supp)
-
 
   
 for e in range (model.part[0].mesh[0].elem_count):  

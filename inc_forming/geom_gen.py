@@ -1,3 +1,4 @@
+import numpy as np
 
 #CHANGE r, t 
 def make_init_curve(rac, ang_1, r, t, zi, zo, ts, dz, dt, zt, ecount, asdif): #Convex radius is from outside
