@@ -199,6 +199,10 @@ shell.asignPropID(1)
  
 model.vscal_fac = vscal_fac
 
+model.mass_scal = mass_scal
+model.ms_dtsize = ms_dtsize 
+model.dampfac   = dampfac
+
 bcpos = largo/2.0 - largo_supp
 if (mech):
   sph1_pt = Part(2)

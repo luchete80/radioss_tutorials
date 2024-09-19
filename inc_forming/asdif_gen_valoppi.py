@@ -16,13 +16,13 @@ flog = open("log.txt","w")
 
 #WORKPIECE
 largo = 0.08
-delta = 0.0015
+delta = 0.008
 thck  = 5.0e-4      #Plate Thickness
 thck_rig = 1.0e-4   #BALL
 thck_supp = 1.0e-3  #SUPP
 
-vscal_fac     = 2000.0 #Affects All magnitudes with s^-1: Tool Speed, HEAT CONDUCTIVIY, CONVECTION
-
+vscal_fac     = 1.0 #Affects All magnitudes with s^-1: Tool Speed, HEAT CONDUCTIVIY, CONVECTION
+dampfac       = 100.0
 #TOOL 
 # SHAPE FROM
 #A hybrid mixed double-sided incremental forming method for forming
@@ -74,8 +74,8 @@ largo_supp = 0.0050
 thermal             = False
 cont_support        = True       #TRUE: SUPPORT IS MODELED BY CONTACT, FALSE: SUPPORT IS MODELED BY BCS ON NODES
 double_sided        = True
-manual_mass_scal    = False
-
+mass_scal           = True
+ms_dtsize           = 1.0e-4
 
 #FROM XIAN 
 # Optimization on the Johnson-Cook parameters of
@@ -94,13 +94,16 @@ mat.cp_th = 520.0 #J/(kgK)
 
 #From Optimization on the Johnson-Cook parameters of
 #Ti-6Al-4V used for high speed cutting simulation
+#thermal
+mat.k_th  = 7.4 # 15 //
+mat.cp_th = 520.0
+
 mat.Ajc   = 790.0e6
 mat.Bjc   = 478.0e6
 mat.njc   = 0.28
 mat.mjc   = 1.0
 mat.Cjc   = 0.032
 mat.e0jc  = 1.0
-
 ##### SCALING
 # class Scaling(Enum):
   # NONE   = 1       # 
