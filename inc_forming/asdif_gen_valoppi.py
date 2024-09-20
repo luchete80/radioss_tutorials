@@ -16,7 +16,7 @@ flog = open("log.txt","w")
 
 #WORKPIECE
 largo = 0.08
-delta = 0.004
+delta = 0.0006
 thck  = 5.0e-4      #Plate Thickness
 thck_rig = 1.0e-4   #BALL
 thck_supp = 1.0e-4  #SUPP
@@ -36,10 +36,10 @@ r_ac3 = 5.0e-3
 ang_1 = 20.0 #DEG
 ang_1 = 50.0 #DEG
 tool_speed    = 0.6 / 60.0 * vscal_fac #Exam,ple 4000 mm/min 
-t_ind         = 1.0e-3
+t_ind         = 1.0/vscal_fac
 dz_up         = 0.0
 dz            = 1.0e-4    
-dtind         = 0.01/vscal_fac    #Indentation time for crve generation
+ind_steps     = 10    #Indentation time for crve generation
 #!!!_ IMPORTANT THIS CAN BE enlarged if not thermal
 da            = 1.0 #ANGLE FOR delta t in process. 
 calc_path           = True
@@ -72,7 +72,7 @@ largo_supp = 0.005
 
 ###### CENTER OF PIECE 
 thermal             = False
-cont_support        = False       #TRUE: SUPPORT IS MODELED BY CONTACT, FALSE: SUPPORT IS MODELED BY BCS ON NODES
+cont_support        = True       #TRUE: SUPPORT IS MODELED BY CONTACT, FALSE: SUPPORT IS MODELED BY BCS ON NODES
 double_sided        = True
 mass_scal           = True
 ms_dtsize           = 1.0e-4
@@ -125,6 +125,8 @@ mat.e0jc  = 1.0
 # textField = Entry(window, width=15)
 # textField.grid(column=2, row=0)
 # textField.insert(0,"test")
+
+dtind = t_ind / ind_steps
 
 fi_x = open("movi_x.inc","w")
 fi_y = open("movi_y.inc","w")
@@ -732,7 +734,7 @@ if (cont_support):
     supp_part[sp].is_rigid = True #REMEMBER LAST NODE OF THE PART IS THE PIVOT
     supp_part[sp].asignPropID(3)
     print("support part length", len(supp_part))
-    model.AppendPart(supp_part[sp])
+    model.AppendPart(supp_part[sp])    
 
 if (not cont_support):
   model.AddNodeSetOutsideBoxXY(1000,Vector(-bcpos,-bcpos,0.0), Vector(bcpos,bcpos,0.0)) #id, v1, v2):
@@ -864,7 +866,7 @@ if (calc_path):
     # xo -= x_init
     # xi -= x_init
   f_test.write("X, Y, Z\n")
-  
+
   
   while (t < t_ind):    
 

@@ -578,7 +578,7 @@ class Function:
     self.vals = []
     self.vals.append((x,y))
     self.id = id
-    print ("function id ", id)
+    #print ("function id ", id)
   def Append (self,x,y):
     self.vals.append((x,y))
     self.val_count = self.val_count + 1
