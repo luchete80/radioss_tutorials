@@ -982,7 +982,7 @@ model.printDynRelax(3,end_time+supp_rel_time+dynrel_time,dtout,dtout_his)
 
 
 #---------------------------------------------------------------
-th_solid_model.printRadioss("solid")
+#th_solid_model.printRadioss("solid")
 
 # #Si no se coloca lambda no funciona
 # b = Button(window, text="Generate", width=10, command=lambda:save(linea_g))

@@ -625,7 +625,7 @@ class Part:
     if (self.mesh[0].type == "solid"):
       f.write('/BRICK/' + str(self.id) + '\n')
     print("Printing Elements..\n")
-    for i in range (1):#self.mesh[0].elem_count):
+    for i in range (self.mesh[0].elem_count):#self.mesh[0].elem_count):
       line = writeIntField(i + self.mesh[0].ini_elem_id ,10)
       for d in range (np.size(self.mesh[0].elnod,1)):
         # print (self.mesh[0].ini_node_id, ", ")
