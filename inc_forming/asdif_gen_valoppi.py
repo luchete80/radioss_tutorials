@@ -44,7 +44,7 @@ ind_steps     = 10    #Indentation time for crve generation
 da            = 1.0 #ANGLE FOR delta t in process. 
 calc_path           = True
 move_tool_to_inipos = True # THIS IS CONVENIENT, OTHERWISE RADIOSS THROWS ERROR DUE TO LARGE DISP TO INITIAL POS
-ball_gap      = 1.0e-4  #THIS IS ASSIGNED SINCE IF NOT THE BALL INITIAL MOVEMENT DRAGS THE PLATE
+ball_gap      = 2.0e-4  #THIS IS ASSIGNED SINCE IF NOT THE BALL INITIAL MOVEMENT DRAGS THE PLATE
 r0            = 0.005
 
 #dang           = 5.0  #Angle (deg) increment for path gen
