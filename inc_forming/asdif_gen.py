@@ -26,9 +26,15 @@ thck_supp = 1.0e-4  #SUPP
 #TOOL (IF CALC PATH)
 r_i           = 0.0     #Inner Path Radius
 r_o           = 0.0     #Outer Path Radius
+
 #TOOL (IT NOT CALC PATH)
 topfname = "myToolpath_topToolTipPnts.csv"
 botfname = "myToolpath_botToolTipPnts.csv"
+
+if multi_tool:
+    topfname = "multitool_topToolTipPnts.csv"
+    botfname = "multitool_botToolTipPnts.csv"
+
 mm       = 1.0e-3 #IF UNITS ARE IN MM
 
 r             = 0.0325
@@ -69,6 +75,10 @@ double_sided        = True
 calc_path           = False
 mass_scal           = True
 ms_dtsize           = 1.0e-4
+
+multi_tool          = True
+multi_tool_stp_angle= 90
+multi_tool_N        = 8 
 
 
 ###### MATERIAL
@@ -164,35 +174,58 @@ if (double_sided):
   sph2_mesh = Sphere_Mesh(3, tool_rad,        \
                         x_init_o, y_init_o,(-tool_rad - thck/2.0 - gap-thck_rig/2.0), \
                                         8) #(id, radius, divisions):
+
+
+i=0
+#============================================================================================================
+if multi_tool:
+
+    sph_mesh=list()
+    
+    angles=np.arange(step_angle,360,step_angle)
+        
+    for i,angle in  enumerate(angles):
+        sin=np.sin(angle*np.pi/180)
+        cos=np.cos(angle*np.pi/180)
+
+        extra_tools_mesh.append(Sphere_Mesh(2+i, tool_rad,        \
+                                cos * x_init_o, sin * y_init_o,(-tool_rad - thck/2.0 - gap-thck_rig/2.0), \
+                                8) #(id, radius, divisions):\
+                                )
+    else:
+        i=0
+
+#============================================================================================================
+
                                         
 
 if (cont_support):
   #Y-     support,                id,lx,               ly,         elem_x,     elem_y,       ox,                   oy, z_, flip):
-  supp_mesh.append(Rect_Plane_Mesh(4,largo+largo_supp,largo_supp,dens_supp_2,dens_supp_1, -largo/2.0-largo_supp/2.0, -largo/2.0-largo_supp/2.0, -thck/2.0-gap_cont-thck_supp/2.0, False)) #Legth x,  
+  supp_mesh.append(Rect_Plane_Mesh(4+i,largo+largo_supp,largo_supp,dens_supp_2,dens_supp_1, -largo/2.0-largo_supp/2.0, -largo/2.0-largo_supp/2.0, -thck/2.0-gap_cont-thck_supp/2.0, False)) #Legth x,  
   supp_mesh[0].AddRigidNode(0.0,-largo/2.0, -2.0*thck)
-  supp_mesh.append(Rect_Plane_Mesh(5,largo+largo_supp,largo_supp,dens_supp_2,dens_supp_1, -largo/2.0-largo_supp/2.0, -largo/2.0-largo_supp/2.0,  thck/2.0+gap_cont+thck_supp/2.0, True))
+  supp_mesh.append(Rect_Plane_Mesh(5+i,largo+largo_supp,largo_supp,dens_supp_2,dens_supp_1, -largo/2.0-largo_supp/2.0, -largo/2.0-largo_supp/2.0,  thck/2.0+gap_cont+thck_supp/2.0, True))
   supp_mesh[1].AddRigidNode(0.0,-largo/2.0,  2.0*thck)
 
   #Y+ support,                   id,lx,               ly,         elem_x,     elem_y,       ox,                   oy, z_, flip):
-  supp_mesh.append(Rect_Plane_Mesh(6,largo+largo_supp,largo_supp,dens_supp_2,dens_supp_1, -largo/2.0-largo_supp/2.0,  largo/2.0-largo_supp/2.0, -thck/2.0-gap_cont-thck_supp/2.0, False))
+  supp_mesh.append(Rect_Plane_Mesh(6+i,largo+largo_supp,largo_supp,dens_supp_2,dens_supp_1, -largo/2.0-largo_supp/2.0,  largo/2.0-largo_supp/2.0, -thck/2.0-gap_cont-thck_supp/2.0, False))
   supp_mesh[2].AddRigidNode(0.0, largo/2.0, -2.0*thck)
-  supp_mesh.append(Rect_Plane_Mesh(7,largo+largo_supp,largo_supp,dens_supp_2,dens_supp_1, -largo/2.0-largo_supp/2.0,  largo/2.0-largo_supp/2.0,  thck/2.0+gap_cont+thck_supp/2.0, True))
+  supp_mesh.append(Rect_Plane_Mesh(7+i,largo+largo_supp,largo_supp,dens_supp_2,dens_supp_1, -largo/2.0-largo_supp/2.0,  largo/2.0-largo_supp/2.0,  thck/2.0+gap_cont+thck_supp/2.0, True))
   supp_mesh[3].AddRigidNode(0.0, largo/2.0,  2.0*thck)
   
   #THESE SUPPORTS HAVE Y LENGTH SHORTER THAN OTHERS; ONLY Y LENGTH ON HEIGHT
   # #X-     support,                id,lx,      ly,     elem_x,     elem_y,       ox,               oy, z_, flip):  
   x_pos = largo/2.0
-  supp_mesh.append(Rect_Plane_Mesh(8,largo_supp,largo-largo_supp,dens_supp_1,dens_supp_2, -x_pos-largo_supp/2.0, -largo/2.0+largo_supp/2.0, -thck/2.0-gap_cont-thck_supp/2.0, False))
+  supp_mesh.append(Rect_Plane_Mesh(8+i,largo_supp,largo-largo_supp,dens_supp_1,dens_supp_2, -x_pos-largo_supp/2.0, -largo/2.0+largo_supp/2.0, -thck/2.0-gap_cont-thck_supp/2.0, False))
   supp_mesh[4].AddRigidNode(-largo/2.0 ,0.0,  -2.0*thck)
-  supp_mesh.append(Rect_Plane_Mesh(9,largo_supp,largo-largo_supp,dens_supp_1,dens_supp_2, -x_pos-largo_supp/2.0, -largo/2.0+largo_supp/2.0,  thck/2.0+gap_cont+thck_supp/2.0, True))
+  supp_mesh.append(Rect_Plane_Mesh(9+i,largo_supp,largo-largo_supp,dens_supp_1,dens_supp_2, -x_pos-largo_supp/2.0, -largo/2.0+largo_supp/2.0,  thck/2.0+gap_cont+thck_supp/2.0, True))
   supp_mesh[5].AddRigidNode(-largo/2.0 ,0.0,   2.0*thck)
-  
 
   # #X+     support,                id,lx,      ly,     elem_x,     elem_y,       ox,               oy, z_, flip):  
-  supp_mesh.append(Rect_Plane_Mesh(10,largo_supp,largo-largo_supp,dens_supp_1,dens_supp_2, x_pos-largo_supp/2.0, -largo/2.0+largo_supp/2.0, -thck/2.0-gap_cont-thck_supp/2.0, False))
+  supp_mesh.append(Rect_Plane_Mesh(10+i,largo_supp,largo-largo_supp,dens_supp_1,dens_supp_2, x_pos-largo_supp/2.0, -largo/2.0+largo_supp/2.0, -thck/2.0-gap_cont-thck_supp/2.0, False))
   supp_mesh[6].AddRigidNode(-largo/2.0 ,0.0,  -2.0*thck)
-  supp_mesh.append(Rect_Plane_Mesh(11,largo_supp,largo-largo_supp,dens_supp_1,dens_supp_2, x_pos-largo_supp/2.0, -largo/2.0+largo_supp/2.0,  thck/2.0+gap_cont+thck_supp/2.0, True))
+  supp_mesh.append(Rect_Plane_Mesh(11+i,largo_supp,largo-largo_supp,dens_supp_1,dens_supp_2, x_pos-largo_supp/2.0, -largo/2.0+largo_supp/2.0,  thck/2.0+gap_cont+thck_supp/2.0, True))
   supp_mesh[7].AddRigidNode(-largo/2.0 ,0.0,   2.0*thck)
+
 
 
   
@@ -234,12 +267,26 @@ if (double_sided):
   sph2_pt.is_rigid = True
   sph2_pt.is_moving = True
   sph2_pt.asignPropID(2)
+    
+#============================================================================
+if (multi_tool):
+    sph_pts = list()
+    for index, i in enumerate(range(4,multi_tool_N)):
+        sph_pts.append(Part(i))
+      
+        sph_pts[index].AppendMesh(sph2_mesh[index]) 
+        sph_pts[index].is_rigid = True
+        sph_pts[index].is_moving = True
+        sph_pts[index].asignPropID(2)
+else:
+    i=0
+#============================================================================
 
 model.AppendPart(shell) #FIRST PART TO ADD!
 
 if (cont_support):
   for sp in range (2*4):
-    supp_part.append(Part(4+sp))
+    supp_part.append(Part(4+i+sp))
     supp_part[sp].AppendMesh(supp_mesh[sp])
     supp_part[sp].is_rigid = True #REMEMBER LAST NODE OF THE PART IS THE PIVOT
     supp_part[sp].asignPropID(3)
@@ -268,10 +315,19 @@ if (double_sided):
   inter_2 = Interface(3,1)
   model.AppendInterface(inter_2)
 
+#Multi - tool
+if (multi_tool):
+    inter_N=list()
+        for index,i in enumerate(rang(4,multi_tool_N)):
+            inter_N.append(Interface(i,1))
+            model.AppendInterface(inter_N[index])
+else:
+    i=0
+
 #CHANGE TO ARRAY
 if (cont_support):
   for sp in range (2*4):
-    model.AppendInterface(Interface(sp+4,1))
+    model.AppendInterface(Interface(sp+i+4,1))
   
   
 model.cont_support = cont_support
@@ -425,6 +481,9 @@ model.supp_fnc.append(f_upper_supp)
 tool_count = 1
 if (double_sided):
   tool_count = 2
+
+if (multi_tool)
+    tool_count = multi_tool_N
 
 for p in range(tool_count):
   model.part[p+1].temp_fnc.Append(1.0e-3, 500.)

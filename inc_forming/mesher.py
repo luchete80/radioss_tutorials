@@ -1,6 +1,8 @@
 from math import *
 import numpy as np
 
+debug = True
+
 def writeFloatField(number, length, decimals):
   fmt ='%.' + str(decimals) + 'e'
   # print ('format ' + fmt)
@@ -164,6 +166,8 @@ class Mesh:
     self.node_count = self.node_count + 1    
   
   def printContSurfRadioss(self,f): #ALREADY OPENED
+    if(debug):
+        print("/SURF/PART/%d\n"%(self.id+1000000))
     f.write("/SURF/PART/%d\n"%(self.id+1000000))
     f.write("PART_RIG_SURF_%d\n"%self.id)
     f.write(writeIntField(self.id,10)+"\n")
@@ -693,6 +697,7 @@ class Model:
   ms_dtsize = 1.0e-4
   dampfac   = 0.0
   
+  
   def __init__(self):
     self.part_count = 0
     self.part = []
@@ -703,8 +708,14 @@ class Model:
     self.node_group = []
     self.starter_file = ""
     self.supp_fnc = []
+    self.multi_tool=False
+    self.multi_tool_N=8
     
-  
+  def set_Multi_tool(self,multi_tool_N):
+    print('set 8')
+    self.multi_tool=True
+    self.multi_tool_N=multi_tool_N
+      
   def AppendPart(self, p):
     if (not isinstance(p, Part)):
       print ("ERROR: added object is not a part ")
@@ -862,13 +873,20 @@ class Model:
     f.write("      2019         0 \n")
     f.write("                  kg                   m                   s\n")
     f.write("                  kg                   m                   s\n")
-    f.write("#include movi_x.inc\n")
-    f.write("#include movi_y.inc\n")
-    f.write("#include movi_z.inc\n")
-    if (self.double_sided):
-      f.write("#include movo_x.inc\n")
-      f.write("#include movo_y.inc\n")
-      f.write("#include movo_z.inc\n")
+    if(not(self.multi_tool)):
+      f.write("#include movi_x.inc\n")
+      f.write("#include movi_y.inc\n")
+      f.write("#include movi_z.inc\n")
+      if (self.double_sided):
+        f.write("#include movo_x.inc\n")
+        f.write("#include movo_y.inc\n")
+        f.write("#include movo_z.inc\n")
+    else:
+      for i in range(self.multi_tool_N):
+        f.write(f'#include movi_x{i}.inc\n')
+        f.write(f'#include movi_y{i}.inc\n')
+        f.write(f'#include movi_z{i}.inc\n')
+        
     f.write('/NODE\n')
     for p in range (self.part_count):
       print ("part node count ", self.part[p].mesh[0].node_count)
