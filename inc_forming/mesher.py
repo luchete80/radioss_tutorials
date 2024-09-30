@@ -767,7 +767,7 @@ class Model:
       if (not self.thermal):
         f.write("         0         0         0                   0         0         0         0\n")
       else:
-        if (self.inter[i].id_master<4):
+        if (self.inter[i].id_master<self.multi_tool_N+2): #was 4
           f.write("         0         1         0                   0         0         0         0\n")          
         else: #Ithe=1
           f.write("         0         0         0                   0         0         0         0\n")
@@ -777,7 +777,7 @@ class Model:
       f.write("#              Stmin               Stmax          %mesh_size               dtmin  Irem_gap\n")
       f.write("                   0                   0                   0                   0         0\n")
       f.write("#              Stfac                Fric              Gapmin              Tstart               Tstop\n")
-      if (self.inter[i].id_master<4): #FRICTION
+      if (self.inter[i].id_master<self.multi_tool_N+2): #was 4 #FRICTION
         f.write("#                  1                  0.                  .0                   0                   0\n")
       else :
         f.write("#                  1                 1.0                  .0                   0                   0\n")
@@ -789,7 +789,7 @@ class Model:
       
       #TEHRMAL CONTACT FIELD
       if (self.thermal):
-        if (self.inter[i].id_master<4):
+        if (self.inter[i].id_master<self.multi_tool_N+2): #was 4
           f.write("#---1----|----2----|----3----|----4----|----5----|----6----|----7----|----8----|----9----|---10----|\n")
           f.write("#-- Kthe	          |fct_IDK  |	 	      |         Tint	    |Ithe_form| -----AscaleK ---  |\n")
           f.write("15000               0                   0                   1\n")
@@ -914,7 +914,7 @@ class Model:
 
     if (self.thermal):
       print("Printing heat things\n")
-      for lf in range(2):
+      for lf in range(self.multi_tool_N):
         print("Temperature Part"+str(lf+1))
         self.part[lf+1].temp_fnc.print(f)
         #print("part count \n", lf+2)
@@ -942,13 +942,26 @@ class Model:
       #  line = line + "       1.0       1.0\n"
       #  f.write(line)
       #APPLY TEMP TO THE TOOL
-        if (lf== 0 or (lf==1 and self.double_sided) ):
+#TEST
+        # if (lf== 0 or (lf==1 and self.double_sided) ): 
+        #   print(f"imptTemp to part {lf+1}")
+        #   line = "/IMPTEMP/%d\nTOOL_TEMP%d\n" % (lf+2,lf+2)
+        #   line = line + "#---1----|----2----|----3----|----4----|----5----|----6----|----7----|----8----|\n"
+        #   line = line + "#fct_IDT	 sens_ID	 grnd_ID\n"	
+        #   line = line + writeIntField(lf+2,10)+ "         0" + writeIntField(lf+2,10) + "\n"      
+        #   line = line + "#---1----|----2----|----3----|----4----|----5----|----6----|----7----|----8----|\n"
+        #   line = line + "       1.0       1.0\n"
+        
+        if (lf<=self.multi_tool_N):
+          print(f"imptTemp to part {lf+1}")
           line = "/IMPTEMP/%d\nTOOL_TEMP%d\n" % (lf+2,lf+2)
           line = line + "#---1----|----2----|----3----|----4----|----5----|----6----|----7----|----8----|\n"
           line = line + "#fct_IDT	 sens_ID	 grnd_ID\n"	
           line = line + writeIntField(lf+2,10)+ "         0" + writeIntField(lf+2,10) + "\n"      
           line = line + "#---1----|----2----|----3----|----4----|----5----|----6----|----7----|----8----|\n"
           line = line + "       1.0       1.0\n"
+          
+            
           f.write(line)
     
     for p in range(len(self.prop)):
