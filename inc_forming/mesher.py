@@ -709,7 +709,7 @@ class Model:
     self.starter_file = ""
     self.supp_fnc = []
     self.multi_tool=False
-    self.multi_tool_N=8
+    self.multi_tool_N=2
     
   def set_Multi_tool(self,multi_tool_N):
     print('set 8')
@@ -988,7 +988,7 @@ class Model:
         # print ("fn ", self.load_fnc[lf][0], "\n")
         line = "/IMPVEL/%d\nVEL_SUPP%d\n" % (lf+1,lf+1)
         line = line + "#funct_IDT       Dir   skew_ID sensor_ID  grnod_ID  frame_ID     Icoor\n"
-        line = line + writeIntField(self.supp_fnc[0].id,10) + "         Z         0         0" + writeIntField (109+lf,10) + "         0         0\n"
+        line = line + writeIntField(self.supp_fnc[0].id,10) + "         Z         0         0" + writeIntField (100+1+self.multi_tool_N+lf,10) + "         0         0\n"
         line = line + "#           Ascale_x            Fscale_Y              Tstart               Tstop\n"
         if lf % 2 == 0:
           fscale = writeIntField(1,20)
