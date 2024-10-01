@@ -691,7 +691,7 @@ class Model:
   starter_file = ""
   double_sided = True
   min_dt = 1.0e-4
-  end_proc_time = 0.0 #Before release
+  #end_proc_time = 0.0 #Before release
   vscal_fac = 1.0
   mass_scal = False
   ms_dtsize = 1.0e-4
@@ -710,9 +710,34 @@ class Model:
     self.supp_fnc = []
     self.multi_tool=False
     self.multi_tool_N=2
+    self.end_proc_time=0.0
+
+  def set_end_time(self, inc_file=None, end_time=None):
+    try:
+      if inc_file is None and end_time is None:
+        raise ValueError("file or end time must be specified")
+    
+      if inc_file is None:
+        self.end_proc_time = end_time
+        return
+        
+      if end_time is None:
+        with open(inc_file, 'r') as file:
+          lines = file.readlines()
+        self.end_proc_time = float(lines[-1].split()[0])  # Convertir el primer valor a float
+        print("Last line:", lines[-1])
+        print("End processing time:", self.end_proc_time)
+    
+    except FileNotFoundError:
+      print("Error: The specified file does not exist.")
+    except ValueError as ve:
+      print(ve)  # Para manejar el error de valores no especificados
+    except Exception as e:
+      print(f"An unexpected error occurred: {e}")
+      
     
   def set_Multi_tool(self,multi_tool_N):
-    print('set 8')
+    print("set multitool to:", multi_tool_N)
     self.multi_tool=True
     self.multi_tool_N=multi_tool_N
       
@@ -1100,6 +1125,9 @@ class Model:
     f.write("/RFILE\n")
     f.write(" 20000 0 0\n")
     f.write("/MON/ON   \n")
+    if (self.mass_scal):
+      f.write("/DT/NODA/CST/0\n")
+      f.write("0.67   "+str(self.ms_dtsize)+"\n")
     f.write("\n")
     # f.write("#INTERFACES REMOVING:\n")
     # f.write("/DEL/INTER\n")
@@ -1177,6 +1205,9 @@ class Model:
     f.write("/RFILE\n")
     f.write(" 20000 0 0\n")
     f.write("/MON/ON   \n")
+    if (self.mass_scal):
+      f.write("/DT/NODA/CST/0\n")
+      f.write("0.67   "+str(self.ms_dtsize)+"\n")
     f.write("\n")
     f.write("/ADYREL\n")
     f.write(" \n")
