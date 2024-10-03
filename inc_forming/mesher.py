@@ -738,7 +738,8 @@ class Model:
     
   def set_Multi_tool(self,multi_tool_N):
     print("set multitool to:", multi_tool_N)
-    self.multi_tool=True
+    if multi_tool_N>2: 
+        self.multi_tool=True
     self.multi_tool_N=multi_tool_N
       
   def AppendPart(self, p):
@@ -899,13 +900,13 @@ class Model:
     f.write("                  kg                   m                   s\n")
     f.write("                  kg                   m                   s\n")
     if(not(self.multi_tool)):
-      f.write("#include movi_x.inc\n")
-      f.write("#include movi_y.inc\n")
-      f.write("#include movi_z.inc\n")
+      f.write("#include movi_x0.inc\n")
+      f.write("#include movi_y0.inc\n")
+      f.write("#include movi_z0.inc\n")
       if (self.double_sided):
-        f.write("#include movo_x.inc\n")
-        f.write("#include movo_y.inc\n")
-        f.write("#include movo_z.inc\n")
+        f.write("#include movi_x1.inc\n")
+        f.write("#include movi_y1.inc\n")
+        f.write("#include movi_z1.inc\n")
     else:
       for i in range(self.multi_tool_N):
         f.write(f'#include movi_x{i}.inc\n')
