@@ -793,7 +793,13 @@ class Model:
       if (not self.thermal):
         f.write("         0         0         0                   0         0         0         0\n")
       else:
-        if (self.inter[i].id_master<self.multi_tool_N+2): #was 4
+          
+        if self.double_sided:
+          start_part=2
+        else:
+          start_part=1
+            
+        if (self.inter[i].id_master<self.multi_tool_N+start_part): #was 4
           f.write("         0         1         0                   0         0         0         0\n")          
         else: #Ithe=1
           f.write("         0         0         0                   0         0         0         0\n")
@@ -803,7 +809,7 @@ class Model:
       f.write("#              Stmin               Stmax          %mesh_size               dtmin  Irem_gap\n")
       f.write("                   0                   0                   0                   0         0\n")
       f.write("#              Stfac                Fric              Gapmin              Tstart               Tstop\n")
-      if (self.inter[i].id_master<self.multi_tool_N+2): #was 4 #FRICTION
+      if (self.inter[i].id_master<self.multi_tool_N+start_part): #was 4 #FRICTION
         f.write("#                  1                  0.                  .0                   0                   0\n")
       else :
         f.write("#                  1                 1.0                  .0                   0                   0\n")
@@ -815,7 +821,7 @@ class Model:
       
       #TEHRMAL CONTACT FIELD
       if (self.thermal):
-        if (self.inter[i].id_master<self.multi_tool_N+2): #was 4
+        if (self.inter[i].id_master<self.multi_tool_N+start_part): #was 4
           f.write("#---1----|----2----|----3----|----4----|----5----|----6----|----7----|----8----|----9----|---10----|\n")
           f.write("#-- Kthe	          |fct_IDK  |	 	      |         Tint	    |Ithe_form| -----AscaleK ---  |\n")
           f.write("15000               0                   0                   1\n")
