@@ -515,7 +515,7 @@ class Spring_Mesh(Mesh):
   def __init__(self, id ):
     #super(Spring_Mesh, self).__init__()
     self.id = id
-    self.elnodes.append(0,0)
+    self.elnodes.append((0,0))
 
 
 def plane_mesh(length, delta, nodos, elnod, mesh):
