@@ -129,6 +129,9 @@ class Mesh:
   def alloc_nodes(nod_count):
     for i in range (nod_count-1):
       nodes.append((0.,0.,0.))
+
+  def add_node(self,x,y,z):
+    self.nodes.append((x,y,z))
   
   def printESurfsRadioss(self,f):
     if (self.print_segments):
@@ -502,6 +505,18 @@ class Sphere_Mesh(Mesh):
     self.elem_count = e
     
 
+class Spring_Mesh(Mesh):
+  nodes = []
+  elnodes = []
+  def __init__(self, id, n1 = 0, n2 = 0):
+    #super(Spring_Mesh, self).__init__()
+    self.id = id
+    self.elnodes.append(n1,n2)
+  def __init__(self, id ):
+    #super(Spring_Mesh, self).__init__()
+    self.id = id
+    self.elnodes.append(0,0)
+
 
 def plane_mesh(length, delta, nodos, elnod, mesh):
   num_nodos = 10
@@ -604,6 +619,7 @@ class Part:
   is_moving = False
   id_grn_move = 0 #GROUP NODE FOR MOVING
   pid         = 1
+  stiffk_     = 1.0e5         
   
   def __init__(self, mid):
     self.id = mid
