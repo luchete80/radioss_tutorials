@@ -158,6 +158,9 @@ class Mesh:
       f.write('/SHELL/' + str(self.id) + '\n')
     if (type=="solid"):
       f.write('/SOLID/' + str(self.id) + '\n')
+    if (type=="spring"):
+      f.write('/SPRING/' + str(self.id) + '\n')
+    
     print("Printing elements..\n")
     for i in range (self.elem_count):
       line = writeIntField(i+1,10)
@@ -508,15 +511,20 @@ class Sphere_Mesh(Mesh):
 
 class Spring_Mesh(Mesh):
   nodes = []
-  elnodes = []
+  elnod = []
+  type = "spring"
   def __init__(self, id, n1 = 0, n2 = 0):
     #super(Spring_Mesh, self).__init__()
     self.id = id
-    self.elnodes.append(n1,n2)
+    #self.elnod.append(n1,n2)
   def __init__(self, id ):
     #super(Spring_Mesh, self).__init__()
     self.id = id
-    self.elnodes.append((0,0))
+    #self.elnod.append((0,0))
+  def add_elem(self,n1,n2):
+    self.elnod.append((n1,n2))
+    self.elem_count+=1
+    
 
 
 def plane_mesh(length, delta, nodos, elnod, mesh):
@@ -538,24 +546,58 @@ class NodeGroup:
 
 class Prop: 
   thck = 5.0e-4
+  type = "shell"
   def __init__(self, pid, t):
     self.pid = pid
     self.thck = t
   def printRadioss(self,f):     
+    if (type=="shell"):
+      f.write("##--------------------------------------------------------------------------------------------------\n")
+      f.write("## Shell Property Set (pid 1)\n")
+      f.write("##--------------------------------------------------------------------------------------------------\n")
+      f.write("/PROP/SHELL/" + str(self.pid) + "\n")
+      f.write("SECTION_SHELL:1 TITLE:probe_section  \n")                                                               
+      f.write("#Ishell	Ismstr	Ish3n	Idril	 	 	P_thickfail\n")
+      f.write("         4         2                         \n")                                   
+      f.write("#hm	hf	hr	dm	dn\n")
+      f.write("\n")
+      f.write("#---1----|----2----|----3----|----4----|----5----|----6----|----7----|----8----|----9----|---10----|\n")
+      f.write("#N	       Istrain	 Thick	             Ashear	 	           Ithick	Iplas    \n")                                                                                                
+      f.write(writeIntField(2, 10) + "          " + writeFloatField(self.thck,20,6) + "                                       1         1\n")
+
+
+class SpringProp(Prop):
+  k = 1.0
+  c = 0.0
+  #else if (type=="spring"):    
+  def __init__(self, pid, k):     
+    self.pid = pid
+    self.k = k
+  def printRadioss(self,f):
     f.write("##--------------------------------------------------------------------------------------------------\n")
-    f.write("## Shell Property Set (pid 1)\n")
+    f.write("## Spring Property Set (pid 1)\n")
     f.write("##--------------------------------------------------------------------------------------------------\n")
-    f.write("/PROP/SHELL/" + str(self.pid) + "\n")
-    f.write("SECTION_SHELL:1 TITLE:probe_section  \n")                                                               
-    f.write("#Ishell	Ismstr	Ish3n	Idril	 	 	P_thickfail\n")
-    f.write("         4         2                         \n")                                   
-    f.write("#hm	hf	hr	dm	dn\n")
-    f.write("\n")
-    f.write("#---1----|----2----|----3----|----4----|----5----|----6----|----7----|----8----|----9----|---10----|\n")
-    f.write("#N	       Istrain	 Thick	             Ashear	 	           Ithick	Iplas    \n")                                                                                                
-    f.write(writeIntField(2, 10) + "          " + writeFloatField(self.thck,20,6) + "                                       1         1\n")
-             
-        
+    f.write("/PROP/TYPE13/" + str(self.pid) + "\n")
+    f.write("SECTION_SPRING TITLE:probe_section  \n")                                                               
+    f.write("#--Mass	           |            Inertia|	Skew_ID |	sens_ID	|  Isflag	|  Ifail	|Ileng	Ifail2\n")
+    f.write("         2.0e-6                                        \n")
+    for k in range(6): #DOF                                   
+      f.write("#---1----|----2----|----3----|----4----|----5----|----6----|----7----|----8----|----9----|---10----|\n")
+      f.write("#                 K1	                 C1	                 A1	                 B1	                 D1\n")
+      if (k<3):
+        f.write(writeFloatField(self.k,20,6))
+      else:
+        f.write(writeFloatField(1.0e10,20,6))
+      for i in range(4):
+        f.write(writeFloatField(0.0,20,6))
+      f.write("\n")
+      for i in range(5):
+        f.write(writeIntField(0, 10))
+      f.write("\n")
+      for i in range(4):
+        f.write(writeIntField(0, 20))
+      f.write("\n")
+
          
      
 class Material:
@@ -645,7 +687,11 @@ class Part:
       f.write('/SHELL/' + str(self.id) + '\n')
     if (self.mesh[0].type == "solid"):
       f.write('/BRICK/' + str(self.id) + '\n')
+    if (self.mesh[0].type == "spring"):
+      f.write('/SPRING/' + str(self.id) + '\n')
     print("Printing Elements..\n")
+    #print ("initial node ",self.mesh[0].ini_node_id+ self.mesh[0].ini_node_id)
+    #print ("node: ", self.mesh[0].elnod[0][0])
     for i in range (self.mesh[0].elem_count):#self.mesh[0].elem_count):
       line = writeIntField(i + self.mesh[0].ini_elem_id ,10)
       for d in range (np.size(self.mesh[0].elnod,1)):
