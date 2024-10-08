@@ -766,13 +766,15 @@ class Model:
       self.part_count = self.part_count + 1
       print ("part count ", self.part_count)
       if (self.part_count > 1):
-        self.tot_nod_count = self.tot_nod_count + self.part[self.part_count-2].mesh[0].node_count
+        
         self.part[self.part_count-1].mesh[0].ini_node_id = self.tot_nod_count + 1
         
         self.tot_ele_count = self.tot_ele_count + self.part[self.part_count-2].mesh[0].elem_count
         self.part[self.part_count-1].mesh[0].ini_elem_id = self.tot_ele_count + 1
-        
-    print ("Part ", self.part_count, " initial node: ", self.tot_nod_count + 1, "end node: ", self.tot_nod_count)
+      
+      self.tot_nod_count = self.tot_nod_count + self.part[self.part_count-1].mesh[0].node_count  
+
+    print ("Part ", self.part_count, " initial node: ", self.part[self.part_count-1].mesh[0].ini_node_id, "end node: ", self.tot_nod_count)
   
   def AppendInterface(self, i):
     if (not isinstance(i, Interface)):
