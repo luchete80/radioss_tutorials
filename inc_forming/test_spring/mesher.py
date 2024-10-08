@@ -132,6 +132,7 @@ class Mesh:
 
   def add_node(self,x,y,z):
     self.nodes.append((x,y,z))
+    self.node_count += 1
   
   def printESurfsRadioss(self,f):
     if (self.print_segments):
