@@ -1,0 +1,23 @@
+__pycache__/
+*.py[cod]
+.ipynb_checkpoints/
+#1.1 Do NOT ignore file pattern in  any subdirectory
+!*/config.php
+#1.2 ...only ignore it in the current directory
+/config.php
+# 2.1 Ignore file pattern everywhere
+*.csv
+# 2.2 ...but NOT in the current directory
+#!/*.csv
+# 2.2 ...but NOT in the data directory
+!/data/*.csv
+*.out
+*.rad
+testA*
+testT*
+*.tmp
+*.rst
+*.inc
+*.vtk
+*.inp
+*.csv
