@@ -550,25 +550,27 @@ class Prop:
   def __init__(self, pid, t):
     self.pid = pid
     self.thck = t
+    self.type = "shell"
   def printRadioss(self,f):     
-    if (type=="shell"):
-      f.write("##--------------------------------------------------------------------------------------------------\n")
-      f.write("## Shell Property Set (pid 1)\n")
-      f.write("##--------------------------------------------------------------------------------------------------\n")
-      f.write("/PROP/SHELL/" + str(self.pid) + "\n")
-      f.write("SECTION_SHELL:1 TITLE:probe_section  \n")                                                               
-      f.write("#Ishell	Ismstr	Ish3n	Idril	 	 	P_thickfail\n")
-      f.write("         4         2                         \n")                                   
-      f.write("#hm	hf	hr	dm	dn\n")
-      f.write("\n")
-      f.write("#---1----|----2----|----3----|----4----|----5----|----6----|----7----|----8----|----9----|---10----|\n")
-      f.write("#N	       Istrain	 Thick	             Ashear	 	           Ithick	Iplas    \n")                                                                                                
-      f.write(writeIntField(2, 10) + "          " + writeFloatField(self.thck,20,6) + "                                       1         1\n")
+    #if (type=="shell"):
+    f.write("##--------------------------------------------------------------------------------------------------\n")
+    f.write("## Shell Property Set (pid 1)\n")
+    f.write("##--------------------------------------------------------------------------------------------------\n")
+    f.write("/PROP/SHELL/" + str(self.pid) + "\n")
+    f.write("SECTION_SHELL:1 TITLE:probe_section  \n")                                                               
+    f.write("#Ishell	Ismstr	Ish3n	Idril	 	 	P_thickfail\n")
+    f.write("         4         2                         \n")                                   
+    f.write("#hm	hf	hr	dm	dn\n")
+    f.write("\n")
+    f.write("#---1----|----2----|----3----|----4----|----5----|----6----|----7----|----8----|----9----|---10----|\n")
+    f.write("#N	       Istrain	 Thick	             Ashear	 	           Ithick	Iplas    \n")                                                                                                
+    f.write(writeIntField(2, 10) + "          " + writeFloatField(self.thck,20,6) + "                                       1         1\n")
 
 
 class SpringProp(Prop):
   k = 1.0
   c = 0.0
+  type = "spring"
   #else if (type=="spring"):    
   def __init__(self, pid, k):     
     self.pid = pid
@@ -839,10 +841,12 @@ class Model:
     self.load_fnc.append(lf)
     
   def AppendProp(self, p):
+    print ("APPENDING PROP")
     if (not isinstance(p, Prop)):
       print ("ERROR: added object is not a part ")
     else:
-      self.mat.append(p)
+      self.prop.append(p)
+      
       
   def printInterfaces(self,f):
     f.write("#-  9. INTERFACES:\n")  
@@ -1007,8 +1011,10 @@ class Model:
     print ("printing materials: ", len(self.mat))
     for m in range (len(self.mat)):
       self.mat[m].printRadioss(f)
-    
 
+    for p in range(len(self.prop)):
+      self.prop[p].printRadioss(f)
+      
     if (self.thermal):
       print("Printing heat things\n")
       for lf in range(self.multi_tool_N):
@@ -1060,10 +1066,7 @@ class Model:
           
             
           f.write(line)
-    
-    for p in range(len(self.prop)):
-      self.mat[p].printRadioss(f)
-      
+            
     self.printInterfaces(f)
     
     #IF NO RELEASE
