@@ -823,8 +823,9 @@ class Model:
       
       self.tot_nod_count = self.tot_nod_count + self.part[self.part_count-1].mesh[0].node_count  
 
+    print ("Added part, id: ", self.part[self.part_count-1].id)
     print ("Part ", self.part_count, " initial node: ", self.part[self.part_count-1].mesh[0].ini_node_id, "end node: ", self.tot_nod_count)
-  
+    
   def AppendInterface(self, i):
     if (not isinstance(i, Interface)):
       print ("ERROR: added object is not a interface ")
