@@ -1005,7 +1005,7 @@ class Model:
       print("Printing part"+str(p))
       self.part[p].printRadioss(f)
       print("Printing convection...\n")
-      if (not self.part[p].is_rigid):
+      if (self.part[p].id == 1):
         self.part[p].mesh[0].printConvRadioss(self.vscal_fac,f)
         
     
