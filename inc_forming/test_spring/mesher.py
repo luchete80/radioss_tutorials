@@ -720,12 +720,13 @@ class Part:
     f.write(line)
     
     #GRNOD FOR MOVE (IF CONTACT SUPPORT)
-    if (self.is_rigid):
+    if (self.is_rigid or self.is_moving):
       line = "/GRNOD/NODE/%d\n" % self.id_grn_move    
       line = line + "MOVE_%d\n" % self.id
       line = line + writeIntField(self.mesh[0].ini_node_id + self.mesh[0].node_count - 1, 10) + "\n"
       f.write(line)
 
+    if (self.is_moving):
       line = "/BCS/%d\n" % self.id
       line = line + "BoundSpcSet_1 \n"  
       line = line + "#  Tra rot   skew_ID  grnod_ID\n"
