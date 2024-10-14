@@ -662,6 +662,7 @@ class Function:
 class Part:
   is_rigid = False
   is_moving = False
+  is_support = False
   id_grn_move = 0 #GROUP NODE FOR MOVING
   pid         = 1
   stiffk_     = 1.0e5    
@@ -725,14 +726,13 @@ class Part:
       line = line + "MOVE_%d\n" % self.id
       line = line + writeIntField(self.mesh[0].ini_node_id + self.mesh[0].node_count - 1, 10) + "\n"
       f.write(line)
-
-    if (self.is_moving):
+    if (self.is_moving or self.is_support):
       line = "/BCS/%d\n" % self.id
       line = line + "BoundSpcSet_1 \n"  
       line = line + "#  Tra rot   skew_ID  grnod_ID\n"
-      if (self.is_moving):
+      if (self.is_moving): #LEDDING A TOOL OR A SPRING
         line = line + "   000 111         0" + writeIntField(100+self.id, 10) + "\n"
-      else: 
+      if (self.is_support):         
         line = line + "   110 111         0" + writeIntField(100+self.id, 10) + "\n"
       f.write(line)
 
