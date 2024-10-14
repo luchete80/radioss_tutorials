@@ -128,7 +128,7 @@ class Mesh:
     
   def alloc_nodes(nod_count):
     for i in range (nod_count-1):
-      nodes.append((0.,0.,0.))
+      nodes.append(Node(i,0.,0.,0.))
   
   def printESurfsRadioss(self,f):
     if (self.print_segments):
@@ -261,12 +261,14 @@ class Plane_Mesh(Mesh):
     print ('Nodes Count: ' + str(self.node_count))
     print ('Elem Count: ' + str(self.node_count))
     y = -largo/2.0
+    n = 0
     for j in range (nc):
       x = -largo/2.0
       for i in range (nc):
-        self.nodes.append((x,y,0.))
+        self.nodes.append((n,x,y,0.))
         x = x + delta
       y = y + delta
+      n+=1
       
     for ey in range (elem_xy):    
       for ex in range (elem_xy):   
@@ -471,7 +473,7 @@ class Sphere_Mesh(Mesh):
           
 
           if (put_node):
-            self.nodes.append((x,y,z))
+            self.nodes.append((n,x,y,z))
             # print ("vertex ", n)
             n = n +1
     

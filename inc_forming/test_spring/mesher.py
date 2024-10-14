@@ -664,7 +664,8 @@ class Part:
   is_moving = False
   id_grn_move = 0 #GROUP NODE FOR MOVING
   pid         = 1
-  stiffk_     = 1.0e5         
+  stiffk_     = 1.0e5    
+  elcon_renumber = True #TEMPORARY, ONLY UNTIL VECTOR OF NODES WILL BE A VECTOR OF CLASSES     
   
   def __init__(self, mid):
     self.id = mid
@@ -674,6 +675,7 @@ class Part:
     self.id_grn_move = mid + 100
     print("Creating part " + str(self.id,) + " function\n")
     self.temp_fnc = Function(self.id,0.0,0.0)
+    self.elcon_renumber = True
     
   def asignPropID (self, pi):
     self.pid = pi
@@ -694,11 +696,15 @@ class Part:
     print("Printing Elements..\n")
     #print ("initial node ",self.mesh[0].ini_node_id+ self.mesh[0].ini_node_id)
     #print ("node: ", self.mesh[0].elnod[0][0])
+    if (self.elcon_renumber):
+      start_id = self.mesh[0].ini_node_id
+    else:
+      start_id = 0
     for i in range (self.mesh[0].elem_count):#self.mesh[0].elem_count):
       line = writeIntField(i + self.mesh[0].ini_elem_id ,10)
       for d in range (np.size(self.mesh[0].elnod,1)):
         # print (self.mesh[0].ini_node_id, ", ")
-        line = line + writeIntField(self.mesh[0].elnod[i][d] + self.mesh[0].ini_node_id,10)
+        line = line + writeIntField(self.mesh[0].elnod[i][d] + start_id,10)
       if (i%100==0):
         print ("Element ",i)
       f.write(line + '\n')   
