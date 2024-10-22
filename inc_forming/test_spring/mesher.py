@@ -590,7 +590,8 @@ class SpringProp(Prop):
         f.write(writeFloatField(self.k,20,6))
       else:
         f.write(writeFloatField(1.0e10,20,6))
-      for i in range(4):
+      f.write(writeFloatField(1.0e2,20,6))
+      for i in range(3):
         f.write(writeFloatField(0.0,20,6))
       f.write("\n")
       for i in range(5):
