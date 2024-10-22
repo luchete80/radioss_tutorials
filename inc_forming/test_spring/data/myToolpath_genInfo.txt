@@ -1,0 +1,12 @@
+Incremental Forming Method: Single-Point Incremental Forming
+Forming Direction: Negative Z-Direction
+Top Tool Diameter: 5.0000 [mm]
+Toolpath Length Along Top Tool Tip Points: 4586.6318 [mm]
+Toolpath Method: Z-Level Contour Slicing
+Incremental Depth (contour) or Pitch (spiral): 0.5000 [mm]
+Start Z-Height of Algorithm: 0.0000 [mm]
+End Z-Height of Algorithm: -20.0000 [mm]
+Sheet Thickness: 0.5000 [mm]
+Resolution Along Toolpath Curve: 1.0000 [mm]
+Toolpath Direction: Counter-Clockwise (CCW)
+Angle (CCW from X-axis in XY-Plane) and Radial Distance of the Starting Construction Point: 0.0000 [deg]    10000.0000 [mm]
