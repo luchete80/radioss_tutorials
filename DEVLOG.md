@@ -4,3 +4,4 @@
            For smaller thicknesses, not working.
 20240429 - Added moving BCs. 
            
+20241120 - Fixed Spring nodes (mesh constructor)
