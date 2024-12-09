@@ -1,0 +1,773 @@
+13c13
+<    "execution_count": 26,
+---
+>    "execution_count": 1,
+317c317
+<    "execution_count": 27,
+---
+>    "execution_count": 9,
+327c327
+<      "execution_count": 27,
+---
+>      "execution_count": 9,
+338c338
+<    "execution_count": 28,
+---
+>    "execution_count": 2,
+675c675
+<    "execution_count": 29,
+---
+>    "execution_count": 12,
+717c717
+<    "execution_count": 34,
+---
+>    "execution_count": 6,
+735,736c735,736
+<       "-0.034\n",
+<       "Point Count:  9411\n",
+---
+>       "0.0\n",
+>       "Point Count:  5049\n",
+738,740c738,740
+<       "First Point:  [85.2656, -0.034, -1.6694]\n",
+<       "Avg distance:  1.7476894422641363\n",
+<       "Segments witgh distance > 1.0e-6:  44  of  9412\n",
+---
+>       "First Point:  [32.1048, 0.0, -0.0062]\n",
+>       "Avg distance:  0.9084423690774835\n",
+>       "Segments witgh distance > 1.0e-6:  0  of  5050\n",
+742,743c742,743
+<       "85.2656\n",
+<       "Point Count:  9411\n",
+---
+>       "32.1048\n",
+>       "Point Count:  5049\n",
+745,747c745,747
+<       "First Point:  [0.03400000000000522, 85.2656, -1.6694]\n",
+<       "Avg distance:  1.7476894422641363\n",
+<       "Segments witgh distance > 1.0e-6:  44  of  9412\n",
+---
+>       "First Point:  [1.965852027863297e-15, 32.1048, -0.0062]\n",
+>       "Avg distance:  0.9084423690774835\n",
+>       "Segments witgh distance > 1.0e-6:  0  of  5050\n",
+749,750c749,750
+<       "0.034000000000010445\n",
+<       "Point Count:  9411\n",
+---
+>       "3.931704055726594e-15\n",
+>       "Point Count:  5049\n",
+752,754c752,754
+<       "First Point:  [-85.2656, 0.034000000000010445, -1.6694]\n",
+<       "Avg distance:  1.7476894422641363\n",
+<       "Segments witgh distance > 1.0e-6:  44  of  9412\n",
+---
+>       "First Point:  [-32.1048, 3.931704055726594e-15, -0.0062]\n",
+>       "Avg distance:  0.9084423690774833\n",
+>       "Segments witgh distance > 1.0e-6:  0  of  5050\n",
+756,757c756,757
+<       "-85.2656\n",
+<       "Point Count:  9411\n",
+---
+>       "-32.1048\n",
+>       "Point Count:  5049\n",
+759,761c759,761
+<       "First Point:  [-0.034000000000015664, -85.2656, -1.6694]\n",
+<       "Avg distance:  1.7476894422641363\n",
+<       "Segments witgh distance > 1.0e-6:  44  of  9412\n"
+---
+>       "First Point:  [-5.897556083589891e-15, -32.1048, -0.0062]\n",
+>       "Avg distance:  0.9084423690774838\n",
+>       "Segments witgh distance > 1.0e-6:  0  of  5050\n"
+783c783,791
+<    "execution_count": 1,
+---
+>    "execution_count": null,
+>    "id": "4d1d702e-a110-44e0-8d32-37f446c195d0",
+>    "metadata": {},
+>    "outputs": [],
+>    "source": []
+>   },
+>   {
+>    "cell_type": "code",
+>    "execution_count": 4,
+795c803
+<       "Top    Init X and Y positions:  0.08526560000000001 -3.4000000000000007e-05\n",
+---
+>       "Top    Init X and Y positions:  0.032104799999999996 0.0\n",
+798,799c806,807
+<       "Nodes Count: 15876\n",
+<       "Elem Count: 15876\n",
+---
+>       "Nodes Count: 6561\n",
+>       "Elem Count: 6561\n",
+803c811
+<       "Sphere Origin:  0.08526560000000001 -3.4000000000000007e-05 0.00795\n",
+---
+>       "Sphere Origin:  0.032104799999999996 0.0 0.0028\n",
+805,822c813,815
+<       "angulos [90, 180, 270]\n",
+<       "Creating Sphere mesh\n",
+<       "repeated nodes:  100\n",
+<       "Sphere Origin:  3.4000000000005224e-05 0.08526560000000001 0.00795\n",
+<       "Sphere generated: %d 386  nodes      \n",
+<       ">>>>>>>>>extra tool 0 mesh id: 3\n",
+<       "Creating Sphere mesh\n",
+<       "repeated nodes:  100\n",
+<       "Sphere Origin:  -0.08526560000000001 3.400000000001045e-05 0.00795\n",
+<       "Sphere generated: %d 386  nodes      \n",
+<       ">>>>>>>>>extra tool 1 mesh id: 4\n",
+<       "Creating Sphere mesh\n",
+<       "repeated nodes:  100\n",
+<       "Sphere Origin:  -3.4000000000015666e-05 -0.08526560000000001 0.00795\n",
+<       "Sphere generated: %d 386  nodes      \n",
+<       ">>>>>>>>>extra tool 2 mesh id: 5\n",
+<       "dx:  0.003416666666666667\n",
+<       "Adding rect on z:  -0.00015\n",
+---
+>       "Part index i:  0\n",
+>       "dx:  0.0017500000000000003\n",
+>       "Adding rect on z:  -5e-05\n",
+827,828c820,821
+<       "dx:  0.003416666666666667\n",
+<       "Adding rect on z:  0.00015\n",
+---
+>       "dx:  0.0017500000000000003\n",
+>       "Adding rect on z:  5e-05\n",
+833,834c826,827
+<       "dx:  0.003416666666666667\n",
+<       "Adding rect on z:  -0.00015\n",
+---
+>       "dx:  0.0017500000000000003\n",
+>       "Adding rect on z:  -5e-05\n",
+839,840c832,833
+<       "dx:  0.003416666666666667\n",
+<       "Adding rect on z:  0.00015\n",
+---
+>       "dx:  0.0017500000000000003\n",
+>       "Adding rect on z:  5e-05\n",
+846c839
+<       "Adding rect on z:  -0.00015\n",
+---
+>       "Adding rect on z:  -5e-05\n",
+852c845
+<       "Adding rect on z:  0.00015\n",
+---
+>       "Adding rect on z:  5e-05\n",
+858c851
+<       "Adding rect on z:  -0.00015\n",
+---
+>       "Adding rect on z:  -5e-05\n",
+864c857
+<       "Adding rect on z:  0.00015\n",
+---
+>       "Adding rect on z:  5e-05\n",
+869,870c862,863
+<       "Piece Shell node count 15876\n",
+<       "Shell node count:  15876\n",
+---
+>       "Piece Shell node count 6561\n",
+>       "Shell node count:  6561\n",
+872,876c865,866
+<       "extr 0 sphere node count: 387\n",
+<       "extr 1 sphere node count: 387\n",
+<       "extr 2 sphere node count: 387\n",
+<       "set multitool to: 4\n",
+<       "Last line:     1.6495689292e+03   -4.3326500000e-02\n",
+---
+>       "set multitool to: 1\n",
+>       "Last line:     4.6065620160e+02   -2.6867700000e-02\n",
+878c868
+<       "End processing time: 1649.5689292\n",
+---
+>       "End processing time: 460.6562016\n",
+884,892c874
+<       "add extra tool 0 to part 3\n",
+<       "Creating part 3 function\n",
+<       "\n",
+<       "add extra tool 1 to part 4\n",
+<       "Creating part 4 function\n",
+<       "\n",
+<       "add extra tool 2 to part 5\n",
+<       "Creating part 5 function\n",
+<       "\n",
+---
+>       "After multi tools, part index i:  -1\n",
+895c877,878
+<       "Part  1  initial node:  1 end node:  0\n",
+---
+>       "Added part, id:  1\n",
+>       "Part  1  initial node:  1 end node:  6561\n",
+897,904c880,884
+<       "Part  2  initial node:  15877 end node:  15876\n",
+<       "part count  3\n",
+<       "Part  3  initial node:  16264 end node:  16263\n",
+<       "part count  4\n",
+<       "Part  4  initial node:  16651 end node:  16650\n",
+<       "part count  5\n",
+<       "Part  5  initial node:  17038 end node:  17037\n",
+<       "Creating part 6 function\n",
+---
+>       "Added part, id:  2\n",
+>       "Part  2  initial node:  6562 end node:  6948\n",
+>       "Saving spring element node 1:  6948\n",
+>       "spring_tool size 2\n",
+>       "Creating part 4 function\n",
+906c886
+<       "add support 0 to part 6\n",
+---
+>       "add support 0 to part 4, id 4\n",
+908,910c888,891
+<       "part count  6\n",
+<       "Part  6  initial node:  17425 end node:  17424\n",
+<       "Creating part 7 function\n",
+---
+>       "part count  3\n",
+>       "Added part, id:  4\n",
+>       "Part  3  initial node:  6949 end node:  7315\n",
+>       "Creating part 5 function\n",
+912c893
+<       "add support 1 to part 7\n",
+---
+>       "add support 1 to part 5, id 5\n",
+914,916c895,898
+<       "part count  7\n",
+<       "Part  7  initial node:  17792 end node:  17791\n",
+<       "Creating part 8 function\n",
+---
+>       "part count  4\n",
+>       "Added part, id:  5\n",
+>       "Part  4  initial node:  7316 end node:  7682\n",
+>       "Creating part 6 function\n",
+918c900
+<       "add support 2 to part 8\n",
+---
+>       "add support 2 to part 6, id 6\n",
+920,922c902,905
+<       "part count  8\n",
+<       "Part  8  initial node:  18159 end node:  18158\n",
+<       "Creating part 9 function\n",
+---
+>       "part count  5\n",
+>       "Added part, id:  6\n",
+>       "Part  5  initial node:  7683 end node:  8049\n",
+>       "Creating part 7 function\n",
+924c907
+<       "add support 3 to part 9\n",
+---
+>       "add support 3 to part 7, id 7\n",
+926,928c909,912
+<       "part count  9\n",
+<       "Part  9  initial node:  18526 end node:  18525\n",
+<       "Creating part 10 function\n",
+---
+>       "part count  6\n",
+>       "Added part, id:  7\n",
+>       "Part  6  initial node:  8050 end node:  8416\n",
+>       "Creating part 8 function\n",
+930c914
+<       "add support 4 to part 10\n",
+---
+>       "add support 4 to part 8, id 8\n",
+932,934c916,919
+<       "part count  10\n",
+<       "Part  10  initial node:  18893 end node:  18892\n",
+<       "Creating part 11 function\n",
+---
+>       "part count  7\n",
+>       "Added part, id:  8\n",
+>       "Part  7  initial node:  8417 end node:  8783\n",
+>       "Creating part 9 function\n",
+936c921
+<       "add support 5 to part 11\n",
+---
+>       "add support 5 to part 9, id 9\n",
+938,940c923,926
+<       "part count  11\n",
+<       "Part  11  initial node:  19260 end node:  19259\n",
+<       "Creating part 12 function\n",
+---
+>       "part count  8\n",
+>       "Added part, id:  9\n",
+>       "Part  8  initial node:  8784 end node:  9150\n",
+>       "Creating part 10 function\n",
+942c928
+<       "add support 6 to part 12\n",
+---
+>       "add support 6 to part 10, id 10\n",
+944,946c930,933
+<       "part count  12\n",
+<       "Part  12  initial node:  19627 end node:  19626\n",
+<       "Creating part 13 function\n",
+---
+>       "part count  9\n",
+>       "Added part, id:  10\n",
+>       "Part  9  initial node:  9151 end node:  9517\n",
+>       "Creating part 11 function\n",
+948c935
+<       "add support 7 to part 13\n",
+---
+>       "add support 7 to part 11, id 11\n",
+950,955c937,942
+<       "part count  13\n",
+<       "Part  13  initial node:  19994 end node:  19993\n",
+<       "---------------------------------------------interface  0 ,  3\n",
+<       "---------------------------------------------interface  1 ,  4\n",
+<       "---------------------------------------------interface  2 ,  5\n",
+<       "Last line:     1.6495689292e+03   -4.3326500000e-02\n",
+---
+>       "part count  10\n",
+>       "Added part, id:  11\n",
+>       "Part  10  initial node:  9518 end node:  9884\n",
+>       "Adding Springs\n",
+>       "---------------------------------------\n",
+>       "Creating part 13 function\n",
+957c944,957
+<       "End processing time: 1649.5689292\n",
+---
+>       "Nodes:  6948 ;  9885\n",
+>       "part count  11\n",
+>       "Added part, id:  13\n",
+>       "Part  11  initial node:  9885 end node:  9885\n",
+>       "Nodes:  6948 9885\n",
+>       "Creating part 14 function\n",
+>       "\n",
+>       "APPENDING PROP\n",
+>       "APPENDING PROP\n",
+>       "APPENDING PROP\n",
+>       "APPENDING PROP\n",
+>       "Last line:     4.6065620160e+02   -2.6867700000e-02\n",
+>       "\n",
+>       "End processing time: 460.6562016\n",
+960,963c960
+<       "part node count  15876\n",
+<       "part node count  387\n",
+<       "part node count  387\n",
+<       "part node count  387\n",
+---
+>       "part node count  6561\n",
+972a970
+>       "part node count  1\n",
+1040,1132d1037
+<       "Element  6400\n",
+<       "Element  6500\n",
+<       "Element  6600\n",
+<       "Element  6700\n",
+<       "Element  6800\n",
+<       "Element  6900\n",
+<       "Element  7000\n",
+<       "Element  7100\n",
+<       "Element  7200\n",
+<       "Element  7300\n",
+<       "Element  7400\n",
+<       "Element  7500\n",
+<       "Element  7600\n",
+<       "Element  7700\n",
+<       "Element  7800\n",
+<       "Element  7900\n",
+<       "Element  8000\n",
+<       "Element  8100\n",
+<       "Element  8200\n",
+<       "Element  8300\n",
+<       "Element  8400\n",
+<       "Element  8500\n",
+<       "Element  8600\n",
+<       "Element  8700\n",
+<       "Element  8800\n",
+<       "Element  8900\n",
+<       "Element  9000\n",
+<       "Element  9100\n",
+<       "Element  9200\n",
+<       "Element  9300\n",
+<       "Element  9400\n",
+<       "Element  9500\n",
+<       "Element  9600\n",
+<       "Element  9700\n",
+<       "Element  9800\n",
+<       "Element  9900\n",
+<       "Element  10000\n",
+<       "Element  10100\n",
+<       "Element  10200\n",
+<       "Element  10300\n",
+<       "Element  10400\n",
+<       "Element  10500\n",
+<       "Element  10600\n",
+<       "Element  10700\n",
+<       "Element  10800\n",
+<       "Element  10900\n",
+<       "Element  11000\n",
+<       "Element  11100\n",
+<       "Element  11200\n",
+<       "Element  11300\n",
+<       "Element  11400\n",
+<       "Element  11500\n",
+<       "Element  11600\n",
+<       "Element  11700\n",
+<       "Element  11800\n",
+<       "Element  11900\n",
+<       "Element  12000\n",
+<       "Element  12100\n",
+<       "Element  12200\n",
+<       "Element  12300\n",
+<       "Element  12400\n",
+<       "Element  12500\n",
+<       "Element  12600\n",
+<       "Element  12700\n",
+<       "Element  12800\n",
+<       "Element  12900\n",
+<       "Element  13000\n",
+<       "Element  13100\n",
+<       "Element  13200\n",
+<       "Element  13300\n",
+<       "Element  13400\n",
+<       "Element  13500\n",
+<       "Element  13600\n",
+<       "Element  13700\n",
+<       "Element  13800\n",
+<       "Element  13900\n",
+<       "Element  14000\n",
+<       "Element  14100\n",
+<       "Element  14200\n",
+<       "Element  14300\n",
+<       "Element  14400\n",
+<       "Element  14500\n",
+<       "Element  14600\n",
+<       "Element  14700\n",
+<       "Element  14800\n",
+<       "Element  14900\n",
+<       "Element  15000\n",
+<       "Element  15100\n",
+<       "Element  15200\n",
+<       "Element  15300\n",
+<       "Element  15400\n",
+<       "Element  15500\n",
+<       "Element  15600\n",
+1152d1056
+<       "Element  300\n",
+1163d1066
+<       "Element  300\n",
+1174d1076
+<       "Element  300\n",
+1233,1256d1134
+<       "Element  100\n",
+<       "Element  200\n",
+<       "/SURF/PART/1000011\n",
+<       "\n",
+<       "Printing convection...\n",
+<       "\n",
+<       "Printing part11\n",
+<       "Printing Elements..\n",
+<       "\n",
+<       "Element  0\n",
+<       "Element  100\n",
+<       "Element  200\n",
+<       "/SURF/PART/1000012\n",
+<       "\n",
+<       "Printing convection...\n",
+<       "\n",
+<       "Printing part12\n",
+<       "Printing Elements..\n",
+<       "\n",
+<       "Element  0\n",
+<       "Element  100\n",
+<       "Element  200\n",
+<       "/SURF/PART/1000013\n",
+<       "\n",
+1259c1137
+<       "printing materials:  4\n",
+---
+>       "printing materials:  1\n",
+1264,1269d1141
+<       "Temperature Part2\n",
+<       "imptTemp to part 2\n",
+<       "Temperature Part3\n",
+<       "imptTemp to part 3\n",
+<       "Temperature Part4\n",
+<       "imptTemp to part 4\n",
+1273,1284c1145,1153
+<       "16263\n",
+<       "16650\n",
+<       "17037\n",
+<       "17424\n",
+<       "17791\n",
+<       "18158\n",
+<       "18525\n",
+<       "18892\n",
+<       "19259\n",
+<       "19626\n",
+<       "19993\n",
+<       "20360\n"
+---
+>       "6948\n",
+>       "7315\n",
+>       "7682\n",
+>       "8049\n",
+>       "8416\n",
+>       "8783\n",
+>       "9150\n",
+>       "9517\n",
+>       "9884\n"
+1308,1310c1177,1179
+<     "largo = 0.2\n",
+<     "delta = 0.0016\n",
+<     "thck  = 7.0e-4      #Plate Thickness\n",
+---
+>     "largo = 0.1\n",
+>     "delta = 0.00125\n",
+>     "thck  = 5.0e-4      #Plate Thickness\n",
+1334c1203
+<     "tool_rad      = 0.00755    #Tool radius\n",
+---
+>     "tool_rad      = 0.0025    #Tool radius\n",
+1341c1210
+<     "supp_rel_time = 5.0\n",
+---
+>     "supp_rel_time = 10.0\n",
+1346a1216
+>     "tool_springs  = True\n",
+1359d1228
+<     "tool_temp           = 100\n",
+1366c1235
+<     "multi_tool          = True\n",
+---
+>     "multi_tool          = False\n",
+1390,1431c1259,1275
+<     "Ti6Al4V=False\n",
+<     "AISI430=True\n",
+<     "\n",
+<     "if Ti6Al4V:\n",
+<     "    ###### MATERIAL\n",
+<     "    mat = Material(1,thermal) #ID, THERMAL\n",
+<     "    mat.rho     = 4430.0\n",
+<     "    mat.E       = 105.0e9\n",
+<     "    mat.nu      = 0.34\n",
+<     "    mat.vs_fac  = vscal_fac\n",
+<     "    \n",
+<     "    #thermal\n",
+<     "    mat.k_th  = 7.4 # 15 //\n",
+<     "    mat.cp_th = 520.0\n",
+<     "    \n",
+<     "    mat.Ajc   = 790.0e6\n",
+<     "    mat.Bjc   = 478.0e6\n",
+<     "    mat.njc   = 0.28\n",
+<     "    mat.mjc   = 1.0\n",
+<     "    mat.Cjc   = 0.032\n",
+<     "    mat.e0jc  = 1.0\n",
+<     "\n",
+<     "if AISI430: #Verification of Johnson-Cook parameters of ferritic stainless steel by drilling process: experimental and finite element simulations\n",
+<     "            #Mehmet Erdi Korkmaz (2020)\n",
+<     "    \n",
+<     "    ###### MATERIAL\n",
+<     "    mat = Material(1,thermal) #ID, THERMAL\n",
+<     "    mat.rho     = 7800.0\n",
+<     "    mat.E       = 200.0e9\n",
+<     "    mat.nu      = 0.3\n",
+<     "    mat.vs_fac  = vscal_fac\n",
+<     "    \n",
+<     "    #thermal\n",
+<     "    mat.k_th  = 26.1 # 15 //\n",
+<     "    mat.cp_th = 460.0\n",
+<     "    \n",
+<     "    mat.Ajc   = 359.0e6\n",
+<     "    mat.Bjc   = 327.0e6\n",
+<     "    mat.njc   = 0.454\n",
+<     "    mat.mjc   = 0.919\n",
+<     "    mat.Cjc   = 0.0786\n",
+<     "    mat.e0jc  = 0.04\n",
+---
+>     "###### MATERIAL\n",
+>     "mat = Material(1,thermal) #ID, THERMAL\n",
+>     "mat.rho     = 4430.0\n",
+>     "mat.E       = 105.0e9\n",
+>     "mat.nu      = 0.34\n",
+>     "mat.vs_fac  = vscal_fac\n",
+>     "\n",
+>     "#thermal\n",
+>     "mat.k_th  = 7.4 # 15 //\n",
+>     "mat.cp_th = 520.0\n",
+>     "\n",
+>     "mat.Ajc   = 790.0e6\n",
+>     "mat.Bjc   = 478.0e6\n",
+>     "mat.njc   = 0.28\n",
+>     "mat.mjc   = 1.0\n",
+>     "mat.Cjc   = 0.032\n",
+>     "mat.e0jc  = 1.0\n",
+1507a1352,1356
+>     "driver_top = Spring_Mesh(1002); #ID, Create Node count,\n",
+>     "driver_top.add_node(x_init, y_init, (tool_rad + thck/2.0 + gap + thck_rig/2.0+2.0*tool_rad))\n",
+>     "#Elements will be created once connectiovities are known (after tools node ids will be known)\n",
+>     "#TODO: USE NODES ID\n",
+>     "\n",
+1512a1362,1364
+>     "  driver_bot = Spring_Mesh(1003); #ID, Create Node count,\n",
+>     "  driver_bot.add_node(x_init_o, y_init_o, (-tool_rad + -thck/2.0 - gap - thck_rig/2.0-2.0*tool_rad))\n",
+>     "\n",
+1516c1368
+<     "\n",
+---
+>     "driver_top_mesh_mt = []\n",
+1548c1400,1408
+<     "        \n",
+---
+>     "\n",
+>     "            #MESHES FOR SPRINGS\n",
+>     "            count = 0\n",
+>     "            for j in range(multi_tool_N-1):\n",
+>     "                driver_top_mesh_mt.append(Spring_Mesh(1004+count)); #ID, Create Node count,\n",
+>     "                driver_top_mesh_mt[count].add_node(cos * x_init-sin*y_init, \\\n",
+>     "                                                   sin*x_init+cos*y_init, (tool_rad + thck/2.0 + gap + thck_rig/2.0+2.0*tool_rad))\n",
+>     "                count+=1\n",
+>     "                \n",
+1554c1414
+<     "\n",
+---
+>     "print (\"Part index i: \", i)\n",
+1613c1473
+<     "#model.end_proc_time = end_time\n",
+---
+>     "#model.end_proc_time = end_time   #USED\n",
+1630c1490,1491
+<     "sph1_pt.is_moving = True\n",
+---
+>     "if (not tool_springs):\n",
+>     "  sph1_pt.is_moving = True\n",
+1637c1498,1499
+<     "  sph2_pt.is_moving = True\n",
+---
+>     "  if (not tool_springs):\n",
+>     "    sph2_pt.is_moving = True\n",
+1639c1501
+<     "    \n",
+---
+>     "\n",
+1640a1503
+>     "#IMPORTANT: sph_pts has the size of ADDED TOOLS\n",
+1649c1512,1513
+<     "            sph_pts[i].is_moving = True\n",
+---
+>     "            if (not tool_springs):\n",
+>     "              sph_pts[i].is_moving = True\n",
+1657c1521,1522
+<     "            sph_pts[i].is_moving = True\n",
+---
+>     "            if (not tool_springs):\n",
+>     "              sph_pts[i].is_moving = True\n",
+1661,1664c1526,1528
+<     "    if double_sided:\n",
+<     "        i=-1\n",
+<     "    else:\n",
+<     "        i=-2\n",
+---
+>     "    i=-1 #Because if bottom tool increases 1\n",
+>     "    \n",
+>     "print (\"After multi tools, part index i: \", i)\n",
+1671a1536,1544
+>     "\n",
+>     "#CHANGED FOR CONTEMPLATING DOUBLE SIDEDsph_pt\n",
+>     "#MAX LENGTH, not important if used or not\n",
+>     "spring_toolnodes = [0] * 2 * multi_tool_N\n",
+>     "\n",
+>     "#spring_toolnodes.append(model.tot_nod_count)\n",
+>     "spring_toolnodes[0] = model.tot_nod_count\n",
+>     "print (\"Saving spring element node 1: \", model.tot_nod_count)\n",
+>     "\n",
+1674c1547,1549
+<     "\n",
+---
+>     "  spring_toolnodes[1] = model.tot_nod_count\n",
+>     "  print (\"Append spring node \", model.tot_nod_count)    \n",
+>     "i = 0\n",
+1677a1553,1558
+>     "        print (\"Append spring node \", model.tot_nod_count)\n",
+>     "        #spring_toolnodes.append(model.tot_nod_count) #SPHERE NODE CENTER SPRING PARTS ARE AT THE END BUT WE're KEEPIN' NODE COUNT\n",
+>     "        spring_toolnodes[2+i]=model.tot_nod_count \n",
+>     "        i+=1\n",
+>     "\n",
+>     "print (\"spring_tool size\", len(spring_toolnodes))\n",
+1686c1567
+<     "    print(f'add support {sp} to part {4+bot_tool_present+i+sp}')\n",
+---
+>     "    print(f'add support {sp} to part {4+bot_tool_present+i+sp}, id {4+bot_tool_present+i+sp}')\n",
+1689a1571
+>     "    supp_part[sp].is_support = True\n",
+1697a1580,1633
+>     "if (tool_springs):\n",
+>     "  print (\"Adding Springs\")\n",
+>     "  print (\"---------------------------------------\") \n",
+>     "  tool_springs_pts =[]\n",
+>     "  tool_springs_pts.append(Part(4+8+multi_tool_N))\n",
+>     "  driver_top.add_elem(spring_toolnodes[0],model.tot_nod_count+1) #NEXT NODE\n",
+>     "  #driver_top.elnod[0][0] = - model.tot_nod_count+1\n",
+>     "  #driver_top.add_elem(0,model.tot_nod_count+1) #NEXT NODE\n",
+>     "  tool_springs_pts[0].AppendMesh(driver_top)\n",
+>     "  tool_springs_pts[0].asignPropID(4)\n",
+>     "  tool_springs_pts[0].elcon_renumber = False ### TO BE MODIFIED\n",
+>     "  tool_springs_pts[0].is_moving = True\n",
+>     "  #driver_top.add_elem()\n",
+>     "  print (\"Nodes: \", spring_toolnodes[0], \"; \", model.tot_nod_count+1)\n",
+>     "  #tool_springs_pts[0].mesh[0].add_elem(spring_toolnodes[0],model.tot_nod_count+1) #NEXT NODE\n",
+>     "  model.AppendPart(tool_springs_pts[0])\n",
+>     "\n",
+>     "  print (\"Nodes: \", model.part[model.part_count-1].mesh[0].elnod[0][0], model.part[model.part_count-1].mesh[0].elnod[0][1])\n",
+>     "    #driver_top.mesh[0].ini_node_id\n",
+>     "  #0 and 1 always generated\n",
+>     "  tool_springs_pts.append(Part(4+8+multi_tool_N+1))\n",
+>     "  if double_sided:\n",
+>     "    print (\"Adding Bottom Springs\")\n",
+>     "    tool_springs_pts[1].AppendMesh(driver_bot)\n",
+>     "    tool_springs_pts[1].asignPropID(4)\n",
+>     "    tool_springs_pts[1].elcon_renumber = False ### TO BE MODIFIED\n",
+>     "    tool_springs_pts[1].is_moving = True\n",
+>     "    model.AppendPart(tool_springs_pts[1])\n",
+>     "\n",
+>     "\n",
+>     "  if (multi_tool):\n",
+>     "      #ALL SPRINGS FOR ODD (TOP) AND EVEN (BOTTOM)\n",
+>     "      for i in range(multi_tool_N-1):\n",
+>     "        #tool_springs_pts =[]\n",
+>     "        #8 SUPPORTS + 2 TOOLS + SHELL \n",
+>     "        tool_springs_pts.append(Part(4+8+multi_tool_N+i+2)) #ODD NUMBERS FOR UPPER TOOLS\n",
+>     "        #ODD NUMBERS FORSPRING TOOL NUMBERS\n",
+>     "        #if (i%2==0): #WHEN DOUBLE SIDED AND MULTITOOL\n",
+>     "        print (\"i \", i)\n",
+>     "        driver_top_mesh_mt[i].add_elem(spring_toolnodes[2+i*2],model.tot_nod_count+1)\n",
+>     "        print (\"Nodes: \", spring_toolnodes[2*i+2], \"; \", model.tot_nod_count+1)\n",
+>     "          #ADD HERE AN IF DOUBLE SIDED DRIVER BOT MESH WHICH IS IN A DIFFERENT NUMBER\n",
+>     "        tool_springs_pts[i+2].AppendMesh(driver_top_mesh_mt[i])\n",
+>     "        print (\"mesh nodes \", tool_springs_pts[i+2].mesh[0].elnod[0][0], tool_springs_pts[i+2].mesh[0].elnod[0][1])\n",
+>     "        print (\"DRIVER TOP MESH  size \", driver_top_mesh_mt[i].elnod)\n",
+>     "        tool_springs_pts[i+2].asignPropID(4)\n",
+>     "        tool_springs_pts[i+2].elcon_renumber = False ### TO BE MODIFIED\n",
+>     "        tool_springs_pts[i+2].is_moving = True\n",
+>     "        #driver_top.add_elem()\n",
+>     "\n",
+>     "        #tool_springs_pts[0].mesh[0].add_elem(spring_toolnodes[0],model.tot_nod_count+1) #NEXT NODE\n",
+>     "        model.AppendPart(tool_springs_pts[i+2])\n",
+>     "\n",
+>     "\n",
+1704a1641,1643
+>     "if (tool_springs):\n",
+>     "  model.AppendProp(SpringProp(4,1.0e6))\n",
+>     "\n",
+1891,1892c1830,1831
+<     "  model.part[p+1].temp_fnc.Append(1.0e-3, tool_temp)\n",
+<     "  model.part[p+1].temp_fnc.Append(model.end_proc_time+supp_rel_time+dynrel_time, tool_temp)\n",
+---
+>     "  model.part[p+1].temp_fnc.Append(1.0e-3, 500.)\n",
+>     "  model.part[p+1].temp_fnc.Append(model.end_proc_time+supp_rel_time+dynrel_time, 500.)\n",
+1927c1866
+<    "execution_count": 18,
+---
+>    "execution_count": 3,
+1934c1873
+<        "3"
+---
+>        "(-0.05, -0.05, 0.0)"
+1937c1876
+<      "execution_count": 18,
+---
+>      "execution_count": 3,
+1943c1882,1883
+<     "sph_mesh[0].id"
+---
+>     "#print (driver_top.elnod)\n",
+>     "model.part[0].mesh[0].nodes[0]"
