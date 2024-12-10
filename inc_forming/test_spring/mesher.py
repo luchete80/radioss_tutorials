@@ -516,14 +516,10 @@ class Spring_Mesh(Mesh):
   def __init__(self, id, n1 = 0, n2 = 0):
     #super(Spring_Mesh, self).__init__()
     self.id = id
-    self.elnod = []
-    self.nodes = []
     #self.elnod.append(n1,n2)
   def __init__(self, id ):
     #super(Spring_Mesh, self).__init__()
     self.id = id
-    self.elnod = []
-    self.nodes = []
     #self.elnod.append((0,0))
   def add_elem(self,n1,n2):
     self.elnod.append((n1,n2))

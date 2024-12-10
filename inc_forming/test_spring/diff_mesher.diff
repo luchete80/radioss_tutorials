@@ -1,13 +1,28 @@
-132,135d131
+131,135c131
+<       nodes.append((0.,0.,0.))
 < 
 <   def add_node(self,x,y,z):
 <     self.nodes.append((x,y,z))
 <     self.node_count += 1
+---
+>       nodes.append(Node(i,0.,0.,0.))
 161,163d156
 <     if (type=="spring"):
 <       f.write('/SPRING/' + str(self.id) + '\n')
 <     
-512,528d504
+270a264
+>     n = 0
+274c268
+<         self.nodes.append((x,y,0.))
+---
+>         self.nodes.append((n,x,y,0.))
+276a271
+>       n+=1
+481c476
+<             self.nodes.append((x,y,z))
+---
+>             self.nodes.append((n,x,y,z))
+512,532d506
 < class Spring_Mesh(Mesh):
 <   nodes = []
 <   elnod = []
@@ -15,48 +30,41 @@
 <   def __init__(self, id, n1 = 0, n2 = 0):
 <     #super(Spring_Mesh, self).__init__()
 <     self.id = id
+<     self.elnod = []
+<     self.nodes = []
 <     #self.elnod.append(n1,n2)
 <   def __init__(self, id ):
 <     #super(Spring_Mesh, self).__init__()
 <     self.id = id
+<     self.elnod = []
+<     self.nodes = []
 <     #self.elnod.append((0,0))
 <   def add_elem(self,n1,n2):
 <     self.elnod.append((n1,n2))
 <     self.elem_count+=1
 <     
 < 
-549d524
+553d526
 <   type = "shell"
-554,577d528
-<     if (type=="shell"):
-<       f.write("##--------------------------------------------------------------------------------------------------\n")
-<       f.write("## Shell Property Set (pid 1)\n")
-<       f.write("##--------------------------------------------------------------------------------------------------\n")
-<       f.write("/PROP/SHELL/" + str(self.pid) + "\n")
-<       f.write("/PROP/SHELL/" + str(self.pid) + "\n")
-<       f.write("SECTION_SHELL:1 TITLE:probe_section  \n")                                                               
-<       f.write("#Ishell	Ismstr	Ish3n	Idril	 	 	P_thickfail\n")
-<       f.write("         4         2                         \n")                                   
-<       f.write("#hm	hf	hr	dm	dn\n")
-<       f.write("\n")
-<       f.write("#---1----|----2----|----3----|----4----|----5----|----6----|----7----|----8----|----9----|---10----|\n")
-<       f.write("#N	       Istrain	 Thick	             Ashear	 	           Ithick	Iplas    \n")                                                                                                
-<       f.write(writeIntField(2, 10) + "          " + writeFloatField(self.thck,20,6) + "                                       1         1\n")
+557d529
+<     self.type = "shell"
+559d530
+<     #if (type=="shell"):
+572,607c543,544
 < 
 < 
 < class SpringProp(Prop):
 <   k = 1.0
 <   c = 0.0
+<   type = "spring"
 <   #else if (type=="spring"):    
 <   def __init__(self, pid, k):     
 <     self.pid = pid
 <     self.k = k
 <   def printRadioss(self,f):
-579c530
+<     f.write("##--------------------------------------------------------------------------------------------------\n")
 <     f.write("## Spring Property Set (pid 1)\n")
----
->     f.write("## Shell Property Set (pid 1)\n")
-581,601c532,542
+<     f.write("##--------------------------------------------------------------------------------------------------\n")
 <     f.write("/PROP/TYPE13/" + str(self.pid) + "\n")
 <     f.write("SECTION_SPRING TITLE:probe_section  \n")                                                               
 <     f.write("#--Mass	           |            Inertia|	Skew_ID |	sens_ID	|  Isflag	|  Ifail	|Ileng	Ifail2\n")
@@ -68,7 +76,8 @@
 <         f.write(writeFloatField(self.k,20,6))
 <       else:
 <         f.write(writeFloatField(1.0e10,20,6))
-<       for i in range(4):
+<       f.write(writeFloatField(1.0e2,20,6))
+<       for i in range(3):
 <         f.write(writeFloatField(0.0,20,6))
 <       f.write("\n")
 <       for i in range(5):
@@ -79,34 +88,81 @@
 <       f.write("\n")
 < 
 ---
->     f.write("/PROP/SHELL/" + str(self.pid) + "\n")
->     f.write("SECTION_SHELL:1 TITLE:probe_section  \n")                                                               
->     f.write("#Ishell	Ismstr	Ish3n	Idril	 	 	P_thickfail\n")
->     f.write("         4         2                         \n")                                   
->     f.write("#hm	hf	hr	dm	dn\n")
->     f.write("\n")
->     f.write("#---1----|----2----|----3----|----4----|----5----|----6----|----7----|----8----|----9----|---10----|\n")
->     f.write("#N	       Istrain	 Thick	             Ashear	 	           Ithick	Iplas    \n")                                                                                                
->     f.write(writeIntField(2, 10) + "          " + writeFloatField(self.thck,20,6) + "                                       1         1\n")
 >              
 >         
-666d606
-<   stiffk_     = 1.0e5         
-691,692d630
+670d606
+<   is_support = False
+673,674d608
+<   stiffk_     = 1.0e5    
+<   elcon_renumber = True #TEMPORARY, ONLY UNTIL VECTOR OF NODES WILL BE A VECTOR OF CLASSES     
+684d617
+<     self.elcon_renumber = True
+700,701d632
 <     if (self.mesh[0].type == "spring"):
 <       f.write('/SPRING/' + str(self.id) + '\n')
-694,695d631
+703,708d633
 <     #print ("initial node ",self.mesh[0].ini_node_id+ self.mesh[0].ini_node_id)
 <     #print ("node: ", self.mesh[0].elnod[0][0])
-817c753
+<     if (self.elcon_renumber):
+<       start_id = self.mesh[0].ini_node_id
+<     else:
+<       start_id = 0
+713c638
+<         line = line + writeIntField(self.mesh[0].elnod[i][d] + start_id,10)
+---
+>         line = line + writeIntField(self.mesh[0].elnod[i][d] + self.mesh[0].ini_node_id,10)
+729c654
+<     if (self.is_rigid or self.is_moving):
+---
+>     if (self.is_rigid):
+734c659
+<     if (self.is_moving or self.is_support):
+---
+> 
+738c663
+<       if (self.is_moving): #LEDDING A TOOL OR A SPRING
+---
+>       if (self.is_moving):
+740c665
+<       if (self.is_support):         
+---
+>       else: 
+830c755
 <         
 ---
 >         self.tot_nod_count = self.tot_nod_count + self.part[self.part_count-2].mesh[0].node_count
-822,825c758,759
+835,840c760,762
 <       
 <       self.tot_nod_count = self.tot_nod_count + self.part[self.part_count-1].mesh[0].node_count  
 < 
+<     print ("Added part, id: ", self.part[self.part_count-1].id)
 <     print ("Part ", self.part_count, " initial node: ", self.part[self.part_count-1].mesh[0].ini_node_id, "end node: ", self.tot_nod_count)
+<     
 ---
 >         
 >     print ("Part ", self.part_count, " initial node: ", self.tot_nod_count + 1, "end node: ", self.tot_nod_count)
+>   
+857d778
+<     print ("APPENDING PROP")
+861,862c782
+<       self.prop.append(p)
+<       
+---
+>       self.mat.append(p)
+1020c940
+<       if (self.part[p].id == 1):
+---
+>       if (not self.part[p].is_rigid):
+1026a947
+>     
+1028,1030d948
+<     for p in range(len(self.prop)):
+<       self.prop[p].printRadioss(f)
+<       
+1082c1000,1003
+<             
+---
+>     
+>     for p in range(len(self.prop)):
+>       self.mat[p].printRadioss(f)
+>       
