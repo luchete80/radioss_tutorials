@@ -7,3 +7,12 @@ MULTITOOL SPIF
 PARTS 5 to 7
 
 PARTS 
+
+
+
+IN MULTITOOL
+
+PARTS ID: 2 TO 5 
+
+SUPPORT IDs:  
+WITH 4 tools from 7 to 14
