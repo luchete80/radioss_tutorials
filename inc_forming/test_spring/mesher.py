@@ -758,7 +758,8 @@ class Part:
       self.mesh[0].printRigidRadioss(f) 
       self.mesh[0].printContSurfRadioss(f)
     else:
-      self.mesh[0].printPartSurfRadioss(f) #ONLYFOR CONVECTION
+      if (self.mesh[0].type != "spring"):
+        self.mesh[0].printPartSurfRadioss(f) #ONLYFOR CONVECTION
 
 class Interface:
   id_master = 0
