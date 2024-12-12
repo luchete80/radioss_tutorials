@@ -604,7 +604,16 @@ class SpringProp(Prop):
       for i in range(4):
         f.write(writeIntField(0, 20))
       f.write("\n")
-
+    f.write("#                 V0              Omega0               F_cut   Fsmooth\n")
+    f.write("                   0                   0                   0         0\n")
+    f.write("#                  C                   n               alpha                beta\n")
+    f.write("                   0                   0                   0                   0\n")
+    f.write("                   0                   0                   0                   0\n")
+    f.write("                   0                   0                   0                   0\n")
+    f.write("                   0                   0                   0                   0\n")
+    f.write("                   0                   0                   0                   0\n")
+    f.write("                   0                   0                   0                   0\n")
+    f.write("#---1----|----2----|----3----|----4----|----5----|----6----|----7----|----8----|----9----|---10----|\n")
          
      
 class Material:
