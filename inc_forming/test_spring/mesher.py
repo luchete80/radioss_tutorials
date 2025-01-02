@@ -572,13 +572,12 @@ class Prop:
 
 
 class SpringProp(Prop):
-  k = 1.0
+  k = []
   c = 0.0
   type = "spring"
   #else if (type=="spring"):    
-  def __init__(self, pid, k):     
-    self.pid = pid
-    self.k = k
+  def __init__(self, pid, kx,ky,kz):     
+    self.k.append(kx);    self.k.append(ky);    self.k.append(kz);
   def printRadioss(self,f):
     f.write("##--------------------------------------------------------------------------------------------------\n")
     f.write("## Spring Property Set (pid 1)\n")
@@ -591,7 +590,7 @@ class SpringProp(Prop):
       f.write("#---1----|----2----|----3----|----4----|----5----|----6----|----7----|----8----|----9----|---10----|\n")
       f.write("#                 K1	                 C1	                 A1	                 B1	                 D1\n")
       if (k<3):
-        f.write(writeFloatField(self.k,20,6))
+        f.write(writeFloatField(self.k[k],20,6))
       else:
         f.write(writeFloatField(1.0e10,20,6))
       f.write(writeFloatField(1.0e2,20,6))
