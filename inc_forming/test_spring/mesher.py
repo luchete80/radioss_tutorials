@@ -576,7 +576,8 @@ class SpringProp(Prop):
   c = 0.0
   type = "spring"
   #else if (type=="spring"):    
-  def __init__(self, pid, kx,ky,kz):     
+  def __init__(self, pid, kx,ky,kz):  
+    self.pid = pid   
     self.k.append(kx);    self.k.append(ky);    self.k.append(kz);
   def printRadioss(self,f):
     f.write("##--------------------------------------------------------------------------------------------------\n")
