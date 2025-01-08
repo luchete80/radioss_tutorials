@@ -902,10 +902,10 @@ class Model:
       f.write("                   0                   0                   0                   0         0\n")
       f.write("#              Stfac                Fric              Gapmin              Tstart               Tstop\n")
       if (self.inter[i].id_master<=self.multi_tool_N+start_part): #was 4 #FRICTION
-        f.write("#                  1                  0.                  .0                   0                   0\n")
+        f.write("                   1                  0.                  .0                   0                   0\n")
       else :
-        f.write("#                  1                 1.0                  .0                   0                   0\n")
-      f.write("                   1                 .0           0.0000                       0                   0\n")
+        f.write("                   1                 1.0                  .0                   0                   0\n")
+      # f.write("                   1                 .0           0.0000                       0                   0\n")
       f.write("#      IBC                        Inacti                VisS                VisF              Bumult\n")
       f.write("       000                             0                   1                   1                   0\n")
       f.write("#    Ifric    Ifiltr               Xfreq     Iform   sens_ID\n")
