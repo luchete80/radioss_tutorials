@@ -37,6 +37,7 @@ IF MPI
   starter_linux64_gf -i test_0000.rad -np 8
   mpiexec -n 8  --map-by socket:PE=$OMP_NUM_THREADS --bind-to core engine_linux64_gf_ompi -i test_0001.rad 
 
+  mpiexec -n 8  --map-by socket:PE=$OMP_NUM_THREADS --bind-to core engine_linux64_gf_ompi -i CHECK_FILE  
 
 
   
