@@ -248,6 +248,14 @@ class Mesh:
         mx = e
     return mx
 
+  def PrintCoords(self,dim,val,tol):
+    ni = 1
+    print ("----------------------------------------------------------------------COORDINATE SHELL NODES ")
+    for i in range (self.node_count):
+      #print(self.nodes[i][0], self.nodes[i][1])
+      if (abs(self.nodes[i][dim] - val) <= tol):
+        print(i)
+
 class Plane_Mesh(Mesh):
   ini_node_id = 1 
   ini_elem_id = 1
