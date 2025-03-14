@@ -5,8 +5,9 @@ import numpy as np
 ### ld²=2 l²
 ### ld = sqrt(2)l
 
-
-def create_mesh(l = 0.04, lc=0.05, r_outer=0.032, r_large=0.18, l_tot = 0.22, export_geo=True):
+def create_mesh(nodes,elnod, l, lc, r_outer, r_large, l_tot):
+  
+    export_geo=True
     gmsh.initialize()
     gmsh.model.add("diamond_to_circle")
 
@@ -253,13 +254,38 @@ def create_mesh(l = 0.04, lc=0.05, r_outer=0.032, r_large=0.18, l_tot = 0.22, ex
     if export_geo:
         with open("diamond_to_circle.geo", "w") as f:
             f.write(geo_content)
- 
+  
+    #### PASS VALUES
+    nodes = []
+    node_tags, node_coords, _ = gmsh.model.mesh.getNodes()
+    # Convert GMSH node coordinates to an ordered list
+    nodes = [
+    node_coords[i : i + 3] for i in range(0, len(node_coords), 3)
+    ]
+
+    # Map GMSH node ID to index in `self.nodes`
+    node_index_map = {tag: i for i, tag in enumerate(node_tags)}    
+    
+    elnod = []  # Initialize element connectivity list
+
+    element_types, element_tags, element_node_tags = gmsh.model.mesh.getElements()
+
+    for elem_type, tags, nodes in zip(element_types, element_tags, element_node_tags):
+        if elem_type == 3:  # Quad elements (GMSH type 3)
+            num_nodes_per_elem = 4  # Quads have 4 nodes
+            for i in range(len(tags)):
+                # Map global GMSH node tags to local indices
+                node_indices = [node_index_map[n] for n in nodes[i * num_nodes_per_elem : (i + 1) * num_nodes_per_elem]]
+                print ("Node indices ",node_indices)
+                elnod.append(node_indices)    
+    
+    
     gmsh.finalize()
 
 #def create_mesh(l = 0.04, lc=0.0022, r_outer=0.032, r_large=0.18, l_tot = 0.22, export_geo=True):
 # Run the mesher and export .geo
-r_large=0.18
-create_mesh(0.1,0.005,r_large-0.085,r_large,0.22)
+#r_large=0.18
+#create_mesh(0.1,0.005,r_large-0.085,r_large,0.22)
 
 
 

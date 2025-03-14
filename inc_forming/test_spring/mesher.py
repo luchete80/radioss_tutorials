@@ -1,5 +1,6 @@
 from math import *
 import numpy as np
+from gen import *
 
 debug = True
 
@@ -265,6 +266,7 @@ class Plane_Mesh(Mesh):
   def set_ini_nod_ele (inin, inie):
     ini_node_id = inin 
     ini_elem_id = inie
+
   def __init__(self, id, largo, delta):
     self.nodes = []
     self.elnod = []
@@ -292,6 +294,10 @@ class Plane_Mesh(Mesh):
               # print *, "Element ", i , "Elnod", elem%elnod(i,:) 
     # print(self.elnod)
     self.writeCenters()
+
+  def Plane_gmsh(self,l, lc, r_outer, r_large, l_tot):
+    create_mesh(self.nodes,self.elnod, l , lc, r_outer, r_large, l_tot)
+    
 
 
 class Rect_Plane_Mesh(Mesh):
@@ -341,6 +347,8 @@ class Rect_Plane_Mesh(Mesh):
               # print *, "Element ", i , "Elnod", elem%elnod(i,:) 
     # print(self.elnod)
     self.writeCenters()
+
+
 
 class Rect_Solid_Mesh(Mesh):
   ini_node_id = 1 
