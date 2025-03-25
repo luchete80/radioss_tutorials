@@ -139,7 +139,20 @@ def create_mesh(nodes,elnod, l, lc, r_outer, r_large, l_tot):
         sq_lines.append(tag)
         geo_content += f"Line({tag}) = {{{ext_sq_point[i]}, {ext_sq_point[(i+1)%8]}}};\n"
 
+    
+    #square internal lines
+    sq_in_lines = []   
+    start_dia_pt = 1
+    print ("LEn diamond points", len(diamond_points))
+    for i in range(4):
+        print("I: ",i, "start diam point ",start_dia_pt)
+        print ("tag", diamond_points[start_dia_pt])
 
+
+        tag = gmsh.model.geo.addLine(center_tag, diamond_points[start_dia_pt])
+        sq_in_lines.append(tag)
+        geo_content += f"Line({tag}) = {{{center_tag}, {diamond_points[start_dia_pt]}}};\n"        
+        start_dia_pt+=2
     ######################################################################################################
     #SURFACES
 
@@ -212,7 +225,10 @@ def create_mesh(nodes,elnod, l, lc, r_outer, r_large, l_tot):
     for line in radial_lines:
         gmsh.model.geo.mesh.setTransfiniteCurve(line, radial_elem_eigth)  # Adjust divisions as needed
         geo_content += f"Transfinite Curve{{{line}}}= {radial_elem_eigth};\n"
-
+    
+    
+    #gmsh.model.geo.mesh.setRecombine(2, square_surface)
+    
     # Optional: Recombine surfaces to get quadrilateral elements
     for surface in all_surfaces:
         gmsh.model.geo.mesh.setRecombine(2, surface)
