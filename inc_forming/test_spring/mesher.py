@@ -267,38 +267,42 @@ class Plane_Mesh(Mesh):
     ini_node_id = inin 
     ini_elem_id = inie
 
-  def __init__(self, id, largo, delta):
+
+  def __init__(self, id, largo=0, delta=0):
     self.nodes = []
     self.elnod = []
     self.id = id
-    elem_xy = (int)(largo/delta)
-    nc = (int)(elem_xy+1)
-    self.node_count = nc * nc
-    self.elem_count = (int)((elem_xy)*(elem_xy))
-    print ('Nodes Count: ' + str(self.node_count))
-    print ('Elem Count: ' + str(self.node_count))
-    y = -largo/2.0
-    for j in range (nc):
-      x = -largo/2.0
-      for i in range (nc):
-        self.nodes.append((x,y,0.))
-        x = x + delta
-      y = y + delta
-      
-    for ey in range (elem_xy):    
-      for ex in range (elem_xy):   
-        #THIS IS THE REAL NODE POSITION (FROM ZERO)
-        #UPPER NORMAL IS CLOCKWISE
-        self.elnod.append(((elem_xy+1)*ey+ex,(elem_xy+1)*ey + ex+1,(elem_xy+1)*(ey+1)+ex+1,(elem_xy+1)*(ey+1)+ex))
-                    # elem%elnod(i,:)=[(nel(1)+1)*ey + ex+1,(nel(1)+1)*ey + ex+2,(nel(1)+1)*(ey+1)+ex+2,(nel(1)+1)*(ey+1)+ex+1]         
-              # print *, "Element ", i , "Elnod", elem%elnod(i,:) 
-    # print(self.elnod)
-    self.writeCenters()
+    if (largo > 0):
+      elem_xy = (int)(largo/delta)
+      nc = (int)(elem_xy+1)
+      self.node_count = nc * nc
+      self.elem_count = (int)((elem_xy)*(elem_xy))
+      print ('Nodes Count: ' + str(self.node_count))
+      print ('Elem Count: ' + str(self.node_count))
+      y = -largo/2.0
+      for j in range (nc):
+        x = -largo/2.0
+        for i in range (nc):
+          self.nodes.append((x,y,0.))
+          x = x + delta
+        y = y + delta
+        
+      for ey in range (elem_xy):    
+        for ex in range (elem_xy):   
+          #THIS IS THE REAL NODE POSITION (FROM ZERO)
+          #UPPER NORMAL IS CLOCKWISE
+          self.elnod.append(((elem_xy+1)*ey+ex,(elem_xy+1)*ey + ex+1,(elem_xy+1)*(ey+1)+ex+1,(elem_xy+1)*(ey+1)+ex))
+                      # elem%elnod(i,:)=[(nel(1)+1)*ey + ex+1,(nel(1)+1)*ey + ex+2,(nel(1)+1)*(ey+1)+ex+2,(nel(1)+1)*(ey+1)+ex+1]         
+                # print *, "Element ", i , "Elnod", elem%elnod(i,:) 
+      # print(self.elnod)
+      self.writeCenters()
 
   def Plane_gmsh(self,l, lc, r_outer, r_large, l_tot):
     create_mesh(self.nodes,self.elnod, l , lc, r_outer, r_large, l_tot)
-    
-
+    self.node_count = len(self.nodes)
+    self.elem_count = len(self.elnod)
+    print ("GMSH Mesh Created, Nodes: ", self.node_count, ", Elements: ", len(self.elnod))
+    #self.writeCenters()
 
 class Rect_Plane_Mesh(Mesh):
   ini_node_id = 1 

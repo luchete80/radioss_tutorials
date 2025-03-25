@@ -235,6 +235,7 @@ def create_mesh(nodes,elnod, l, lc, r_outer, r_large, l_tot):
     # Print node coordinates
     for i, coords in zip(node_tags, node_coords_reshaped):
         print(f"Node {i}: {coords}")
+        nodes.append((coords[0],coords[1],coords[2]))
         
             
        # Get element connectivity (including quad elements)
@@ -242,12 +243,14 @@ def create_mesh(nodes,elnod, l, lc, r_outer, r_large, l_tot):
 
     # Print connectivity
     print("\nElement Connectivity (Quads):")
+    elcount = 0
     for elem_type, tags, nodes in zip(element_types, element_tags, element_node_tags):
         if elem_type == 3:  # Quad elements (GMSH element type for quadrilaterals is 3)
             num_nodes_per_elem = 4  # Quads have 4 nodes
             for i, elem_tag in enumerate(tags):
                 node_indices = nodes[i * num_nodes_per_elem : (i + 1) * num_nodes_per_elem]
                 print(f"Quad element {elem_tag}: Nodes: {node_indices}")
+                elcount +=1
 
     # Save mesh and geometry files
     gmsh.write("diamond_to_circle.msh")
@@ -256,32 +259,40 @@ def create_mesh(nodes,elnod, l, lc, r_outer, r_large, l_tot):
             f.write(geo_content)
   
     #### PASS VALUES
-    nodes = []
+    #nodes = [] NO! THIS GENERATES AN INPUT
     node_tags, node_coords, _ = gmsh.model.mesh.getNodes()
     # Convert GMSH node coordinates to an ordered list
-    nodes = [
-    node_coords[i : i + 3] for i in range(0, len(node_coords), 3)
-    ]
+    #nodes = [
+    #node_coords[i : i + 3] for i in range(0, len(node_coords), 3)
+    #]
 
     # Map GMSH node ID to index in `self.nodes`
     node_index_map = {tag: i for i, tag in enumerate(node_tags)}    
     
-    elnod = []  # Initialize element connectivity list
+    #elnod = []  # Initialize element connectivity list
 
     element_types, element_tags, element_node_tags = gmsh.model.mesh.getElements()
-
-    for elem_type, tags, nodes in zip(element_types, element_tags, element_node_tags):
+    
+    #element_count = sum(len(tags) for tags in element_tags)
+    print("Element count: ", elcount)
+    
+    #elnod.resize(elcount)
+    elcount = 0
+    for elem_type, tags, nod in zip(element_types, element_tags, element_node_tags):
         if elem_type == 3:  # Quad elements (GMSH type 3)
             num_nodes_per_elem = 4  # Quads have 4 nodes
             for i in range(len(tags)):
                 # Map global GMSH node tags to local indices
-                node_indices = [node_index_map[n] for n in nodes[i * num_nodes_per_elem : (i + 1) * num_nodes_per_elem]]
-                print ("Node indices ",node_indices)
-                elnod.append(node_indices)    
-    
-    
+                node_indices = [node_index_map[n] for n in nod[i * num_nodes_per_elem : (i + 1) * num_nodes_per_elem]]
+                #print ("Node indices ",node_indices)
+                #elnod.append((node_indices[0],node_indices[1],node_indices[2],node_indices[3])) 
+                elnod.append(node_indices)
+                #print (elnod)
+                elcount +=1
+    #print ("ELNOD:",elnod)
+    print ("Element Count: ", elcount)
     gmsh.finalize()
-
+    print ("EL COUNT:",len(elnod))    
 #def create_mesh(l = 0.04, lc=0.0022, r_outer=0.032, r_large=0.18, l_tot = 0.22, export_geo=True):
 # Run the mesher and export .geo
 #r_large=0.18
