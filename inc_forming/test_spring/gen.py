@@ -4,7 +4,7 @@ import numpy as np
 
 ### ld²=2 l²
 ### ld = sqrt(2)l
-
+### Plane_gmsh(lh_square,l_el_sq,r_small,r_large,largo/2.0)
 def create_mesh(nodes,elnod, l, lc, r_outer, r_large, l_tot):
   
     export_geo=True
@@ -17,14 +17,17 @@ def create_mesh(nodes,elnod, l, lc, r_outer, r_large, l_tot):
     center_tag = gmsh.model.geo.addPoint(0, 0, 0, lc)
     geo_content += f"Point({center_tag}) = {{0, 0, 0, {lc}}};\n"
     
-    radial_elem_eigth = (int)(l/lc)
+    radial_elem_eigth = (int)((l/2.0)/lc)
     print (radial_elem_eigth, "radial_elem_eigth")
     #radial_elem_eigth = 10
-         
+    
     # Define the central diamond (square rotated 45 degrees)
     diamond_points = []
     ld = np.sqrt(2.0)*l/2.0
     la = np.cos(np.pi/4.0)/2.0 * l
+    #MID AND MAX RANGE IS DIVIDEED BY 2
+    f = 0.5
+    rad_lines_len = [(r_outer-(l/2))/lc,f*((r_large-r_outer)/lc),f*((l_tot-r_large)/lc)]
     coords = [(ld, 0), (la, la),(0,ld), (-la, la),(-ld,0), (-la, -la),(0,-ld), (la, -la)]  # Store actual coordinates
     for x, y in coords:
         tag = gmsh.model.geo.addPoint(x, y, 0, lc)
@@ -154,7 +157,7 @@ def create_mesh(nodes,elnod, l, lc, r_outer, r_large, l_tot):
         geo_content += f"Line({tag}) = {{{center_tag}, {diamond_points[start_dia_pt]}}};\n"        
         start_dia_pt+=2
     ######################################################################################################
-    #SURFACES
+    #LOOPS
 
     # Create loop for the central square
     square_loop = gmsh.model.geo.addCurveLoop(diamond_lines)
@@ -199,13 +202,27 @@ def create_mesh(nodes,elnod, l, lc, r_outer, r_large, l_tot):
         transition_loops.append(tag)
         geo_content += f"Curve Loop({tag}) = {{{arc_lines[k]}, {radial_lines[j]}, {-sq_lines[i]}, {-radial_lines[(16+i)%24]}}};\n"
         #sq_lines
+    
+    print ("INTERNAL SQUARE ----")
+    for i in range(4):
+      k = (i+3)%4 #internal second line
+      l = (2*i+7)%8 #diamond second line
+      print ("CURVE LINES ",       -diamond_lines[l], -sq_in_lines[k], sq_in_lines[i],-diamond_lines[2*i]  )
+      
+
+      
+      tag = gmsh.model.geo.addCurveLoop([
+                  -diamond_lines[l], -sq_in_lines[k], sq_in_lines[i],-diamond_lines[2*i]  
+        ])
+      transition_loops.append(tag)
+      geo_content += f"Curve Loop({tag}) = {{{-diamond_lines[l]}, {-sq_in_lines[k]}, {sq_in_lines[i]}, {-diamond_lines[2*i]}}};\n"
     #####################################################################################
     #SURFACES
     
     # Create surfaces
     square_surface = gmsh.model.geo.addPlaneSurface([square_loop])
     transition_surfaces = [gmsh.model.geo.addPlaneSurface([loop]) for loop in transition_loops]
-    geo_content += f"Plane Surface({square_surface}) = {{{square_loop}}};\n"
+    #geo_content += f"Plane Surface({square_surface}) = {{{square_loop}}};\n"
     
     for i, loop in enumerate(transition_loops):
         geo_content += f"Plane Surface({transition_surfaces[i]}) = {{{loop}}};\n"
@@ -218,13 +235,21 @@ def create_mesh(nodes,elnod, l, lc, r_outer, r_large, l_tot):
         gmsh.model.geo.mesh.setTransfiniteSurface(surface)
         geo_content += f"Transfinite Surface({surface});\n"
 
-    for line in diamond_lines + arc_lines + sq_lines:
+    for line in diamond_lines + arc_lines + sq_lines+sq_in_lines:
         gmsh.model.geo.mesh.setTransfiniteCurve(line, radial_elem_eigth)  # Adjust divisions as needed
         geo_content += f"Transfinite Curve{{{line}}}= {radial_elem_eigth};\n"
         
+        i = 0
     for line in radial_lines:
-        gmsh.model.geo.mesh.setTransfiniteCurve(line, radial_elem_eigth)  # Adjust divisions as needed
-        geo_content += f"Transfinite Curve{{{line}}}= {radial_elem_eigth};\n"
+        k = 0
+        if (i>7): k = 1
+        if (i>15): k = 2
+
+        print(k,", LENGTH DENSITY :",rad_lines_len[k])
+        gmsh.model.geo.mesh.setTransfiniteCurve(line, int(rad_lines_len[k]))  # Adjust divisions as needed
+        geo_content += f"Transfinite Curve{{{line}}}= {int(rad_lines_len[k])};\n"
+        i+=1
+    
     
     
     #gmsh.model.geo.mesh.setRecombine(2, square_surface)
@@ -234,9 +259,16 @@ def create_mesh(nodes,elnod, l, lc, r_outer, r_large, l_tot):
         gmsh.model.geo.mesh.setRecombine(2, surface)
         geo_content += f"Recombine Surface({surface});\n"
 
+    ################################################################################
+    if export_geo:
+        with open("diamond_to_circle.geo", "w") as f:
+            f.write(geo_content)
+  
+    
     gmsh.model.geo.synchronize()
 
     gmsh.model.mesh.generate(2)
+    
 
 
     ##### AFTER MESHING ABTAIN COORDS
@@ -250,7 +282,7 @@ def create_mesh(nodes,elnod, l, lc, r_outer, r_large, l_tot):
     print ("Node count ",num_nodes)
     # Print node coordinates
     for i, coords in zip(node_tags, node_coords_reshaped):
-        print(f"Node {i}: {coords}")
+        #print(f"Node {i}: {coords}")
         nodes.append((coords[0],coords[1],coords[2]))
         
             
@@ -265,15 +297,12 @@ def create_mesh(nodes,elnod, l, lc, r_outer, r_large, l_tot):
             num_nodes_per_elem = 4  # Quads have 4 nodes
             for i, elem_tag in enumerate(tags):
                 node_indices = nodes[i * num_nodes_per_elem : (i + 1) * num_nodes_per_elem]
-                print(f"Quad element {elem_tag}: Nodes: {node_indices}")
+                #print(f"Quad element {elem_tag}: Nodes: {node_indices}")
                 elcount +=1
 
     # Save mesh and geometry files
     gmsh.write("diamond_to_circle.msh")
-    if export_geo:
-        with open("diamond_to_circle.geo", "w") as f:
-            f.write(geo_content)
-  
+
     #### PASS VALUES
     #nodes = [] NO! THIS GENERATES AN INPUT
     node_tags, node_coords, _ = gmsh.model.mesh.getNodes()
