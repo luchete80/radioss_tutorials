@@ -27,7 +27,7 @@ def create_mesh(nodes,elnod, l, lc, r_outer, r_large, l_tot):
     la = np.cos(np.pi/4.0)/2.0 * l
     #MID AND MAX RANGE IS DIVIDEED BY 2
     f = 0.5
-    rad_lines_len = [(r_outer-(l/2))/lc,f*((r_large-r_outer)/lc),f*((l_tot-r_large)/lc)]
+    rad_lines_len = [(r_outer-(l/2*np.sqrt(2.0)))/lc,f*((r_large-r_outer)/lc),f*((l_tot-r_large)/lc)]
     coords = [(ld, 0), (la, la),(0,ld), (-la, la),(-ld,0), (-la, -la),(0,-ld), (la, -la)]  # Store actual coordinates
     for x, y in coords:
         tag = gmsh.model.geo.addPoint(x, y, 0, lc)
