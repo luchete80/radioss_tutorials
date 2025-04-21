@@ -1,188 +1,138 @@
-# =============================================
-# LS-DYNA to Radioss Node/Element Converter
-# Converts *NODE and *ELEMENT_SOLID/*ELEMENT_SHELL to Radioss format
-# Uses fixed-width field formatting in output
-# =============================================
+class SectionHandler:
+    def __init__(self, radioss_file):
+        self.radioss_file = radioss_file
+
+    def handle_line(self, line):
+        pass
+
+    def finalize(self):
+        pass
+
+
+class NodeHandler(SectionHandler):
+    def __init__(self, radioss_file):
+        super().__init__(radioss_file)
+        self.radioss_file.write('/NODE/1\n')
+
+    def handle_line(self, line):
+        parts = line.split()
+        if len(parts) >= 4:
+            formatted_line = (
+                f"{parts[0]:>10}{parts[1]:>20}{parts[2]:>20}{parts[3]:>20}\n"
+            )
+            self.radioss_file.write(formatted_line)
+
+class ElementHandler(SectionHandler):
+    def __init__(self, radioss_file, element_type):
+        super().__init__(radioss_file)
+        self.element_type = element_type
+        self.radioss_file.write(f'/ELEMENT/{element_type}/1\n')
+
+    def handle_line(self, line):
+        parts = line.split()
+        if self.element_type == 'BRICK' and len(parts) >= 9:
+            line_fmt = ''.join([f"{p:<10}" for p in parts[:9]]) + '\n'
+        elif self.element_type == 'QUAD' and len(parts) >= 5:
+            line_fmt = ''.join([f"{p:<10}" for p in parts[:5]]) + '\n'
+        else:
+            return
+        self.radioss_file.write(line_fmt)
+
+class ContactHandler(SectionHandler):
+    def __init__(self, radioss_file):
+        super().__init__(radioss_file)
+        self.data = {}
+
+    def handle_line(self, line):
+        parts = line.split()
+        if len(parts) >= 8:
+            self.data = {
+                'id': parts[0],
+                'ssid': parts[1],
+                'msid': parts[2],
+                'fric': parts[7] if len(parts) > 7 else '0.0'
+            }
+
+    def finalize(self):
+        # Same logic from your write_contact() helper
+        self.radioss_file.write('/INTER/TYPE7\n')
+        w = 10
+        self.radioss_file.write(
+            f"{self.data['id']:<{w}}{7:<{w}}{self.data['msid']:<{w}}"
+            f"{self.data['ssid']:<{w}}{self.data['fric']:<{w}}"
+            f"{0:<{w}}{0:<{w}}{1:<{w}}{0:<{w}}\n"
+        )
+        self.radioss_file.write(f"{'':<{w}}{0.0:<{w}}{0.0:<{w}}{0:<{w}}{0:<{w}}{0:<{w}}\n")
+
+class NodeSetHandler(SectionHandler):
+    def __init__(self, radioss_file, set_id, set_name):
+        super().__init__(radioss_file)
+        self.set_id = set_id
+        self.set_name = set_name
+        self.nodes = []
+
+    def handle_line(self, line):
+        # Use space splitting instead of commas
+        parts = [p.strip() for p in line.split() if p.strip()]
+        self.nodes.extend(p for p in parts if p.isdigit())
+
+    def finalize(self):
+        self.radioss_file.write(f'/GRNOD/{self.set_id}\n$ {self.set_name}\n')
+        for i, node in enumerate(self.nodes, 1):
+            self.radioss_file.write(f"{node:>10}")
+            if i % 10 == 0 or i == len(self.nodes):
+                self.radioss_file.write('\n')
+        self.radioss_file.write('\n')
+
+
+#SECTION DISPATCHER
+def get_handler(line, radioss_file, set_name_map):
+    if line.startswith('*NODE'):
+        return NodeHandler(radioss_file)
+    elif line.startswith('*ELEMENT_SOLID'):
+        return ElementHandler(radioss_file, 'BRICK')
+    elif line.startswith('*ELEMENT_SHELL'):
+        return ElementHandler(radioss_file, 'QUAD')
+    elif line.startswith('*CONTACT_AUTOMATIC_NODES_TO_SURFACE_ID'):
+        return ContactHandler(radioss_file)
+    elif line.startswith('*SET_SEGMENT_TITLE'):
+        parts = line.split(',')
+        set_id = parts[0].split()[-1]
+        set_name = parts[1].strip().strip('"\'') if len(parts) > 1 else f"Set_{set_id}"
+        set_name_map[set_id] = set_name
+        return None
+    elif line.startswith('*SET_NODE_LIST'):
+        set_id = line.split()[-1]
+        return NodeSetHandler(radioss_file, set_id, set_name_map.get(set_id, f"Set_{set_id}"))
+    return None
 
 def convert_lsdyna_to_radioss(input_file, output_file):
+    set_name_map = {}
+    current_handler = None
+
     with open(input_file, 'r') as dyna_file, open(output_file, 'w') as radioss_file:
-        in_nodes = False
-        in_elements = False
-        element_type = None
-        
-        # Field widths configuration
-        node_id_width = 10
-        coord_width = 20
-        elem_id_width = 10
-        node_ref_width = 10
-        
         for line in dyna_file:
-            line = line.strip().upper()
-            
-            # Detect *NODE section
-            if line.startswith('*NODE'):
-                in_nodes = True
-                radioss_file.write('/NODE/1\n')  # Radioss node format
+            line = line.strip()
+            if line.startswith('$') or not line:
                 continue
-            
-            # Detect *ELEMENT_SOLID or *ELEMENT_SHELL
-            elif line.startswith('*ELEMENT_SOLID'):
-                in_elements = True
-                element_type = 'BRICK'
-                radioss_file.write(f'/ELEMENT/{element_type}/1\n')
-                continue
-            elif line.startswith('*ELEMENT_SHELL'):
-                in_elements = True
-                element_type = 'QUAD'  # or 'TRIA' for triangles
-                radioss_file.write(f'/ELEMENT/{element_type}/1\n')
-                continue
-            
-            # End of section
-            elif line.startswith('*') and ('NODE' in line or 'ELEMENT' in line):
-                in_nodes = False
-                in_elements = False
-            
-            # Process node data with fixed-width fields
-            if in_nodes and line and not line.startswith('*'):
-                parts = line.split()
-                if len(parts) >= 4:
-                    node_id = parts[0].strip()
-                    x = parts[1].strip()
-                    y = parts[2].strip()
-                    z = parts[3].strip()
-                    
-                    # Format with fixed width
-                    formatted_line = (f"{node_id:>{node_id_width}}"
-                                     f"{x:>{coord_width}}"
-                                     f"{y:>{coord_width}}"
-                                     f"{z:>{coord_width}}\n")
-                    radioss_file.write(formatted_line)
-            
-            # Process element data with fixed-width fields
-            elif in_elements and line and not line.startswith('*'):
-                parts = [p.strip() for p in line.split() if p.strip()]
-                
-                if element_type == 'BRICK' and len(parts) >= 9:
-                    # Solid element (8 nodes)
-                    formatted_line = (f"{parts[0]:<{elem_id_width}}"
-                                     f"{parts[1]:<{node_ref_width}}"
-                                     f"{parts[2]:<{node_ref_width}}"
-                                     f"{parts[3]:<{node_ref_width}}"
-                                     f"{parts[4]:<{node_ref_width}}"
-                                     f"{parts[5]:<{node_ref_width}}"
-                                     f"{parts[6]:<{node_ref_width}}"
-                                     f"{parts[7]:<{node_ref_width}}"
-                                     f"{parts[8]:<{node_ref_width}}\n")
-                    radioss_file.write(formatted_line)
-                    
-                elif element_type == 'QUAD' and len(parts) >= 5:
-                    # Shell element (4 nodes)
-                    formatted_line = (f"{parts[0]:<{elem_id_width}}"
-                                    f"{parts[1]:<{node_ref_width}}"
-                                    f"{parts[2]:<{node_ref_width}}"
-                                    f"{parts[3]:<{node_ref_width}}"
-                                    f"{parts[4]:<{node_ref_width}}\n")
-                    radioss_file.write(formatted_line)
+            line_up = line.upper()
 
-        print(f"Conversion complete! Radioss file saved to: {output_file}")
+            if line_up.startswith('*'):
+                if current_handler:
+                    current_handler.finalize()
+                current_handler = get_handler(line_up, radioss_file, set_name_map)
+            elif current_handler:
+                current_handler.handle_line(line)
 
+        if current_handler:
+            current_handler.finalize()
 
-
-
-def convert_contact_to_inter(input_file, output_file):
-    with open(input_file, 'r') as dyna_file, open(output_file, 'w') as radioss_file:
-        in_contact = False
-        contact_data = []
-        
-        # Fixed field widths for Radioss output
-        field_widths = {
-            'id': 10,
-            'type': 10,
-            'main': 10,
-            'secondary': 10,
-            'fric': 10,
-            'igstyp': 10,
-            'ibsort': 10,
-            'ifric': 10,
-            'i2sort': 10
-        }
-        
-        for line in dyna_file:
-            line = line.strip().upper()
-            
-            # Detect CONTACT section
-            if line.startswith('*CONTACT_AUTOMATIC_NODES_TO_SURFACE_ID'):
-                in_contact = True
-                continue
-            
-            # End of section
-            elif line.startswith('*') and in_contact:
-                in_contact = False
-                break  # Assuming we only process the first contact found
-            
-            # Process contact data
-            if in_contact and line and not line.startswith('$'):
-                # Skip comment lines
-                if line.startswith('$'):
-                    continue
-                
-                # Parse contact card (assuming fixed format or space-separated)
-                parts = line.split()
-                if len(parts) >= 8:
-                    contact_data = {
-                        'id': parts[0],
-                        'ssid': parts[1],  # Slave node set ID
-                        'msid': parts[2],  # Master segment set ID
-                        'fric': parts[7] if len(parts) > 7 else '0.0'  # Friction coefficient
-                    }
-        
-        # Write Radioss INTER/TYPE7 entry if contact data was found
-        if contact_data:
-            # Write header
-            radioss_file.write('/INTER/TYPE7\n')
-            
-            # Format and write main card
-            main_card = (
-                f"{contact_data['id']:<{field_widths['id']}}"
-                #f"7{:<{field_widths['type']}}"  # TYPE7
-                f"{contact_data['msid']:<{field_widths['main']}}"  # Main surface
-                f"{contact_data['ssid']:<{field_widths['secondary']}}"  # Secondary surface
-                f"{contact_data['fric']:<{field_widths['fric']}}"  # Friction
-                f"{0:<{field_widths['igstyp']}}"  # IGSTYP (default 0)
-                f"{0:<{field_widths['ibsort']}}"  # IBSORT (default 0)
-                f"{1:<{field_widths['ifric']}}"  # IFRIC (1=friction active)
-                f"{0:<{field_widths['i2sort']}}"  # I2SORT (default 0)
-                f"\n"
-            )
-            radioss_file.write(main_card)
-            
-            # Write optional cards (default values)
-            radioss_file.write(
-                f"{'':<{field_widths['id']}}"  # Empty first field
-                f"{0.0:<{field_widths['type']}}"  # FRIC_MIN (default 0.0)
-                f"{0.0:<{field_widths['main']}}"  # XFILTR (default 0.0)
-                f"{0:<{field_widths['secondary']}}"  # IFLAG (default 0)
-                f"{0:<{field_widths['fric']}}"  # IORTH (default 0)
-                f"{0:<{field_widths['igstyp']}}"  # IEDGE (default 0)
-                f"\n"
-            )
-            
-            print(f"Conversion complete! Radioss INTER/TYPE7 saved to: {output_file}")
-        else:
-            print("No CONTACT_AUTOMATIC_NODES_TO_SURFACE_ID found in input file.")
+    print(f"Conversion complete! Radioss file saved to: {output_file}")
 
 # =============================================
 # Usage Example
 # =============================================
-input_k_file = "corte_2.k"   # Your LS-DYNA input file
-output_rad_file = "contact_inter.rad"  # Output Radioss file
-
-convert_contact_to_inter(input_k_file, output_rad_file)
-
-# =============================================
-# Usage Example
-# =============================================
-input_k_file = "corte_2.k"   # Your LS-DYNA input file
-output_rad_file = "radioss_model.rad"  # Output Radioss file
+input_k_file = "corte_2.k"        # Input LS-DYNA file
+output_rad_file = "model.rad"  # Output Radioss file
 
 convert_lsdyna_to_radioss(input_k_file, output_rad_file)
