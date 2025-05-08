@@ -71,6 +71,40 @@ class NodeHandler:
         for nid, (x, y, z) in nodes.items():
             radioss_file.write(f"{nid:<10}{x:<15.6f}{y:<15.6f}{z:<15.6f}\n")
 
+### ORIGINAL WITH NO DICT
+#class ElementHandler(SectionHandler):
+#    def __init__(self, radioss_file, element_type):
+        super().__init__(radioss_file)
+        self.element_type = element_type
+        self.elements_by_part = {}  # Dictionary: part_id -> list of lines
+
+    def handle_line(self, line):
+        parts = line.split()
+        if not parts:
+            return
+
+        # LS-DYNA: line[0] = elem_id, line[1:-1] = connectivity, line[-1] = part_id
+        try:
+            part_id = int(parts[-1])
+            if part_id not in self.elements_by_part:
+                self.elements_by_part[part_id] = []
+            self.elements_by_part[part_id].append(parts[:-1])  # exclude the part ID
+        except ValueError:
+            print(f"Warning: could not parse part ID in line: {line}")
+
+    def finalize(self):
+        for part_id, elements in self.elements_by_part.items():
+            self.radioss_file.write(f'/{self.element_type}/{part_id}\n')
+            for parts in elements:
+                if self.element_type == 'BRICK' and len(parts) >= 9:
+                    line_fmt = ''.join(f"{p:<10}" for p in parts[:9]) + '\n'
+                elif self.element_type == 'QUAD' and len(parts) >= 5:
+                    line_fmt = ''.join(f"{p:<10}" for p in parts[:5]) + '\n'
+                else:
+                    continue
+                self.radioss_file.write(line_fmt)
+            self.radioss_file.write
+
 class ElementHandler:
     def __init__(self, elements_dict, elem_type):
         self.elements = elements_dict 
@@ -89,6 +123,34 @@ class ElementHandler:
         for eid, conn in elements.items():
             radioss_file.write(f"{eid:<10}" + ''.join(f"{nid:<10}" for nid in conn) + "\n")
  
+class ElementHandler:
+    def __init__(self, elem_type):
+        self.elements_by_part = {}  # Dict[int, Dict[int, List[int]]]
+        self.elem_type = elem_type  # "BRICK", "QUAD", etc.
+
+    def handle_line(self, line):
+        parts = line.strip().split()
+        if not parts:
+            return
+
+        try:
+            eid = int(parts[0])
+            nodes = [int(p) for p in parts[1:-1]]  # Exclude last (part ID)
+            part_id = int(parts[-1])
+
+            if part_id not in self.elements_by_part:
+                self.elements_by_part[part_id] = {}
+
+            self.elements_by_part[part_id][eid] = nodes
+
+        except ValueError:
+            print(f"Warning: couldn't parse line: {line}")
+
+    def finalize(self, radioss_file):
+        for part_id, elements in self.elements_by_part.items():
+            radioss_file.write(f'/{self.elem_type}/{part_id}\n')
+            for eid, nodes in elements.items():
+                radioss_file.write(f"{eid:<10}" + ''.join(f"{nid:<10}" for nid in nodes) + "\n")
         
 
 #*CONTACT_AUTOMATIC_NODES_TO_SURFACE_ID
@@ -415,8 +477,8 @@ def get_handler(line, radioss_file, set_name_map,conn):
     elif line.startswith('*CONTACT_AUTOMATIC_NODES_TO_SURFACE_ID'):
         return ContactHandler(radioss_file)
     elif line.startswith('*SET_SEGMENT_TITLE'):
-        #SegmentSetHandler(radioss_file)
-        return SegmentSetHandlerSurf(radioss_file,conn)
+        return SegmentSetHandler(radioss_file)
+        #return SegmentSetHandlerSurf(radioss_file,conn)
     elif line.startswith('*SET_NODE_LIST'):
         return NodeSetHandler(radioss_file)
     elif line.startswith('*PART'):
