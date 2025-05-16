@@ -1,0 +1,5 @@
+$# LS-PrePost command file created by LS-PrePost(R) 2024/R1(4.11)-30Jan2024 -64bit-Linux
+$# Created on May-16-2025 (13:04:43)
+activelabel clearhilighttag
+activelabel clearhilighttag
+open keyword "/home/weldform-pc/Numerico/radioss_tutorials/metal_cut/corte_2.k"
