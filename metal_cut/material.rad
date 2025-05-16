@@ -1,0 +1,35 @@
+/MAT/ELAST/1
+TITLE
+7850
+200.0E9               0.3
+/HEAT/MAT/1
+#                 T0             RHO0_CP                  AS                  BS     IFORM
+                20.0        3.588000e+06        2.610000e+01                 0.0        1
+
+/MAT/PLAS_JOHNS/2
+MAT_PIECEWISE_LINEAR_PLASTICITY:2 TITLE:mat_probe   
+        7.800000e+03
+#                  E                  Nu     Iflag  
+        2.000000e+11        3.000000e-01
+#                  a                   b                   n             EPS_max            SIG_max0
+        3.590000e+08        3.270000e+08        4.540000e-011.00000000000000E+301.00000000000000E+30
+#                  c           EPS_DOT_0       ICC   Fsmooth               F_cut               Chard
+        7.860000e-02        4.000000e-02         1         11.00000000000000E+30
+#                  m              T_melt              rhoC_p                 T_r
+               0.919               1500.        3.588000e+06                   0
+#/HEAT/MAT/mat_ID/unit_ID
+/HEAT/MAT/2
+#                 T0             RHO0_CP                  AS                  BS     IFORM
+                20.0        3.588000e+06                 120                 0.0        1
+ 
+/SURF/PART/EXT/2
+PART1
+2
+/FUNCT/1
+F_FUNC_1
+        0.000000e+00        0.000000e+00
+        1.000000e-04        0.3000000000
+        1.0000000000        0.3000000000
+/FAIL/JOHNSON/2
+           0.1300000           0.1300000           1.5000000           0.0110000   0.0
+               0.001  
