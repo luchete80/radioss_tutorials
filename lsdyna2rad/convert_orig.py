@@ -1,4 +1,23 @@
+import logging
+logger = logging.getLogger(__name__)
+import re
+
+# ~ # Use like this:
+# ~ logger.warning("Skipping malformed element line: %s", line)
+
+
 el_conn = []
+
+#REGISTRY
+# ~ handlers = {
+    # ~ '*PART': PartHandler,
+    # ~ '*NODE': NodeHandler,
+    # ~ '*ELEMENT_SOLID': lambda f: ElementHandler(f, 'BRICK'),
+    # ~ '*SECTION_SOLID': SectionSolidHandler,
+    # ~ '*CONTACT_AUTOMATIC_NODES_TO_SURFACE_ID': ContactHandler,
+    # ~ '*SET_NODE_LIST': NodeSetHandler,
+    # ~ '*SET_SEGMENT': SegmentSetHandler,
+# ~ }
 
 class SectionHandler:
     def __init__(self, radioss_file):
@@ -30,8 +49,15 @@ class PartHandler(SectionHandler):
         print ("parsing part")
 
 
+        if len(self.lines) < 2:
+            print("Incomplete *PART section")
+            return
+
         title = self.lines[0]
         parts = self.lines[1].split()
+        if len(parts) < 3:
+            print("Invalid PART line: ", self.lines[1])
+            return
         secid = 0
         mid = 0
         #secid = self.lines[2].split()[0]
@@ -73,9 +99,13 @@ class ElementHandler(SectionHandler):
 
     def handle_line(self, line):
         parts = line.split()
+
         if not parts:
             return
-
+        if len(parts) < 3:
+            print("Skipping malformed element line:", line)
+            return
+            
         # LS-DYNA: line[0] = elem_id, line[1:-1] = connectivity, line[-1] = part_id
         try:
             part_id = int(parts[1])
@@ -102,15 +132,91 @@ class ElementHandler(SectionHandler):
 #*CONTACT_AUTOMATIC_NODES_TO_SURFACE_ID
 #$     cid    ssid    msid     sstyp  mstyp    sboxid  mboxid  spr        mpr
 #$     fs     fd      dc       vc     vdc      penchk  bt      dt         sfs
+# ~ class ContactHandler(SectionHandler):
+    # ~ def __init__(self, radioss_file):
+        # ~ super().__init__(radioss_file)
+        # ~ self.lines = []
+        # ~ self.contact_id = None
+
+    # ~ def handle_line(self, line):
+        # ~ if not line.strip():
+            # ~ return
+        # ~ self.lines.append(line.strip())
+
+    # ~ def finalize(self):
+        # ~ if len(self.lines) < 2:
+            # ~ print("Invalid contact definition, skipping...")
+            # ~ return
+
+        # ~ # Determine where CID is located
+        # ~ if len(self.lines) == 4:
+            # ~ self.contact_id = int(self.lines[0].split()[0])
+            # ~ line1 = self.lines[1].split()
+            # ~ line2 = self.lines[2].split()
+            # ~ line3 = self.lines[3].split()
+        # ~ elif len(self.lines) == 3:
+            # ~ self.contact_id = 1  # fallback
+            # ~ line1 = self.lines[0].split()
+            # ~ line2 = self.lines[1].split()
+            # ~ line3 = self.lines[2].split()
+        # ~ else:
+            # ~ self.contact_id = 1  # fallback
+            # ~ line1 = self.lines[0].split()
+            # ~ line2 = self.lines[1].split()
+            # ~ line3 = []
+
+        # ~ # Default values
+        # ~ #MASTER IS SURFACE, SLAVE IS GRNOD
+        # ~ ssid = int(line1[0]) + 100 if len(line1) > 0 else 0
+        # ~ msid = int(line1[1])       if len(line1) > 1 else 0
+
+        # ~ # Friction and optional values
+        # ~ static_friction = float(line2[0]) if len(line2) > 0 else 0.0
+        # ~ dynamic_friction = float(line2[1]) if len(line2) > 1 else static_friction
+
+        # ~ # Write the /INTER/TYPE7 block
+        # ~ print ("Writing Contact...")
+        # ~ self.radioss_file.write(f"/INTER/TYPE7/{self.contact_id}\n")
+        # ~ self.radioss_file.write(f"Converted from *CONTACT_AUTOMATIC_NODES_TO_SURFACE_ID\n")
+        # ~ self.radioss_file.write(f"#  Slav_id   Mast_id      Istf      Ithe      Igap                Ibag      Idel     Icurv      Iadm\n")
+        # ~ self.radioss_file.write(f"{ssid:>10}{msid:>10}         0         1         0         0\n")  # ISlave, IMaster, Igap=1
+
+        # ~ self.radioss_file.write(f"#          Fscalegap             GAP_MAX             Fpenmax\n")
+        # ~ self.radioss_file.write(f"                   0                   0                   0\n")
+        # ~ self.radioss_file.write(f"#              Stmin               Stmax          %mesh_size               dtmin  Irem_gap\n")
+        # ~ self.radioss_file.write(f"                   0                   0                   0                   0         0\n")
+        # ~ self.radioss_file.write(f"#              Stfac                Fric              Gapmin              Tstart               Tstop\n")
+        # ~ self.radioss_file.write(f"                   1                  0.                  .0                   0                   0\n")
+        # ~ self.radioss_file.write(f"#      IBC                        Inacti                VisS                VisF              Bumult\n")
+        # ~ self.radioss_file.write(f"       000                             0                   1                   1                   0\n")
+        # ~ self.radioss_file.write(f"#    Ifric    Ifiltr               Xfreq     Iform   sens_ID\n")
+        # ~ self.radioss_file.write(f"         0         0                   0         0         0\n")
+
+
+        # ~ self.radioss_file.write(f"#-- Kthe	          |fct_IDK  |	 	      |         Tint	    |Ithe_form| -----AscaleK ---  |\n")
+        # ~ self.radioss_file.write(f"15000               0                   0                   1\n")
+        # ~ self.radioss_file.write(f"#----   Frad	      |       Drad	      |       Fheats	    |    Fheatm     -----\n")
+        # ~ self.radioss_file.write(f"0                   0                   0                   0\n")
+        # ~ self.radioss_file.write(f"#---1----|----2----|----3----|----4----|----5----|----6----|----7----|----8----|----9----|---10----|\n")
+        # ~ print ("Done.")
 class ContactHandler(SectionHandler):
     def __init__(self, radioss_file):
         super().__init__(radioss_file)
         self.lines = []
         self.contact_id = None
+        self.contact_type = "nodes_to_surface"  # default
 
     def handle_line(self, line):
         if not line.strip():
             return
+
+        if "*CONTACT_AUTOMATIC_SURFACE_TO_SURFACE_ID" in line.upper():
+            print("Detected Surface to Surface Contact")
+            self.contact_type = "surface_to_surface"
+        elif "*CONTACT_AUTOMATIC_NODES_TO_SURFACE_ID" in line.upper():
+            print("Detected Node to Surface Contact")
+            self.contact_type = "nodes_to_surface"
+
         self.lines.append(line.strip())
 
     def finalize(self):
@@ -118,55 +224,65 @@ class ContactHandler(SectionHandler):
             print("Invalid contact definition, skipping...")
             return
 
-        # Determine where CID is located
-        if len(self.lines) == 4:
-            self.contact_id = int(self.lines[0].split()[0])
+        # --- Extract contact ID and optional title ---
+        cid_line = self.lines[0].strip()
+        match = re.match(r"(\d+)", cid_line)
+        if match:
+            self.contact_id = int(match.group(1))
+            self.contact_title = cid_line[match.end():].strip()
+        else:
+            print("Warning: Contact ID not found, using fallback ID = 1")
+            self.contact_id = 1
+            self.contact_title = cid_line
+
+        # --- Prepare contact data lines ---
+        if len(self.lines) >= 4:
             line1 = self.lines[1].split()
             line2 = self.lines[2].split()
             line3 = self.lines[3].split()
         elif len(self.lines) == 3:
-            self.contact_id = 1  # fallback
-            line1 = self.lines[0].split()
-            line2 = self.lines[1].split()
-            line3 = self.lines[2].split()
-        else:
-            self.contact_id = 1  # fallback
-            line1 = self.lines[0].split()
-            line2 = self.lines[1].split()
+            line1 = self.lines[1].split()
+            line2 = self.lines[2].split()
             line3 = []
+        else:
+            print("Not enough lines for contact definition.")
+            return
 
-        # Default values
-        #MASTER IS SURFACE, SLAVE IS GRNOD
-        ssid = int(line1[0]) + 100 if len(line1) > 0 else 0
+        # Extract IDs
+        ssid = int(line1[0])       if len(line1) > 0 else 0
         msid = int(line1[1])       if len(line1) > 1 else 0
-
-        # Friction and optional values
         static_friction = float(line2[0]) if len(line2) > 0 else 0.0
         dynamic_friction = float(line2[1]) if len(line2) > 1 else static_friction
 
-        # Write the /INTER/TYPE7 block
-        self.radioss_file.write(f"/INTER/TYPE7/{self.contact_id}\n")
-        self.radioss_file.write(f"Converted from *CONTACT_AUTOMATIC_NODES_TO_SURFACE_ID\n")
+        print(f"Writing Contact ({self.contact_type})...")
+
+        if self.contact_type == "nodes_to_surface":
+            self.radioss_file.write(f"/INTER/TYPE7/{self.contact_id}\n")
+            self.radioss_file.write(f"Converted from *CONTACT_AUTOMATIC_NODES_TO_SURFACE_ID\n")
+        else:  # surface_to_surface
+            self.radioss_file.write(f"/INTER/TYPE5/{self.contact_id}\n")
+            self.radioss_file.write(f"Converted from *CONTACT_AUTOMATIC_SURFACE_TO_SURFACE_ID\n")
+
         self.radioss_file.write(f"#  Slav_id   Mast_id      Istf      Ithe      Igap                Ibag      Idel     Icurv      Iadm\n")
-        self.radioss_file.write(f"{ssid:>10}{msid:>10}         0         1         0         0\n")  # ISlave, IMaster, Igap=1
+        self.radioss_file.write(f"{ssid:>10}{msid:>10}         0         1         0         0\n")
 
         self.radioss_file.write(f"#          Fscalegap             GAP_MAX             Fpenmax\n")
         self.radioss_file.write(f"                   0                   0                   0\n")
         self.radioss_file.write(f"#              Stmin               Stmax          %mesh_size               dtmin  Irem_gap\n")
         self.radioss_file.write(f"                   0                   0                   0                   0         0\n")
         self.radioss_file.write(f"#              Stfac                Fric              Gapmin              Tstart               Tstop\n")
-        self.radioss_file.write(f"                   1                  0.                  .0                   0                   0\n")
+        self.radioss_file.write(f"                   1         {static_friction:<10.4f}         0.0                   0                   0\n")
         self.radioss_file.write(f"#      IBC                        Inacti                VisS                VisF              Bumult\n")
         self.radioss_file.write(f"       000                             0                   1                   1                   0\n")
         self.radioss_file.write(f"#    Ifric    Ifiltr               Xfreq     Iform   sens_ID\n")
         self.radioss_file.write(f"         0         0                   0         0         0\n")
-
-
         self.radioss_file.write(f"#-- Kthe	          |fct_IDK  |	 	      |         Tint	    |Ithe_form| -----AscaleK ---  |\n")
         self.radioss_file.write(f"15000               0                   0                   1\n")
         self.radioss_file.write(f"#----   Frad	      |       Drad	      |       Fheats	    |    Fheatm     -----\n")
         self.radioss_file.write(f"0                   0                   0                   0\n")
-        self.radioss_file.write(f"#---1----|----2----|----3----|----4----|----5----|----6----|----7----|----8----|----9----|---10----|\n")
+
+        print("Done.")
+
 
 class NodeSetHandler(SectionHandler):
     def __init__(self, radioss_file):
@@ -376,8 +492,8 @@ class PrescribedMotionSetHandler(SectionHandler):
           dir_ = "X"
         elif (self.dof == 2):
           dir_ = "Y"
-        elif (self.dof == 2):
-          dir_ = "Z"
+        elif self.dof == 3:
+            dir_ = "Z"
         self.radioss_file.write(f"{self.funct:>10}{dir_:>10}{self.velocity:>10}"+"         0" +f"{self.set_id:>10}" + "         0         0"+ "\n")
         self.radioss_file.write(f"#           Ascale_x            Fscale_Y              Tstart               Tstop\n")
         self.radioss_file.write(f"                   0                   1                   0               11000\n")
@@ -390,7 +506,8 @@ def get_handler(line, radioss_file, set_name_map):
         return ElementHandler(radioss_file, 'BRICK')
     elif line.startswith('*ELEMENT_SHELL'):
         return ElementHandler(radioss_file, 'QUAD')
-    elif line.startswith('*CONTACT_AUTOMATIC_NODES_TO_SURFACE_ID'):
+    elif line.startswith('*CONTACT_AUTOMATIC_NODES_TO_SURFACE_ID') or \
+         line.startswith('*CONTACT_AUTOMATIC_SURFACE_TO_SURFACE_ID')  :
         return ContactHandler(radioss_file)
     elif line.startswith('*SET_SEGMENT_TITLE'):
         return SegmentSetHandler(radioss_file)
@@ -442,7 +559,7 @@ def convert_lsdyna_to_radioss(input_file, output_file):
 # =============================================
 # Usage Example
 # =============================================
-input_k_file = "corte_2.k"        # Input LS-DYNA file
+input_k_file = "Compresion.k"        # Input LS-DYNA file
 output_rad_file = "model_0000.rad"  # Output Radioss file
 
 convert_lsdyna_to_radioss(input_k_file, output_rad_file)
