@@ -79,3 +79,4 @@ zoomhere -0.054670 0.255295 0.327680;
 quat -0.742734 0.176253 0.024771 0.645499;
 quat -0.670576 0.163886 0.028872 0.722936;
 quat -0.346548 0.158678 -0.017683 0.924345;
+Save Config. parameters to file /home/weldform-pc/LSTC/LS-PrePost4.11/lsppconf
