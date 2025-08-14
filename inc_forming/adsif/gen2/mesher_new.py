@@ -1187,7 +1187,17 @@ class Model:
     # f.write("TH_NAME1 \n")
     # f.write("FX        FY        FZ        \n")
     # f.write("200\n")  
-    
+
+    are_springs = False
+    ns = 1
+    for part in (self.part):
+      if (part.mesh[0].type == "spring"):
+        f.write("/TH/SPRING/"+str(ns)+"\nNAME\n")
+        f.write("FX        FY        FZ        MX        MY        MZ        \n")
+        f.write("LX        LY        LZ        RX        RY        RZ        IE\n")
+        f.write(writeIntField(part.mesh[0].ini_elem_id,10)+"\n")
+        ns+=1
+        
     f.write("/TH/PART/1\n")
     f.write("TH_NAME1 \n")
     f.write("DEF\n")
@@ -1252,15 +1262,16 @@ class Model:
     f.write(str(self.end_proc_time)+ "\n")
     f.write("/TFILE/4\n")
     	# No value: Built-in format of current Radioss version.
-# = 1
-# Binary (not readable by most Radioss post-processors)
-# = 2
-# Coded ASCII 32-bit
-# = 3
-# ASCII
-# = 4 (Default)
-# Binary IEEE 32-bit
+    # = 1
+    # Binary (not readable by most Radioss post-processors)
+    # = 2
+    # Coded ASCII 32-bit
+    # = 3
+    # ASCII
+    # = 4 (Default)
+    # Binary IEEE 32-bit
     f.write(str(dthis) + "\n")
+      
     f.write("/STOP\n")
     f.write("0 1e+08 0 1 1\n")
     if (self.mass_scal):
