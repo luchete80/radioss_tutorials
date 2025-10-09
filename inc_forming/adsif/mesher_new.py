@@ -209,15 +209,15 @@ class Mesh:
     f.write("/CONVEC/1/11\n")
     f.write("convect with ambient air \n")
     f.write("#  SURF_ID    FCT_ID   SENS_ID\n")
-    f.write(writeIntField(self.id*1e6,10)+"   1000000         0\n")
+    f.write(writeIntField(self.id+1e6,10)+"   1000000         0\n")
     f.write("#             ASCALE              FSCALE              TSTART               TSTOP                   H\n")
-    f.write("                   0                   0                   0                   0" + writeFloatField(30.0*vs_fac,20,6) +"\n")
+    f.write("                   1                   1                   0                   0" + writeFloatField(30.0*vs_fac,20,6) +"\n")
     f.write("#---1----|----2----|----3----|----4----|----5----|----6----|----7----|----8----|----9----|---10----|\n")
     f.write("/FUNCT/1000000\n")
     f.write("temperature of ambient air (with constant temperature 293K)\n")
     f.write("#                  X                   Y\n")
-    f.write("                   0                 20\n")
-    f.write("                   1                 20\n")
+    f.write("                   0                293\n")
+    f.write("                   1                293\n")
     f.write("#---1----|----2----|----3----|----4----|----5----|----6----|----7----|----8----|----9----|---10----|\n")
     f.write("#ENDDATA  \n")
   
@@ -300,8 +300,8 @@ class Plane_Mesh(Mesh):
       # print(self.elnod)
       self.writeCenters()
 
-  def Plane_gmsh(self,l, lc, r_outer, r_large, l_tot):
-    create_mesh(self.nodes,self.elnod, l , lc, r_outer, r_large, l_tot)
+  def Plane_gmsh(self,l, lc, r_outer, r_large, l_tot,le_ext):
+    create_mesh(self.nodes,self.elnod, l , lc, r_outer, r_large, l_tot,le_ext)
     self.node_count = len(self.nodes)
     self.elem_count = len(self.elnod)
     print ("GMSH Mesh Created, Nodes: ", self.node_count, ", Elements: ", len(self.elnod))
@@ -606,7 +606,7 @@ class SpringProp(Prop):
     f.write("##--------------------------------------------------------------------------------------------------\n")
     f.write("## Spring Property Set (pid 1)\n")
     f.write("##--------------------------------------------------------------------------------------------------\n")
-    f.write("/PROP/TYPE13/" + str(self.pid) + "\n")
+    f.write("/PROP/TYPE8/" + str(self.pid) + "\n")
     f.write("SECTION_SPRING TITLE:probe_section  \n")                                                               
     f.write("#--Mass	           |            Inertia|	Skew_ID |	sens_ID	|  Isflag	|  Ifail	|Ileng	Ifail2\n")
     f.write("         2.0e-6                                        \n")
@@ -644,6 +644,8 @@ class Material:
   rho = 0.0
   ms_fac = 1.0
   vs_fac = 1.0
+  Tm = 1.0e20
+  
   def __init__(self, mid, th):
     self.thermal = th
     id = mid
@@ -660,16 +662,16 @@ class Material:
     f.write(writeFloatField(self.Ajc,20,6) + writeFloatField(self.Bjc,20,6) + writeFloatField(self.njc,20,6) + "1.00000000000000E+301.00000000000000E+30\n")    
     f.write("#                  c           EPS_DOT_0       ICC   Fsmooth               F_cut               Chard\n")    
     #f.write("              0.0786                0.04         1         11.00000000000000E+30\n")
-    f.write(writeFloatField(self.Cjc,20,6) + writeFloatField(self.e0jc,20,6) + "         1         11.00000000000000E+30\n")
+    f.write(writeFloatField(self.Cjc,20,6) + writeFloatField(self.e0jc*self.vs_fac,20,6) + "         1         11.00000000000000E+30\n")
     f.write("#                  m              T_melt              rhoC_p                 T_r\n")    
-    f.write("               0.919               1500."+writeFloatField(self.rho*self.cp_th*self.ms_fac,20,6) +"                   0\n")
+    f.write("               0.919"+writeFloatField(self.Tm,20,6)+writeFloatField(self.rho*self.cp_th*self.ms_fac,20,6) +"                 273\n")
     # if (self.thermal):    
     f.write("#/HEAT/MAT/mat_ID/unit_ID\n")
     f.write("/HEAT/MAT/2\n")
     f.write("#                 T0             RHO0_CP                  AS                  BS     IFORM\n")
     #f.write("              20.0                 2.5e6               15.0                  0.0        1\n")
-    f.write("                20.0" + writeFloatField(self.rho*self.cp_th*self.ms_fac,20,6) + writeFloatField(self.vs_fac*self.k_th,20,6) + "                 0.0        1\n")
-    f.write(" \n") #REQUIRED
+    f.write("               293.0" + writeFloatField(self.rho*self.cp_th*self.ms_fac,20,6) + writeFloatField(self.vs_fac*self.k_th,20,6) + "                 0.0        1\n")
+    f.write(writeFloatField(self.Tm,20,6)+"\n") #REQUIRED
     print("ADDED THERMAL WITH FACTOR",self.vs_fac )
     
 class Function:
@@ -845,6 +847,7 @@ class Model:
   mass_scal = False
   ms_dtsize = 1.0e-4
   dampfac   = 0.0
+  tool_hcont = 0.0
   
   
   def __init__(self):
@@ -962,9 +965,9 @@ class Model:
         f.write(writeIntField(istf,10)+"         0"+writeIntField(igap,10)+"                   0         0"+ writeIntField(icurv,10)+"         0\n")
       else:    
         if self.double_sided:
-          start_part=2
+          start_part=1 # antes 2
         else:
-          start_part=1
+          start_part=0 # antes 1 check
         print("---------------INTERFACE ",i, "id master", self.inter[i].id_master, "MAX ", self.multi_tool_N+start_part)
         if (self.inter[i].id_master<=self.multi_tool_N+start_part): #was 4
           f.write(writeIntField(istf,10)+"         1"+writeIntField(igap,10)+"                   0         0"+ writeIntField(icurv,10)+"         0\n")          
@@ -977,7 +980,8 @@ class Model:
       f.write("                   0                   0                   0                   0         0\n")
       if (self.inter[i].is_curv):
         f.write("# node_ID1	node_ID2	\n")
-        f.write(writeIntField(self.part[self.inter[i].id_master].mesh[0].getRigidNode(),10) + "\n")
+        print(f"¡¡¡¡¡Interface {i}: master id = {self.inter[i].id_master}, "f"rigid node = {self.part[self.inter[i].id_master].mesh[0].getRigidNode()}")
+        f.write(writeIntField(self.part[self.inter[i].id_slave-1].mesh[0].getRigidNode(),10) + "\n")
         
       f.write("#              Stfac                Fric              Gapmin              Tstart               Tstop\n")
       if (self.inter[i].id_master<=self.multi_tool_N+start_part): #was 4 #FRICTION
@@ -995,7 +999,7 @@ class Model:
         if (self.inter[i].id_master<=self.multi_tool_N+start_part): #was 4
           f.write("#---1----|----2----|----3----|----4----|----5----|----6----|----7----|----8----|----9----|---10----|\n")
           f.write("#-- Kthe	          |fct_IDK  |	 	      |         Tint	    |Ithe_form| -----AscaleK ---  |\n")
-          f.write("325000              0                   0                   1\n")
+          f.write(writeFloatField(self.tool_hcont,20,6)+"0                   0                   1\n")
           f.write("#---1----|----2----|----3----|----4----|----5----|----6----|----7----|----8----|----9----|---10----|\n")
           f.write("#----   Frad	      |       Drad	      |       Fheats	    |    Fheatm     -----\n")
           f.write("0                   0                   0                   0\n")
@@ -1186,7 +1190,21 @@ class Model:
     # f.write("TH_NAME1 \n")
     # f.write("FX        FY        FZ        \n")
     # f.write("200\n")  
-    
+
+    are_springs = False
+    ns = 1
+    for part in (self.part):
+      if (part.mesh[0].type == "spring"):
+        f.write("/TH/SPRING/"+str(ns)+"\nNAME\n")
+        f.write("FX        FY        FZ        MX        MY        MZ        \n")
+        f.write("LX        LY        LZ        RX        RY        RZ        IE\n")
+        f.write(writeIntField(part.mesh[0].ini_elem_id,10)+"\n")
+        ns+=1
+        f.write("/TH/NODE/"+str(ns)+"\nNAME\n")
+        f.write("X         Y          Z         \n")
+        f.write(writeIntField(part.mesh[0].ini_node_id,10)+"\n")
+        ns+=1
+        
     f.write("/TH/PART/1\n")
     f.write("TH_NAME1 \n")
     f.write("DEF\n")
@@ -1219,6 +1237,21 @@ class Model:
       f.write(line)
     else:
       print("No Damping was added.")
+
+    f.write("/RADIATION/1/11\n")
+    f.write("RADIATION from heat source\n")
+    f.write("#  surf_ID    fct_ID   sens_ID\n")
+    f.write("1000001   2003      0\n")
+    f.write("#             ASCALE              FSCALE              TSTART               TSTOP                   E\n")
+    f.write("1.0                 1.0                 0                   0                   4.55\n")
+    f.write("#---1----|----2----|----3----|----4----|----5----|----6----|----7----|----8----|----9----|---10----|\n")
+    f.write("/FUNCT/2003\n")
+    f.write("temperature of heat source function of time\n")
+    f.write("#                  X                   Y\n")
+    f.write("0                  293.0\n")
+    f.write("1.0e10             293.0\n")
+    f.write("#---1----|----2----|----3----|----4----|----5----|----6----|----7----|----8----|----9----|---10----|\n")
+
       
     f.write('/END\n')
     
@@ -1251,15 +1284,16 @@ class Model:
     f.write(str(self.end_proc_time)+ "\n")
     f.write("/TFILE/4\n")
     	# No value: Built-in format of current Radioss version.
-# = 1
-# Binary (not readable by most Radioss post-processors)
-# = 2
-# Coded ASCII 32-bit
-# = 3
-# ASCII
-# = 4 (Default)
-# Binary IEEE 32-bit
+    # = 1
+    # Binary (not readable by most Radioss post-processors)
+    # = 2
+    # Coded ASCII 32-bit
+    # = 3
+    # ASCII
+    # = 4 (Default)
+    # Binary IEEE 32-bit
     f.write(str(dthis) + "\n")
+      
     f.write("/STOP\n")
     f.write("0 1e+08 0 1 1\n")
     if (self.mass_scal):
