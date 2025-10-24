@@ -10,19 +10,20 @@ end_node = 63000
 nsides = 251
 node_count = nsides * nsides
 
-h_tool= 325000.0
+h_tool= 65000.0
 
 largo_supp = 0.01
 
 start_index = 5
 end_index = 7 
 
-T0 = 20.0
-T_t = 500.0
+
 thck = 5.0e-4
 L = 0.1
 dens = 4430.0
 c_p = 520.0
+
+T_t = 1700.0
 
 
 print("Average Elem area: ", L/(nsides-1)*L/(nsides-1))
@@ -37,7 +38,7 @@ def extract_number_from_filename(filename):
 
 
 def write_list(atop, cheat):
-  fi_x = open("energy.csv","w")
+  fi_x = open("energy_ap_shell.csv","w")
   fi_x.write("t,area,heat\n")
 
   dt = 1.0
@@ -202,7 +203,7 @@ def open_files_with_extension(directory, extension):
         idx = extract_number_from_filename(file_name)
         if idx is not None and idx > max_idx:
             max_idx = idx
-    
+          
     print(f"Maximum index found: {max_idx}")
         
     force = np.zeros(max_idx+1)  # index begins with 1
@@ -224,6 +225,14 @@ def open_files_with_extension(directory, extension):
                 print("idx %d" % idx)
                 lines = f.readlines()
                 print("file " + str(j) + "/" + str(tot))
+
+                # ~ if (idx>300):
+                  # ~ T_t = 5273.0
+                  # ~ print ("t,t_T: ", idx,T_t)
+                # ~ else:
+                  # ~ T_t = 8700.0+(5273.0-8700.0)/(300)*(idx-1)
+                  # ~ print ("t, t_T:",idx/10,T_t)
+
                 
                 if first:
                     # Encontrar la posición de los datos de temperatura y fuerzas
@@ -287,7 +296,7 @@ def open_files_with_extension(directory, extension):
                 area_top[idx] = nod_area *1.0e6
               
         
-                print("Contact Area Elemental : ", area_top[idx], "Nodal: ", nod_area*1.0e6, "Nodes: ", len(contact_nodes), "Node temp: ")
+                print("Contact Area Elemental : ", area_top[idx], "Nodal: ", nod_area*1.0e6, "Nodes: ", len(contact_nodes), "Heat: ", cont_heat[idx])
                 
 
         
