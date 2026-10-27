@@ -23,3 +23,6 @@ __pycache__/
 !*.rad
 !*.inp
 !model_000*
+
+# Radioss animation files.
+/metal_cut/modelA[0-9]*

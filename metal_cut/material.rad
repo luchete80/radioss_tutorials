@@ -23,8 +23,8 @@ MAT_PIECEWISE_LINEAR_PLASTICITY:2 TITLE:mat_probe
                 20.0        3.588000e+06                 120                 0.0        1
  
 /SURF/PART/EXT/2
-PART1_WORKPIECE_CONTACT_SURFACE
-1
+PART2_TOOL_CONTACT_SURFACE
+2
 /FUNCT/1
 F_FUNC_1
         0.000000e+00        0.000000e+00

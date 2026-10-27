@@ -3379,7 +3379,7 @@ SPC_set_5
 /INTER/TYPE7/1
 Converted from *CONTACT_AUTOMATIC_NODES_TO_SURFACE_ID
 #  Slav_id   Mast_id      Istf      Ithe      Igap                Ibag      Idel     Icurv      Iadm
-       101         2         0         1         0         0
+       102         2         0         1         0         0
 #          Fscalegap             GAP_MAX             Fpenmax
                    0                   0                   0
 #              Stmin               Stmax          %mesh_size               dtmin  Irem_gap

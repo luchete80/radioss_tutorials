@@ -135,10 +135,14 @@ class ContactHandler(SectionHandler):
             line2 = self.lines[1].split()
             line3 = []
 
-        # Default values
-        #MASTER IS SURFACE, SLAVE IS GRNOD
-        ssid = int(line1[0]) + 100 if len(line1) > 0 else 0
-        msid = int(line1[1])       if len(line1) > 1 else 0
+        # LS-DYNA's ssid is the tool segment set (GRNOD 101); msid is
+        # the workpiece node set (GRNOD 102). For TYPE7 use the workpiece
+        # as secondary and the tool surface as main so its nodes are checked
+        # against the cutting surface.
+        tool_nodes = int(line1[0]) + 100 if len(line1) > 0 else 0
+        workpiece_nodes = int(line1[1]) + 100 if len(line1) > 1 else 0
+        ssid = workpiece_nodes
+        msid = 2 if tool_nodes else 0  # /SURF/PART/EXT/2, attached to PART2
 
         # Friction and optional values
         static_friction = float(line2[0]) if len(line2) > 0 else 0.0
