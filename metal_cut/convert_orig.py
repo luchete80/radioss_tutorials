@@ -155,7 +155,7 @@ class ContactHandler(SectionHandler):
         self.radioss_file.write(f"#              Stmin               Stmax          %mesh_size               dtmin  Irem_gap\n")
         self.radioss_file.write(f"                   0                   0                   0                   0         0\n")
         self.radioss_file.write(f"#              Stfac                Fric              Gapmin              Tstart               Tstop\n")
-        self.radioss_file.write(f"                   1                  0.                  .0                   0                   0\n")
+        self.radioss_file.write(f"                   1{static_friction:>20.6g}                  .0                   0                   0\n")
         self.radioss_file.write(f"#      IBC                        Inacti                VisS                VisF              Bumult\n")
         self.radioss_file.write(f"       000                             0                   1                   1                   0\n")
         self.radioss_file.write(f"#    Ifric    Ifiltr               Xfreq     Iform   sens_ID\n")
@@ -436,6 +436,7 @@ def convert_lsdyna_to_radioss(input_file, output_file):
         if current_handler:
             current_handler.finalize()
     
+        radioss_file.write('#include material.rad\n')
         radioss_file.write('/END\n')
     print(f"Conversion complete! Radioss file saved to: {output_file}")
 

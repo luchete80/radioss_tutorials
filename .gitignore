@@ -1,0 +1,25 @@
+# General generated results and temporary files.
+__pycache__/
+*.py[cod]
+.ipynb_checkpoints/
+*.rst
+*.tmp
+*.vtk
+*.vtu
+*.vtp
+*.pvtu
+*.pvd
+*.out
+*.sta
+*.log
+*.err
+*.his
+*.h3d
+*.plt
+*.anim
+
+# These exceptions apply to rules in this file. More specific local
+# .gitignore files may still ignore these extensions in their directories.
+!*.rad
+!*.inp
+!model_000*
