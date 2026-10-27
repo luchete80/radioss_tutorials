@@ -24,7 +24,7 @@
  COMPUTATION HARDWARE DESCRIPTION
   
  HOSTNAME     CPU TYPE, FREQUENCY AND MEMORY
- ana   AMD Ryzen 7 5700G with Radeon Graphics          (x86_64), 3800 MHz,   6333 MB RAM,  16688 MB swap
+ ana   AMD Ryzen 7 5700G with Radeon Graphics          (x86_64), 3800 MHz,   7272 MB RAM,  16688 MB swap
   
  STACKSIZE  . . . . . . . . . . . . . . . . . . . . 1430 MB
  THREAD STACKSIZE . . . . . . . . . . . . . . . . . 400 MB
@@ -521,9 +521,9 @@ PART:         2,Solid2
  INTERFACE NUMBER. . . . . . . . . . . . . .         1
  INTERFACE TYPE. . . . . . . . . . . . . . .     7
 
-  GAP MIN =  5.4915016223343E-06
-  Maximum distance for radiation computation =  5.4915016223343E-05
-  POSSIBLE IMPACT NUMBER:           0  (<=           1 *NSN)
+  GAP MIN =  2.5003582538430E-05
+  Maximum distance for radiation computation =  2.5003582538430E-04
+  POSSIBLE IMPACT NUMBER:         936  (<=           1 *NSN)
  
  --------------------------------------
  NEW DOMAIN DECOMPOSITION FOR OPTIMIZATION
@@ -599,9 +599,17 @@ PART:         2,Solid2
  INTERFACE NUMBER. . . . . . . . . . . . . .         1
  INTERFACE TYPE. . . . . . . . . . . . . . .     7
 
-  GAP MIN =  5.4915016223343E-06
-  Maximum distance for radiation computation =  5.4915016223343E-05
-  POSSIBLE IMPACT NUMBER:           0  (<=           1 *NSN)
+  GAP MIN =  2.5003582538430E-05
+  Maximum distance for radiation computation =  2.5003582538430E-04
+  POSSIBLE IMPACT NUMBER:         936  (<=           1 *NSN)
+
+WARNING ID :    343
+** WARNING: INITIAL PENETRATIONS IN INTERFACE
+DESCRIPTION :  
+   -- INTERFACE ID: 1
+   -- INTERFACE TYPE: Converted from *CONTACT_AUTOMATIC_NODES_TO_SURFACE_ID
+   THERE ARE 8 INITIAL PENETRATIONS
+   ( CONCERNING 6 NODES )
 
 
 
@@ -3399,12 +3407,12 @@ DESCRIPTION :
     STARTER STORAGE 
     --------------- 
  
-    STARTER MEMORY USAGE        267 MB
+    STARTER MEMORY USAGE        268 MB
 
 
      LOCAL ENGINE STORAGE EVALUATION FOR SPMD PROCESSOR     1
      --------------------------------------------------------
-        RESTART FILE SIZE        41 MB
+        RESTART FILE SIZE        40 MB
  
 
      RESTART FILES model_0000 WRITTEN
@@ -3415,10 +3423,10 @@ DESCRIPTION :
   
                    ** COMPUTE TIME INFORMATION **
   
- EXECUTION STARTED      :      2026/10/27  12:46:42
- EXECUTION COMPLETED    :      2026/10/27  12:46:43
+ EXECUTION STARTED      :      2026/10/27  13:34:05
+ EXECUTION COMPLETED    :      2026/10/27  13:34:06
   
- ELAPSED TIME...........=          1.10 s
+ ELAPSED TIME...........=          1.05 s
                                00:00:01
   
 ------------------------------------------------------------------------
@@ -3449,6 +3457,14 @@ DESCRIPTION :
 |                                                           |       |                                                  |
 |                                                           |                                                          |
 |                                                           |                                                          |
+|                                                           |  --- INTERFACES                             1 WARNING(S) |
+|                                                           |       |                                                  |
+|                                                           |       |                                                  |
+|                                                           |       |---     1 WARNING ID :          343               |
+|                                                           |       | ** WARNING: INITIAL PENETRATIONS IN INTERFACE    |
+|                                                           |       |                                                  |
+|                                                           |                                                          |
+|                                                           |                                                          |
 |                                                           |  --- KINEMATIC CONDITIONS                   1 WARNING(S) |
 |                                                           |       |                                                  |
 |                                                           |       |                                                  |
@@ -3463,6 +3479,6 @@ DESCRIPTION :
 
 
               0 ERROR(S)            
-              3 WARNING(S)          
+              4 WARNING(S)          
 
 
