@@ -1,0 +1,39 @@
+/MAT/ELAST/1
+TITLE
+7850
+200.0E9               0.3
+/HEAT/MAT/1
+#                 T0             RHO0_CP                  AS                  BS     IFORM
+                20.0        3.588000e+06        2.610000e+01                 0.0        1
+
+/MAT/PLAS_JOHNS/2
+wp
+        2.800000e+03        0.000000e+00
+#                  E                  Nu     Iflag
+        7.200000e+10        3.300000e-01         0
+#                  a                   b                   n             EPS_max            SIG_max0
+        2.500000e+08        1.200000e+08        1.800000e-01        1.000000e+00        0.000000e+00
+#                  c           EPS_DOT_0       ICC   Fsmooth               F_cut               Chard
+        0.000000e+00        0.000000e+00         0         0        0.000000e+00        0.000000e+00
+#                  m              T_melt              rhoC_p                 T_r
+        0.000000e+00        0.000000e+00        0.000000e+00        0.000000e+00
+#/HEAT/MAT/mat_ID/unit_ID
+/HEAT/MAT/2
+#                 T0             RHO0_CP                  AS                  BS     IFORM
+                20.0        3.588000e+06                25.0                 0.0        1
+ 
+/SURF/PART/EXT/2
+PART2_TOOL_CONTACT_SURFACE
+2
+/FUNCT/1
+F_FUNC_1
+        0.000000e+00        0.000000e+00
+        1.000000e-04        0.3000000000
+        1.0000000000        0.3000000000
+/FAIL/BIQUAD/2
+#                  c1                  c2                  c3                  c4                  c5
+        0.000000e+00        0.000000e+00        5.500000e-02        0.000000e+00        0.000000e+00
+#        P_thick_fail   M_Flag   S_Flag     Inst_start        El_FUNC_ID   Ref.El_Length
+        0.000000e+00         2         2        0.000000e+00                   0        0.000000e+00
+#  Fail_ID
+         0

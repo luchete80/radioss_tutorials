@@ -1,0 +1,41 @@
+# A2024-T351 values from Saleem et al. (2017), sourced from their listed refs.
+# Temperatures are absolute K in this kg-m-s Radioss model.
+/MAT/ELAST/1
+TITLE
+7850
+200.0E9               0.3
+/HEAT/MAT/1
+# Tool thermal data retained from model_3; T0 aligned to source room temperature 25 C.
+              298.15             3588000                26.1                   0         1
+
+/MAT/PLAS_JOHNS/2
+A2024-T351, Saleem et al. (2017)
+                2700
+# E, Nu, Iflag
+         73000000000                0.33         0
+# A, B, n; no artificial cap
+           352000000           440000000                0.42                   0                   0
+# C, flow reference rate (paper: 1/s), remaining legacy flags
+              0.0083                   1         0         0                   0                   0
+# m, Tmelt (520 C), rhoCp evaluated at 25 C, Tr (25 C)
+                   1              793.15           2407117.5              298.15
+/HEAT/MAT/2
+# T0=25 C; rhoCp=2700*(0.557*25+877.6); k=46.93195+0.247*T[K]
+              298.15           2407117.5          46.93195               0.247         1
+# T1=melt point; conductivity liquid/latent parameters unavailable in source.
+              793.15                   0                   0                   1
+/SURF/PART/EXT/2
+PART2_TOOL_CONTACT_SURFACE
+2
+/FUNCT/1
+# Tool X velocity: 800 m/min = 13.3333333333 m/s; original ramp timing retained.
+                   0                   0
+              0.0001       13.3333333333
+                   1       13.3333333333
+/FAIL/JOHNSON/2
+# D1-D5 as reported for A2024-T351; D3 convention needs confirmation (see README).
+                0.13                0.13                -1.5               0.011                   0
+# Reference rate=1/s from source; delete solid element when damage accumulates to 1.
+                   1         1         1                   0                   0         0
+# Fail_ID (2019 format)
+         0
