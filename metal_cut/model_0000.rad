@@ -3385,7 +3385,7 @@ Converted from *CONTACT_AUTOMATIC_NODES_TO_SURFACE_ID
 #              Stmin               Stmax          %mesh_size               dtmin  Irem_gap
                    0                   0                   0                   0         0
 #              Stfac                Fric              Gapmin              Tstart               Tstop
-                   1                 0.2                  .0                   0                   0
+                   1                 0.0                  .0                   0                   0
 #      IBC                        Inacti                VisS                VisF              Bumult
        000                             0                   1                   1                   0
 #    Ifric    Ifiltr               Xfreq     Iform   sens_ID
@@ -69548,13 +69548,16 @@ WORKPIECE
          1         2
 /PROP/SOLID/1
 0 0.0 0.0
+24        2
+
+
+/PROP/SOLID/2
+0 0.0 0.0
 1         2
-
-
 /PART/2
 Solid2
 #prop_ID	mat_ID	subset_ID	Thick
-         1         1
+         2         1
 /BRICK/1
 1         701       17321     138       6         1385      33879     17072     636       
 2         1385      33879     17072     636       1386      33880     17073     635       

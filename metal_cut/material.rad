@@ -20,7 +20,7 @@ MAT_PIECEWISE_LINEAR_PLASTICITY:2 TITLE:mat_probe
 #/HEAT/MAT/mat_ID/unit_ID
 /HEAT/MAT/2
 #                 T0             RHO0_CP                  AS                  BS     IFORM
-                20.0        3.588000e+06                 120                 0.0        1
+                20.0        3.588000e+06                25.0                 0.0        1
  
 /SURF/PART/EXT/2
 PART2_TOOL_CONTACT_SURFACE
@@ -31,5 +31,8 @@ F_FUNC_1
         1.000000e-04        0.3000000000
         1.0000000000        0.3000000000
 /FAIL/JOHNSON/2
-           0.1300000           0.1300000           1.5000000           0.0110000   0.0
-               0.001  
+#                 D1                  D2                  D3                  D4                  D5
+                0.26                0.26                 1.5               0.011                 0.0
+#          EPS_DOT_0
+               0.001
+

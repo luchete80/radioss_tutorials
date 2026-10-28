@@ -307,6 +307,87 @@ class Plane_Mesh(Mesh):
     print ("GMSH Mesh Created, Nodes: ", self.node_count, ", Elements: ", len(self.elnod))
     #self.writeCenters()
 
+
+class Plane_Mesh_Tr(Mesh):
+    def __init__(self, id, L=0, lc_inner=0, ratio=3.0):
+        self.id = id
+        self.nodes = []
+        self.elnod = []
+        self.elcenter = []
+        if L > 0:
+            self.generate_diagonal_transition_square(L, lc_inner, ratio)
+
+    def writeCenters(self):
+        self.elcenter = []
+        for e in self.elnod:
+            cx = sum([self.nodes[n][0] for n in e]) / 4.0
+            cy = sum([self.nodes[n][1] for n in e]) / 4.0
+            self.elcenter.append((cx, cy, 0.0))
+
+    def generate_diagonal_transition_square(self, L, lc_inner, ratio):
+        """
+        Genera una malla estructurada con:
+        - Zona central fina (lc_inner)
+        - Zona exterior gruesa (ratio * lc_inner)
+        - Transición diagonal tipo / \ en el perímetro del cuadrado fino
+        """
+
+        lc_outer = ratio * lc_inner
+        L_inner = L / ratio  # tamaño del cuadrado fino
+        L_half = L / 2.0
+        Li_half = L_inner / 2.0
+
+        # Cuántos nodos finos hay por lado en la zona central
+        n_inner = int(L_inner / lc_inner)
+
+        # Coordenadas base de la zona interna
+        x_inner = [-Li_half + i * lc_inner for i in range(n_inner + 1)]
+        y_inner = x_inner.copy()
+
+        # Añadimos una capa exterior de nodos gruesos
+        x_outer = [-L_half, -Li_half - lc_outer, Li_half + lc_outer, L_half]
+        y_outer = x_outer.copy()
+
+        # Coordenadas completas
+        x_coords = sorted(list(set(x_outer + x_inner)))
+        y_coords = sorted(list(set(y_outer + y_inner)))
+
+        nx = len(x_coords)
+        ny = len(y_coords)
+
+        print(f"Nodes in X: {nx}, Nodes in Y: {ny}, Total: {nx*ny}")
+
+        # Generamos nodos con ligera curvatura hacia afuera para dar forma / \
+        def smooth_edge(x, y):
+            """Deforma el borde externo de forma tipo / \\ """
+            deform = 0.0
+            if abs(x) > Li_half and abs(y) > Li_half:
+                # esquinas
+                deform = (abs(x) - Li_half) * (abs(y) - Li_half) / (L_half - Li_half)
+            elif abs(x) > Li_half:
+                deform = (abs(x) - Li_half) * (1.0 - abs(y) / L_half)
+            elif abs(y) > Li_half:
+                deform = (abs(y) - Li_half) * (1.0 - abs(x) / L_half)
+            # aplica un levantamiento en diagonal (hacia afuera)
+            return x * (1 + 0.1 * deform / L_half), y * (1 + 0.1 * deform / L_half)
+
+        for j in range(ny):
+            for i in range(nx):
+                x, y = x_coords[i], y_coords[j]
+                x_def, y_def = smooth_edge(x, y)
+                self.nodes.append((x_def, y_def, 0.0))
+
+        # Elementos cuadrangulares estructurados
+        for j in range(ny - 1):
+            for i in range(nx - 1):
+                n1 = j * nx + i
+                n2 = n1 + 1
+                n3 = n1 + nx + 1
+                n4 = n1 + nx
+                self.elnod.append((n1, n2, n3, n4))
+
+        self.writeCenters()
+
 class Rect_Plane_Mesh(Mesh):
   ini_node_id = 1 
   ini_elem_id = 1
